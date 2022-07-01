@@ -12,7 +12,7 @@ header {
     justify-content: space-between;
     align-items: baseline;
     background-color: #444;
-    height: 65px;
+    min-height: 65px;
     position: fixed;
     width: 100%;
     padding: 0px 50px;
