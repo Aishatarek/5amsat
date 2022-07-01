@@ -1,0 +1,659 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* start header  */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background-color: #444;
+    height: 65px;
+    position: fixed;
+    width: 100%;
+    padding: 0px 50px;
+    z-index: 3;
+}
+
+header a {
+    text-decoration: none;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+}
+
+header .logo {
+    display: inline-block;
+    padding: 8px 12px;
+}
+
+header .logo img {
+    height: 26px;
+    width: auto;
+    margin-top: 2px;
+
+}
+
+header .headerlink {
+    color: #efefef;
+    font-size: 14px;
+    padding: 20px 18px;
+    margin: 0 5px;
+}
+
+header .headerlink i {
+    color: #efefef;
+    font-size: 18px !important;
+}
+
+header .headerlink:hover {
+    background-color: #888;
+}
+
+header .headerbtn {
+    color: #efefef;
+    font-size: 14px;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    margin: 0 9px;
+    padding: 10px 9px;
+    border: 1px solid hsla(0, 0%, 94%, .5);
+}
+
+header .headerbtn i {
+    color: #efefef;
+    font-size: 14px !important;
+}
+
+header .headerbtn:hover {
+    background-color: #888;
+}
+
+/*end header*/
+
+/*first section*/
+.sec1 {
+    height: 80vh;
+    background-image: url(images/hero-33cc6eb8f1a98f8aacf154a4ff4c5f76d5610553e8ba4accb6d22515a64a184a.jpg);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.sec1 h1 {
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 32px;
+    color: #222222;
+    font-weight: 500;
+}
+
+.sec1 h3 {
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 18px;
+    color: #222222;
+    font-weight: 300;
+}
+
+.sec1 a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 11px 23px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #52b035;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 17px;
+}
+
+/* end first section  */
+
+/* start second section  */
+.sec2 {
+    background-color: #F1F1F1;
+    padding: 70px 0px 40px;
+    text-align: center;
+}
+
+.sec2 h3 {
+    font-size: 24px;
+    margin: 30px 0;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+}
+
+.sec2 .sec2flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0 100px;
+}
+
+.sec2 .detaildev {
+    position: relative;
+    height: 200px;
+    width: 24%;
+    margin: 10px 0;
+}
+
+.sec2 .detaildev img {
+    width: 100%;
+    height: 100%;
+}
+
+.sec2 .detaildev a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+}
+
+/* end second section  */
+
+/* start third section  */
+.sec3 {
+    background-image: url(images/pattern-faff445a237e662f4efc1f4ef1b3bdb8fe84158095c82e35def103e872714835.jpg);
+    background-size: cover;
+    padding: 110px 30px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+
+}
+
+.sec3 h3 {
+    font-size: 24px;
+    color: #ffffff;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.sec3 .formdiv {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.sec3 .formdiv i {
+    position: absolute;
+    right: 5px;
+    z-index: 2;
+    font-size: 25px;
+    color: #444;
+}
+
+.sec3 form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sec3 form input {
+    font-family: "Noto Naskh Arabic", "Open Sans", serif;
+    font-size: 23px;
+    height: 55px;
+    padding: 0 35px 0 15px;
+    display: inline-block;
+    width: 720px;
+    outline: none;
+    border: none;
+    color: #444;
+}
+
+.sec3 form input::placeholder {
+    font-family: "Noto Naskh Arabic", "Open Sans", serif;
+    font-size: 23px;
+    color: #444;
+}
+
+.sec3 form button {
+    padding: 7px 25px;
+    color: #fff;
+    background-color: #52b035;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 17px;
+    border: none;
+    position: absolute;
+    left: 5px;
+}
+
+/* end third section  */
+
+/* start fourth secton  */
+.sec4 {
+    padding: 50px 100px;
+    background-color: #f1f1f1;
+}
+
+.sec4 h3 {
+    text-align: center;
+    font-size: 24px;
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.steps {
+    min-height: 373px;
+    position: relative;
+}
+
+.steps .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.steps .step .stepbox {
+    display: flex;
+    align-items: center;
+    background-color: #52b035;
+    width: 360px;
+    padding: 9px 12px;
+
+}
+
+.steps .step .stepbox img {
+    width: 61px;
+}
+
+.steps .step .stepbox p {
+    color: white;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.steps .step .inbetween {
+    width: 5px;
+    height: 60px;
+    background: #52B035;
+}
+
+.steps .step .stepnumber {
+    width: 65px;
+    height: 65px;
+    border: 8px solid #52B035;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+
+.steps .step1 .stepbox {
+    position: absolute;
+    right: 0px;
+    top: -70px;
+}
+
+.steps .step2 .stepbox {
+    position: absolute;
+    right: 0px;
+    top: 100px;
+}
+
+.steps .step3 .stepbox {
+    position: absolute;
+    left: 0px;
+    top: -70px;
+}
+
+.steps .step1 {
+    z-index: 2;
+    position: absolute;
+    top: 100px;
+    right: 100px;
+}
+
+.steps .step2 {
+    z-index: 2;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+}
+
+.steps .step3 {
+    z-index: 2;
+    position: absolute;
+    top: 100px;
+    left: 100px;
+}
+
+.steps .arrowdiv {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+}
+
+.steps .arrowdiv .arrow {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.steps .arrowdiv .arrow {
+    height: 10px;
+    background: #52B035;
+}
+
+.steps .arrowdiv .arrow .front {
+    position: absolute;
+    left: -11px;
+    width: 0;
+    height: 0;
+    border-top: 18px solid transparent;
+    border-right: 33px solid #52B035;
+    border-bottom: 18px solid transparent;
+}
+
+.steps .arrowdiv .arrow .back {
+    position: absolute;
+    right: 0;
+    height: 33px;
+    background: #52B035;
+    width: 10px;
+}
+
+/* end fourth section  */
+
+/* start fifth section  */
+.sec5 {
+    padding: 50px 100px;
+    background-color: #f1f1f1;
+}
+
+.sec5 h3 {
+    text-align: center;
+    font-size: 24px;
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.sec5 .question {
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #222222;
+    border-bottom: 1px solid #c1c1c1;
+    font-size: 16px;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    padding: 10px 0;
+}
+
+.sec5 .question i {
+    font-weight: 1000;
+}
+
+.sec5 .answer {
+    font-size: 14px;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    padding-bottom: 20px;
+    display: none;
+
+}
+
+.sec5 .questiondiv:target .answer {
+    display: block;
+    border-bottom: 1px solid #c1c1c1;
+
+}
+
+.sec5 .questiondiv:target .question {
+    border: none;
+}
+
+/* end fifth section  */
+
+/* start sixth section  */
+.sec6 {
+    padding: 50px 0;
+    background-color: #f1f1f1;
+}
+
+.sec6 h3 {
+    text-align: center;
+    font-size: 24px;
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+
+.sec6 .flexdiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 100px;
+}
+
+.sec6 .flexdiv .linkbox {
+    width: 24%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sec6 .flexdiv .linkbox img {
+    width: 100%;
+}
+
+.sec6 .flexdiv .linkbox div {
+    background-color: white;
+    padding: 20px;
+}
+
+.sec6 .flexdiv .linkbox div a {
+    color: #222222;
+    text-decoration: none;
+    font-size: 14px;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 400;
+}
+
+.sec6 .flexdiv .linkbox div a:hover {
+    color: #52b035;
+}
+
+.enddiv {
+    background-image: url(images/mask-group-2-8b8a720429d8d2124270cd612e54bb3ef9a38e64062f1e0b0e588934df2697ea.png);
+    background-size: cover;
+    text-align: center;
+    padding: 50px 0;
+}
+
+.enddiv a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 11px 23px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #52b035;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 17px;
+}
+
+/* end sixth section  */
+
+/* start footer  */
+footer {
+    background-color: white;
+    text-align: right;
+}
+
+footer .footerdiv,
+footer .footerdiv2 {
+    padding: 20px 100px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+footer .footerdiv .footerdetail1,
+footer .footerdiv2 .footerdetail1 {
+    width: 25%;
+}
+
+footer .footerdiv .footerdetail2,
+footer .footerdiv2 .footerdetail2 {
+    width: 50%;
+}
+
+footer .footerdiv h5 a,
+footer .footerdiv2 h5,
+footer .footerdiv2 h5 a {
+    text-decoration: none;
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 200;
+}
+
+footer .footerdiv ul,
+footer .footerdiv2 ul {
+    list-style-type: square;
+    list-style-position: inside;
+}
+
+footer .footerdiv ul li,
+footer .footerdiv2 ul li {
+    margin: 8px 0;
+}
+
+footer .footerdiv ul li a,
+footer .footerdiv2 ul li a {
+    text-decoration: none;
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 200;
+
+}
+
+footer .footerdiv ul li a:hover,
+footer .footerdiv2 ul li a:hover {
+    color: #52b035;
+}
+
+footer .footerdiv2 img {
+    width: 250px;
+    margin-top: 15px;
+}
+
+footer .footerdiv2 .iconsdiv {
+    display: flex;
+}
+
+footer .footerdiv2 .facelink,
+footer .footerdiv2 .twitterlink {
+    text-decoration: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer .footerdiv2 .facelink {
+    background-color: #4267b2;
+}
+
+footer .footerdiv2 .twitterlink {
+    background-color: #1da1f2;
+    margin-right: 20px;
+}
+
+footer .footerdiv3 {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f1f1f1;
+    padding: 20px 100px;
+}
+
+footer .footerdiv3 ul {
+    display: flex;
+    list-style: none;
+}
+
+footer .footerdiv3 ul li {
+    margin-left: 10px;
+}
+
+footer .footerdiv3 ul li a {
+    text-decoration: none;
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 200;
+}
+
+footer .footerdiv3 p {
+    direction: ltr;
+    color: #222222;
+    font-size: 14px;
+}
+
+footer .footerdiv4 {
+    padding: 50px 150px;
+    text-align: center;
+}
+
+footer .footerdiv4 img {
+    width: 120px;
+}
+
+footer .footerdiv4 .flexdiv4 {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+footer .footerdiv4 .flexdiv4 div {
+    width: 15%;
+    margin-top: 20px;
+    margin-left: 10px;
+    text-align: right;
+}
+
+footer .footerdiv4 a {
+    text-decoration: none;
+}
+
+footer .footerdiv4 a h5 {
+    color: #222222;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 200;
+}
+
+footer .footerdiv4 a p {
+    color: #777;
+    font-size: 11px;
+    font-family: "Noto Kufi Arabic", "Open Sans", sans-serif;
+    font-weight: 200;
+}
