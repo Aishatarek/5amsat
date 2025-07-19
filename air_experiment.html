@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة وجود الهواء - مختبر تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2563eb;
+            --secondary: #1d4ed8;
+            --accent: #f59e0b;
+            --light: #e0f2fe;
+            --dark: #1e293b;
+            --water-color: #0891b2;
+            --glass-color: rgba(255, 255, 255, 0.8);
+            --success: #10b981;
+            --danger: #ef4444;
+            --tissue-color: #f8fafc;
+            --shadow: rgba(0, 0, 0, 0.15);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            color: #334155;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        /* خلفية متحركة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="white" stop-opacity="0.1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient></defs><circle cx="10" cy="10" r="10" fill="url(%23a)"><animateMotion dur="20s" repeatCount="indefinite"><mpath href="%23path"/></animateMotion></circle><circle cx="30" cy="10" r="8" fill="url(%23a)"><animateMotion dur="25s" repeatCount="indefinite"><mpath href="%23path"/></animateMotion></circle><circle cx="50" cy="10" r="12" fill="url(%23a)"><animateMotion dur="30s" repeatCount="indefinite"><mpath href="%23path"/></animateMotion></circle><path id="path" d="M0,10 Q50,0 100,10 T200,10" fill="none"/></svg>') repeat-x;
+            opacity: 0.3;
+            animation: float 20s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes float {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(100px); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 3rem;
+            color: var(--secondary);
+            animation: pulse-wind 2s infinite;
+        }
+        
+        @keyframes pulse-wind {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #2563eb, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 1.7rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        .experiment-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .control-btn.success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-right: 5px solid var(--accent);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2);
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 10px;
+            padding-left: 40px;
+            position: relative;
+            color: #78350f;
+            font-weight: 500;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 25px;
+            height: 25px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 25px;
+            min-height: 600px;
+        }
+        
+        .workspace-section {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .workspace-section h3 {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .components-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .components-panel h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .components-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .component {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: grab;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .component:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .component:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .component-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--light), #bae6fd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.2);
+            position: relative;
+        }
+        
+        /* صور واقعية للمكونات */
+        .component-img.glass-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="glass-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23e0f2fe"/><stop offset="50%" stop-color="%23ffffff"/><stop offset="100%" stop-color="%23bae6fd"/></linearGradient></defs><path d="M30 20 L70 20 L65 80 L35 80 Z" fill="url(%23glass-grad)" stroke="%232563eb" stroke-width="2"/><ellipse cx="50" cy="20" rx="20" ry="3" fill="%23ffffff" stroke="%232563eb" stroke-width="1"/></svg>') center/contain no-repeat;
+        }
+        
+        .component-img.tissue-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="40" fill="%23f8fafc" stroke="%23cbd5e1" stroke-width="1" rx="5"/><line x1="25" y1="40" x2="75" y2="40" stroke="%23e2e8f0" stroke-width="1"/><line x1="25" y1="50" x2="75" y2="50" stroke="%23e2e8f0" stroke-width="1"/><line x1="25" y1="60" x2="75" y2="60" stroke="%23e2e8f0" stroke-width="1"/></svg>') center/contain no-repeat;
+        }
+        
+        .component-img.water-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="water-grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="%2306b6d4"/><stop offset="100%" stop-color="%230891b2"/></linearGradient></defs><rect x="15" y="40" width="70" height="45" fill="url(%23water-grad)" rx="5"/><ellipse cx="50" cy="40" rx="35" ry="5" fill="%2322d3ee"/><path d="M20 50 Q30 45 40 50 T60 50 T80 50" stroke="%2322d3ee" stroke-width="2" fill="none"/></svg>') center/contain no-repeat;
+        }
+        
+        .component-details {
+            flex: 1;
+        }
+        
+        .component-details h4 {
+            color: var(--dark);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .component-details p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .component.dragging {
+            opacity: 0.7;
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+        }
+        
+        .component.placed {
+            opacity: 0.6;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-color: var(--success);
+        }
+        
+        .component.placed::after {
+            content: "✓";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 25px;
+            height: 25px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+        }
+        
+        .experiment-setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin-top: 40px;
+            width: 100%;
+            min-height: 400px;
+        }
+        
+        .water-container {
+            width: 350px;
+            height: 250px;
+            background: linear-gradient(135deg, var(--water-color), #0e7490);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(8, 145, 178, 0.3);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid #0891b2;
+        }
+        
+        .water-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><path d="M0,10 Q25,5 50,10 T100,10 L100,20 L0,20 Z" fill="rgba(255,255,255,0.1)"/></svg>') repeat-x;
+            animation: water-waves 3s infinite ease-in-out;
+        }
+        
+        @keyframes water-waves {
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            25% { transform: translateX(-10px) scaleY(0.9); }
+            50% { transform: translateX(0) scaleY(1.1); }
+            75% { transform: translateX(10px) scaleY(0.9); }
+        }
+        
+        .glass {
+            width: 120px;
+            height: 180px;
+            background: linear-gradient(135deg, var(--glass-color), rgba(255, 255, 255, 0.6));
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .glass::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            width: 140px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+        }
+        
+        .glass::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: glass-shine 4s infinite;
+        }
+        
+        @keyframes glass-shine {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+        
+        .tissue {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--tissue-color), #e2e8f0);
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .tissue::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0,0,0,0.03),
+                rgba(0,0,0,0.03) 2px,
+                transparent 2px,
+                transparent 6px
+            );
+        }
+        
+        .tissue.wet {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            border-color: #475569;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+            animation: drip 2s infinite;
+        }
+        
+        @keyframes drip {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .glass.submerged {
+            transform: translateY(-20px);
+            animation: water-resistance 1s ease-in-out;
+        }
+        
+        .glass.lifted {
+            transform: translateY(-80px);
+            animation: glass-lift 1s ease-out;
+        }
+        
+        @keyframes water-resistance {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+            60% { transform: translateY(-15px); }
+            100% { transform: translateY(-20px); }
+        }
+        
+        @keyframes glass-lift {
+            0% { transform: translateY(-20px); }
+            100% { transform: translateY(-80px); }
+        }
+        
+        .bubbles-air {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .bubble-air {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 100%);
+            border-radius: 50%;
+            animation: bubble-rise-realistic 3s infinite;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        
+        @keyframes bubble-rise-realistic {
+            0% { 
+                transform: translateY(0) scale(0.2); 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.8; 
+            }
+            50% { 
+                transform: translateY(-50px) scale(0.7);
+                opacity: 0.6; 
+            }
+            100% { 
+                transform: translateY(-120px) scale(1) rotate(180deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .experiment-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step.completed {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-left-color: var(--success);
+            transform: scale(1.02);
+        }
+        
+        .step.completed .step-text {
+            text-decoration: line-through;
+            color: #059669;
+            font-weight: 600;
+        }
+        
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #64748b;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step.completed .step-icon {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            animation: success-bounce 0.6s ease-out;
+        }
+        
+        @keyframes success-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .drop-zone {
+            border: 3px dashed var(--primary);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(37, 99, 235, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 180px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(37, 99, 235, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .drop-zone.active {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.25));
+            border-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .drop-zone.active::before {
+            transform: translateX(100%);
+        }
+        
+        .drop-zone.highlight {
+            animation: drop-pulse 2s infinite;
+        }
+        
+        @keyframes drop-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+                border-color: var(--primary);
+            }
+            50% { 
+                box-shadow: 0 0 0 15px rgba(37, 99, 235, 0);
+                border-color: var(--accent);
+            }
+        }
+        
+        .experiment-feedback {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 15px;
+            border-left: 5px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: feedback-shine 3s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: #92400e;
+            font-weight: 600;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(232, 244, 252, 0.95), rgba(224, 242, 254, 0.95));
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid var(--secondary);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+        }
+        
+        .result-area h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(220, 252, 231, 0.95));
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid var(--success);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+        }
+        
+        .conclusion p {
+            margin-bottom: 10px;
+            color: #065f46;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .components-panel {
+                order: -1;
+            }
+            
+            .components-area {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .component {
+                min-width: 120px;
+                flex: 1;
+            }
+            
+            .water-container {
+                width: 280px;
+                height: 200px;
+            }
+            
+            .glass {
+                width: 100px;
+                height: 150px;
+            }
+            
+            .tissue {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+            
+            .drop-zone {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* تأثيرات إضافية للواقعية */
+        .water-ripple {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: ripple 2s infinite;
+        }
+        
+        @keyframes ripple {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        @keyframes particle-float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(20px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- زر التحكم في الصوت -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-wind"></i>
+                <div class="logo-text">
+                    <h1>مختبر تجربة وجود الهواء</h1>
+                    <p>تجربة تفاعلية لاكتشاف أن الهواء مادة حقيقية تشغل حيزاً</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2><i class="fas fa-flask"></i> تجربة الهواء والماء التفاعلية</h2>
+                    <p>أثبت أن الهواء موجود ويمنع الماء من الدخول إلى الكوب</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> إعادة التجربة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> تعليمات التجربة التفاعلية</h3>
+                <ol>
+                    <li>اسحب الكوب الزجاجي من اللوحة الجانبية إلى منطقة التجربة</li>
+                    <li>اسحب المنديل الورقي وضعه داخل الكوب</li>
+                    <li>اسحب وعاء الماء إلى منطقة التجربة</li>
+                    <li>اضغط على زر "بدء التجربة" وشاهد النتائج الواقعية</li>
+                </ol>
+            </div>
+            
+            <div class="experiment-area">
+                <div class="workspace-section" id="workspace">
+                    <h3><i class="fas fa-vial"></i> منطقة التجربة</h3>
+                    
+                    <div class="experiment-steps">
+                        <div class="step" id="step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">ضع الكوب الزجاجي في منطقة التجربة</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">ضع المنديل الورقي داخل الكوب</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">أضف وعاء الماء لإكمال الإعداد</div>
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-setup" id="experimentSetup">
+                        <div class="drop-zone" id="glassDropZone" data-for="glass">
+                            <div class="component-img glass-img"></div>
+                            <p style="color: var(--primary); font-weight: 600;">أسقط الكوب هنا</p>
+                        </div>
+                        
+                        <div class="water-container hidden" id="waterContainer">
+                            <div class="bubbles-air" id="bubblesAir"></div>
+                            <div class="glass hidden" id="glass">
+                                <div class="drop-zone highlight" id="tissueDropZone" data-for="tissue">
+                                    <div class="component-img tissue-img"></div>
+                                    <p style="color: var(--primary); font-weight: 600;">أسقط المنديل هنا</p>
+                                </div>
+                                <div class="tissue dry hidden" id="tissue">
+                                    <i class="fas fa-toilet-paper"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="control-btn success hidden" id="startExperiment" disabled>
+                            <i class="fas fa-play"></i> بدء التجربة
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="components-panel">
+                    <h3><i class="fas fa-toolbox"></i> أدوات التجربة</h3>
+                    <div class="components-area" id="componentsArea">
+                        <div class="component" draggable="true" data-component="glass" id="glassComponent">
+                            <div class="component-img glass-img"></div>
+                            <div class="component-details">
+                                <h4>كوب زجاجي شفاف</h4>
+                                <p>يحبس الهواء بداخله</p>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="tissue" id="tissueComponent">
+                            <div class="component-img tissue-img"></div>
+                            <div class="component-details">
+                                <h4>مناديل ورقية</h4>
+                                <p>تبقى جافة داخل الكوب</p>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="water" id="waterComponent">
+                            <div class="component-img water-img"></div>
+                            <div class="component-details">
+                                <h4>وعاء ماء</h4>
+                                <p>لا يستطيع دخول الكوب</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p><i class="fas fa-hand-point-right"></i> ابدأ بسحب الكوب الزجاجي إلى منطقة التجربة</p>
+            </div>
+            
+            <div class="result-area">
+                <h3><i class="fas fa-clipboard-list"></i> ملاحظات ونتائج التجربة</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p><i class="fas fa-flask"></i> قم بإعداد التجربة لرؤية النتائج العلمية المدهشة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التجربة الرئيسية
+            const glass = document.getElementById('glass');
+            const tissue = document.getElementById('tissue');
+            const startBtn = document.getElementById('startExperiment');
+            const resetBtn = document.getElementById('resetExperiment');
+            const waterContainer = document.getElementById('waterContainer');
+            const bubblesAir = document.getElementById('bubblesAir');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const componentsArea = document.getElementById('componentsArea');
+            const experimentSetup = document.getElementById('experimentSetup');
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            
+            // عناصر الخطوات
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            
+            // عناصر المكونات
+            const glassComponent = document.getElementById('glassComponent');
+            const tissueComponent = document.getElementById('tissueComponent');
+            const waterComponent = document.getElementById('waterComponent');
+            
+            // مناطق الإسقاط
+            const glassDropZone = document.getElementById('glassDropZone');
+            const tissueDropZone = document.getElementById('tissueDropZone');
+            
+            // متغيرات الحالة
+            let experimentStarted = false;
+            let soundEnabled = true;
+            let componentsPlaced = {
+                glass: false,
+                tissue: false,
+                water: false
+            };
+            
+            // إنشاء الأصوات
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            }
+            
+            // أصوات مختلفة للتفاعلات
+            const sounds = {
+                drop: () => playSound(200, 0.3, 'sine'),
+                success: () => playSound(400, 0.5, 'square'),
+                bubbles: () => playSound(800, 0.2, 'sine'),
+                water: () => playSound(150, 1, 'triangle'),
+                complete: () => {
+                    playSound(523, 0.2); // C
+                    setTimeout(() => playSound(659, 0.2), 200); // E
+                    setTimeout(() => playSound(784, 0.4), 400); // G
+                }
+            };
+            
+            // تبديل الصوت
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 400 : 200, 0.2);
+            });
+            
+            // إنشاء فقاعات هوائية واقعية
+            function createRealisticBubbles() {
+                bubblesAir.innerHTML = '';
+                const bubbleCount = 20;
+                
+                for (let i = 0; i < bubbleCount; i++) {
+                    setTimeout(() => {
+                        const bubble = document.createElement('div');
+                        bubble.className = 'bubble-air';
+                        
+                        const size = Math.random() * 15 + 8;
+                        bubble.style.width = `${size}px`;
+                        bubble.style.height = `${size}px`;
+                        bubble.style.left = `${Math.random() * 80 + 10}%`;
+                        bubble.style.bottom = '10px';
+                        bubble.style.animationDelay = '0s';
+                        bubble.style.animationDuration = `${Math.random() * 2 + 2}s`;
+                        
+                        bubblesAir.appendChild(bubble);
+                        sounds.bubbles();
+                        
+                        setTimeout(() => {
+                            if (bubble.parentNode) {
+                                bubble.remove();
+                            }
+                        }, 4000);
+                    }, i * 100);
+                }
+            }
+            
+            // إنشاء تموجات الماء
+            function createWaterRipple(x, y) {
+                const ripple = document.createElement('div');
+                ripple.className = 'water-ripple';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                waterContainer.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 2000);
+            }
+            
+            // إنشاء جزيئات تأثيرية
+            function createParticles(x, y, count = 5) {
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = `${x + Math.random() * 20 - 10}px`;
+                    particle.style.top = `${y + Math.random() * 20 - 10}px`;
+                    particle.style.animation = `particle-float ${Math.random() * 2 + 1}s ease-out forwards`;
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 3000);
+                }
+            }
+            
+            // تحديث حالة الخطوات مع تأثيرات بصرية
+            function updateSteps() {
+                const steps = [
+                    { element: step1, condition: componentsPlaced.glass, zone: glassDropZone },
+                    { element: step2, condition: componentsPlaced.tissue, zone: tissueDropZone },
+                    { element: step3, condition: componentsPlaced.water, zone: null }
+                ];
+                
+                steps.forEach((step, index) => {
+                    if (step.condition) {
+                        if (!step.element.classList.contains('completed')) {
+                            step.element.classList.add('completed');
+                            sounds.success();
+                            
+                            // إخفاء منطقة الإسقاط
+                            if (step.zone) {
+                                step.zone.classList.add('hidden');
+                            }
+                        }
+                    } else {
+                        step.element.classList.remove('completed');
+                        if (step.zone) {
+                            step.zone.classList.remove('hidden');
+                        }
+                    }
+                });
+                
+                // تفعيل زر البدء
+                const allComplete = Object.values(componentsPlaced).every(placed => placed);
+                startBtn.disabled = !allComplete;
+                
+                if (allComplete && startBtn.classList.contains('hidden')) {
+                    startBtn.classList.remove('hidden');
+                    sounds.complete();
+                }
+            }
+            
+            // معالجة السحب والإفلات المحسنة
+            let draggedElement = null;
+            
+            componentsArea.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('component')) {
+                    draggedElement = e.target;
+                    e.dataTransfer.setData('text/plain', e.target.dataset.component);
+                    e.target.classList.add('dragging');
+                    
+                    // إضافة تأثيرات بصرية
+                    const componentType = e.target.dataset.component;
+                    highlightDropZone(componentType);
+                    
+                    sounds.drop();
+                }
+            });
+            
+            componentsArea.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('component')) {
+                    e.target.classList.remove('dragging');
+                    removeHighlights();
+                    draggedElement = null;
+                }
+            });
+            
+            function highlightDropZone(componentType) {
+                removeHighlights();
+                
+                if (componentType === 'glass' && !componentsPlaced.glass) {
+                    glassDropZone.classList.add('active');
+                } else if (componentType === 'tissue' && componentsPlaced.glass && !componentsPlaced.tissue) {
+                    tissueDropZone.classList.add('active');
+                }
+            }
+            
+            function removeHighlights() {
+                glassDropZone.classList.remove('active');
+                tissueDropZone.classList.remove('active');
+            }
+            
+            // معالجة إسقاط المكونات مع تأثيرات واقعية
+            function setupDropZone(zone, validComponent, onDrop) {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const componentType = e.dataTransfer.getData('text/plain');
+                    
+                    if (componentType === validComponent) {
+                        onDrop();
+                        createParticles(e.offsetX, e.offsetY);
+                        sounds.success();
+                    }
+                    
+                    removeHighlights();
+                });
+            }
+            
+            // إعداد مناطق الإسقاط
+            setupDropZone(glassDropZone, 'glass', () => {
+                if (!componentsPlaced.glass) {
+                    glass.classList.remove('hidden');
+                    componentsPlaced.glass = true;
+                    glassComponent.classList.add('placed');
+                    
+                    updateFeedback('تم وضع الكوب الزجاجي بنجاح! الآن ضع المنديل داخل الكوب', 'success');
+                    updateSteps();
+                    
+                    setTimeout(() => {
+                        if (!componentsPlaced.tissue) {
+                            tissueDropZone.classList.add('highlight');
+                        }
+                    }, 1000);
+                }
+            });
+            
+            setupDropZone(tissueDropZone, 'tissue', () => {
+                if (componentsPlaced.glass && !componentsPlaced.tissue) {
+                    tissueDropZone.classList.add('hidden');
+                    tissue.classList.remove('hidden');
+                    componentsPlaced.tissue = true;
+                    tissueComponent.classList.add('placed');
+                    
+                    updateFeedback('تم وضع المنديل داخل الكوب! الآن أضف وعاء الماء', 'success');
+                    updateSteps();
+                    tissueDropZone.classList.remove('highlight');
+                }
+            });
+            
+            setupDropZone(experimentSetup, 'water', () => {
+                if (!componentsPlaced.water) {
+                    waterContainer.classList.remove('hidden');
+                    componentsPlaced.water = true;
+                    waterComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! تم إعداد التجربة بالكامل. اضغط على "بدء التجربة"', 'complete');
+                    updateSteps();
+                    sounds.water();
+                    
+                    // إضافة تموجات الماء
+                    setInterval(() => {
+                        if (waterContainer && !waterContainer.classList.contains('hidden')) {
+                            createWaterRipple(
+                                Math.random() * waterContainer.offsetWidth,
+                                waterContainer.offsetHeight - 50
+                            );
+                        }
+                    }, 3000);
+                }
+            });
+            
+            // تحديث رسائل التغذية الراجعة
+            function updateFeedback(message, type = 'info') {
+                const icons = {
+                    info: 'fas fa-info-circle',
+                    success: 'fas fa-check-circle',
+                    complete: 'fas fa-star',
+                    warning: 'fas fa-exclamation-triangle'
+                };
+                
+                const colors = {
+                    info: '#3b82f6',
+                    success: '#10b981',
+                    complete: '#f59e0b',
+                    warning: '#ef4444'
+                };
+                
+                experimentFeedback.innerHTML = `
+                    <p><i class="${icons[type]}" style="color: ${colors[type]};"></i> ${message}</p>
+                `;
+                
+                // تأثير وميض
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 200);
+            }
+            
+            // بدء التجربة مع تحسينات واقعية
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ التنفيذ...';
+                
+                updateFeedback('بدء التجربة... شاهد ماذا يحدث!', 'info');
+                sounds.water();
+                
+                // مرحلة 1: غمر الكوب في الماء
+                setTimeout(() => {
+                    glass.classList.add('submerged');
+                    createWaterRipple(waterContainer.offsetWidth / 2, waterContainer.offsetHeight - 30);
+                    updateFeedback('يتم غمر الكوب في الماء...', 'info');
+                }, 1000);
+                
+                // مرحلة 2: رفع الكوب
+                setTimeout(() => {
+                    glass.classList.remove('submerged');
+                    glass.classList.add('lifted');
+                    createRealisticBubbles();
+                    updateFeedback('الكوب يخرج من الماء... لاحظ الفقاعات!', 'success');
+                }, 3000);
+                
+                // مرحلة 3: عرض النتيجة النهائية
+                setTimeout(() => {
+                    // المنديل يبقى جافاً!
+                    updateFeedback('مذهل! المنديل ظل جافاً تماماً!', 'complete');
+                    sounds.complete();
+                    
+                    // تحديث الخلاصة العلمية
+                    conclusionDiv.innerHTML = `
+                        <p><strong style="color: #10b981;">🎉 نتائج التجربة المذهلة:</strong></p>
+                        <p>✅ <strong>المنديل بقي جافاً</strong> - الهواء محبوس داخل الكوب منع الماء من الدخول</p>
+                        <p>✅ <strong>ظهور الفقاعات</strong> - دليل على وجود الهواء وخروجه تدريجياً</p>
+                        <p>✅ <strong>مقاومة الماء</strong> - ضغط الهواء أقوى من ضغط الماء</p>
+                        
+                        <p style="margin-top: 15px;"><strong style="color: #2563eb;">📚 الشرح العلمي:</strong></p>
+                        <p>🔬 الهواء مادة حقيقية لها كتلة وتشغل حيزاً في الفراغ</p>
+                        <p>🔬 عند قلب الكوب، يحبس الهواء بداخله ويخلق ضغطاً</p>
+                        <p>🔬 ضغط الهواء المحبوس يمنع الماء من دخول الكوب</p>
+                        <p>🔬 هذا المبدأ يُستخدم في الأجراس الغواصة والغواصات</p>
+                        
+                        <p style="margin-top: 15px;"><strong style="color: #f59e0b;">🌟 تطبيقات عملية:</strong></p>
+                        <p>⚙️ أنظمة التهوية في المباني</p>
+                        <p>⚙️ تقنيات الغوص والاستكشاف البحري</p>
+                        <p>⚙️ صناعة الطائرات والمركبات الفضائية</p>
+                    `;
+                    
+                    startBtn.innerHTML = '<i class="fas fa-check"></i> التجربة مكتملة';
+                    startBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                }, 5000);
+            });
+            
+            // إعادة تعيين التجربة مع تحسينات
+            resetBtn.addEventListener('click', () => {
+                // إيقاف جميع المؤثرات
+                glass.classList.add('hidden');
+                glass.classList.remove('submerged', 'lifted');
+                tissue.classList.add('hidden', 'dry');
+                tissue.classList.remove('wet');
+                waterContainer.classList.add('hidden');
+                startBtn.classList.add('hidden');
+                bubblesAir.innerHTML = '';
+                
+                // إعادة تعيين الحالات
+                experimentStarted = false;
+                componentsPlaced = {
+                    glass: false,
+                    tissue: false,
+                    water: false
+                };
+                
+                // إعادة تعيين المكونات
+                [glassComponent, tissueComponent, waterComponent].forEach(component => {
+                    component.classList.remove('placed');
+                });
+                
+                // إعادة تعيين أزرار التحكم
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> بدء التجربة';
+                startBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                
+                // إعادة إظهار مناطق الإسقاط
+                glassDropZone.classList.remove('hidden');
+                tissueDropZone.classList.remove('hidden');
+                
+                // تحديث الخطوات والرسائل
+                updateSteps();
+                updateFeedback('ابدأ بسحب الكوب الزجاجي إلى منطقة التجربة', 'info');
+                conclusionDiv.innerHTML = `
+                    <p><i class="fas fa-flask"></i> قم بإعداد التجربة لرؤية النتائج العلمية المدهشة</p>
+                `;
+                
+                // تأثير صوتي للإعادة
+                sounds.drop();
+                
+                // توجيه المستخدم
+                setTimeout(() => {
+                    glassDropZone.classList.add('highlight');
+                }, 500);
+            });
+            
+            // بدء التوجيه التفاعلي
+            setTimeout(() => {
+                updateFeedback('مرحباً بك في المختبر التفاعلي! ابدأ بسحب الكوب الزجاجي', 'info');
+                glassDropZone.classList.add('highlight');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
