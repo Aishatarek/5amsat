@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة توصيل الحرارة - مختبر تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #dc2626;
+            --secondary: #b91c1c;
+            --accent: #f59e0b;
+            --light: #fef2f2;
+            --dark: #1e293b;
+            --hot-color: #ef4444;
+            --cold-color: #3b82f6;
+            --metal-color: #64748b;
+            --wood-color: #92400e;
+            --glass-color: rgba(255, 255, 255, 0.8);
+            --success: #10b981;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --heat-gradient: linear-gradient(45deg, #ff6b35, #f7931e, #ffcd3c);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #374151);
+            color: #334155;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        /* خلفية متحركة مع جزيئات حرارية */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="heat" cx="50%" cy="50%"><stop offset="0%" stop-color="orange" stop-opacity="0.1"/><stop offset="100%" stop-color="red" stop-opacity="0"/></radialGradient></defs><circle cx="15" cy="10" r="8" fill="url(%23heat)"><animate attributeName="r" values="6;12;6" dur="3s" repeatCount="indefinite"/></circle><circle cx="50" cy="8" r="6" fill="url(%23heat)"><animate attributeName="r" values="4;10;4" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="85" cy="12" r="10" fill="url(%23heat)"><animate attributeName="r" values="8;14;8" dur="3.5s" repeatCount="indefinite"/></circle></svg>') repeat-x;
+            opacity: 0.4;
+            animation: heat-flow 15s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes heat-flow {
+            0% { transform: translateX(-100px) translateY(0); }
+            50% { transform: translateX(50px) translateY(-20px); }
+            100% { transform: translateX(200px) translateY(0); }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 25px 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--heat-gradient);
+            opacity: 0.1;
+            animation: heat-shine 4s infinite;
+        }
+        
+        @keyframes heat-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 3.5rem;
+            background: var(--heat-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: heat-pulse 3s infinite;
+        }
+        
+        @keyframes heat-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: var(--heat-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .temperature-display {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--accent);
+        }
+        
+        .temperature-display h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+        
+        .temp-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 20px 50px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.1);
+            border-left: 6px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+        }
+        
+        .experiment-header p {
+            color: #7f1d1d;
+            font-size: 1.2rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--heat-gradient);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #64748b, #475569);
+            box-shadow: 0 6px 20px rgba(100, 116, 139, 0.4);
+        }
+        
+        .control-btn.start {
+            background: var(--heat-gradient);
+            animation: heat-glow 2s infinite;
+        }
+        
+        @keyframes heat-glow {
+            0%, 100% { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 6px 30px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.3); }
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            animation: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-right: 6px solid var(--accent);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><path d="M25,5 Q35,15 25,25 Q15,35 25,45" stroke="orange" stroke-width="2" fill="none" opacity="0.1"/></svg>') repeat;
+            animation: instruction-pattern 10s infinite linear;
+        }
+        
+        @keyframes instruction-pattern {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 50px;
+            position: relative;
+            color: #78350f;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            min-height: 700px;
+        }
+        
+        .workspace-section {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 3px dashed #cbd5e1;
+            overflow: hidden;
+        }
+        
+        .workspace-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .workspace-section h3 {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        .components-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.1);
+        }
+        
+        .components-panel h3 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .components-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .component {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: grab;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        
+        .component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.6) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.8s;
+        }
+        
+        .component:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .component:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .component-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        /* صور واقعية للمكونات */
+        .component-img.cup-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="cup-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ffffff"/><stop offset="50%" stop-color="%23f8fafc"/><stop offset="100%" stop-color="%23e2e8f0"/></linearGradient><linearGradient id="water-grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="%23ef4444"/><stop offset="100%" stop-color="%23dc2626"/></linearGradient></defs><path d="M25 30 L75 30 L70 80 L30 80 Z" fill="url(%23cup-grad)" stroke="%23cbd5e1" stroke-width="2"/><path d="M27 35 L73 35 L69 75 L31 75 Z" fill="url(%23water-grad)"/><ellipse cx="50" cy="30" rx="25" ry="4" fill="%23ffffff" stroke="%23cbd5e1"/><path d="M30 45 Q35 40 40 45 Q45 50 50 45 Q55 40 60 45 Q65 50 70 45" stroke="%23ffffff" stroke-width="1" fill="none" opacity="0.7"/></svg>') center/contain no-repeat;
+            background-color: #fef2f2;
+        }
+        
+        .component-img.metal-spoon-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="metal-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23f1f5f9"/><stop offset="50%" stop-color="%23cbd5e1"/><stop offset="100%" stop-color="%2364748b"/></linearGradient></defs><ellipse cx="50" cy="25" rx="15" ry="10" fill="url(%23metal-grad)" stroke="%23475569" stroke-width="1"/><rect x="48" y="35" width="4" height="50" fill="url(%23metal-grad)" stroke="%23475569" stroke-width="1"/><circle cx="50" cy="25" r="8" fill="%23e2e8f0" opacity="0.8"/></svg>') center/contain no-repeat;
+            background-color: #f1f5f9;
+        }
+        
+        .component-img.wood-spoon-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="wood-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23fbbf24"/><stop offset="50%" stop-color="%23d97706"/><stop offset="100%" stop-color="%2392400e"/></linearGradient></defs><ellipse cx="50" cy="25" rx="15" ry="10" fill="url(%23wood-grad)" stroke="%23451a03" stroke-width="1"/><rect x="48" y="35" width="4" height="50" fill="url(%23wood-grad)" stroke="%23451a03" stroke-width="1"/><ellipse cx="50" cy="25" rx="12" ry="7" fill="%23f59e0b" opacity="0.6"/></svg>') center/contain no-repeat;
+            background-color: #fef3c7;
+        }
+        
+        .component-details {
+            flex: 1;
+        }
+        
+        .component-details h4 {
+            color: var(--dark);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .component-details p {
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .material-type {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        
+        .material-type.metal {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            color: #475569;
+        }
+        
+        .material-type.wood {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #9a3412;
+        }
+        
+        .component.dragging {
+            opacity: 0.8;
+            transform: rotate(8deg) scale(1.15);
+            z-index: 1000;
+        }
+        
+        .component.placed {
+            opacity: 0.7;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-color: var(--success);
+        }
+        
+        .component.placed::after {
+            content: "✓";
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 30px;
+            height: 30px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .experiment-setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 50px;
+            width: 100%;
+            min-height: 500px;
+        }
+        
+        .hot-water-container {
+            width: 400px;
+            height: 280px;
+            background: linear-gradient(135deg, var(--hot-color), #dc2626);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.4);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 4px solid #dc2626;
+        }
+        
+        .hot-water-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><path d="M0,15 Q25,10 50,15 T100,15 L100,20 L0,20 Z" fill="rgba(255,255,255,0.2)"/></svg>') repeat-x;
+            animation: hot-waves 2s infinite ease-in-out;
+        }
+        
+        @keyframes hot-waves {
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            25% { transform: translateX(-8px) scaleY(0.9); }
+            50% { transform: translateX(0) scaleY(1.1); }
+            75% { transform: translateX(8px) scaleY(0.9); }
+        }
+        
+        .steam-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .steam-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 100%);
+            border-radius: 50%;
+            animation: steam-rise 4s infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+        
+        @keyframes steam-rise {
+            0% { 
+                transform: translateY(0) scale(0.3); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 0.8; 
+            }
+            80% { 
+                transform: translateY(-150px) scale(1.2);
+                opacity: 0.4; 
+            }
+            100% { 
+                transform: translateY(-200px) scale(1.5) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .spoon {
+            width: 40px;
+            height: 220px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 15px;
+            margin-bottom: 40px;
+        }
+        
+        .spoon.metal {
+            background: linear-gradient(135deg, #f1f5f9, #cbd5e1, #64748b);
+            border-radius: 20px 20px 8px 8px;
+            box-shadow: 0 8px 20px rgba(100, 116, 139, 0.3);
+            border: 2px solid #475569;
+        }
+        
+        .spoon.wood {
+            background: linear-gradient(135deg, #fbbf24, #d97706, #92400e);
+            border-radius: 20px 20px 8px 8px;
+            box-shadow: 0 8px 20px rgba(146, 64, 14, 0.3);
+            border: 2px solid #451a03;
+        }
+        
+        .spoon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid inherit;
+        }
+        
+        .spoon.metal::before {
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+        }
+        
+        .spoon.wood::before {
+            background: linear-gradient(135deg, #fed7aa, #f59e0b);
+        }
+        
+        .spoon.heated.metal {
+            background: linear-gradient(135deg, #fef2f2, #fca5a5, #ef4444);
+            animation: metal-heat-glow 2s infinite;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+        }
+        
+        .spoon.heated.metal::before {
+            background: linear-gradient(135deg, #fee2e2, #fca5a5);
+        }
+        
+        @keyframes metal-heat-glow {
+            0%, 100% { 
+                box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 8px 35px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.4);
+                transform: scale(1.02);
+            }
+        }
+        
+        .spoon.heated.wood {
+            /* الخشب لا يسخن بنفس الطريقة */
+            background: linear-gradient(135deg, #fbbf24, #d97706, #92400e);
+        }
+        
+        .temperature-indicator {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        
+        .spoon:hover .temperature-indicator {
+            opacity: 1;
+        }
+        
+        .temperature-indicator.hot {
+            background: var(--hot-color);
+            color: white;
+        }
+        
+        .temperature-indicator.cool {
+            background: var(--cold-color);
+            color: white;
+        }
+        
+        .experiment-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 5px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .step.completed {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-left-color: var(--success);
+            transform: scale(1.02);
+        }
+        
+        .step.completed .step-text {
+            text-decoration: line-through;
+            color: #059669;
+            font-weight: 700;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #64748b;
+            transition: all 0.4s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step.completed .step-icon {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            animation: success-bounce 0.8s ease-out;
+        }
+        
+        @keyframes success-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .drop-zone {
+            border: 4px dashed var(--primary);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.1));
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(239, 68, 68, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.8s;
+        }
+        
+        .drop-zone.active {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.25));
+            border-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .drop-zone.active::before {
+            transform: translateX(100%);
+        }
+        
+        .drop-zone.highlight {
+            animation: heat-pulse-zone 2s infinite;
+        }
+        
+        @keyframes heat-pulse-zone {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+                border-color: var(--primary);
+            }
+            50% { 
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+                border-color: var(--accent);
+            }
+        }
+        
+        .experiment-feedback {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 20px;
+            border-left: 6px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: feedback-shine 4s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            color: #92400e;
+            font-weight: 700;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(232, 244, 252, 0.95), rgba(224, 242, 254, 0.95));
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 6px solid var(--secondary);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(220, 252, 231, 0.95));
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 6px solid var(--success);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 12px;
+            color: #065f46;
+            font-weight: 600;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            background: var(--heat-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+            z-index: 1000;
+            transition: all 0.4s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+        }
+        
+        .timer-display {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .components-panel {
+                order: -1;
+            }
+            
+            .components-area {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .component {
+                min-width: 150px;
+                flex: 1;
+            }
+            
+            .hot-water-container {
+                width: 300px;
+                height: 220px;
+            }
+            
+            .spoon {
+                width: 35px;
+                height: 180px;
+                margin: 0 10px;
+            }
+            
+            .drop-zone {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .timer-display, .sound-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                left: auto;
+                margin: 10px;
+            }
+        }
+        
+        /* تأثيرات الحرارة المتقدمة */
+        .heat-visualization {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .heat-wave {
+            position: absolute;
+            border: 2px solid rgba(239, 68, 68, 0.6);
+            border-radius: 50%;
+            animation: heat-wave-expand 3s infinite;
+        }
+        
+        @keyframes heat-wave-expand {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 1;
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+            }
+        }
+        
+        .conductivity-indicator {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.5s;
+        }
+        
+        .conductivity-indicator.conductor {
+            background: linear-gradient(135deg, #fee2e2, #fca5a5);
+            color: #dc2626;
+        }
+        
+        .conductivity-indicator.insulator {
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+            color: #2563eb;
+        }
+        
+        .spoon.tested .conductivity-indicator {
+            opacity: 1;
+            bottom: -40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- أزرار التحكم -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+    
+    <div class="timer-display hidden" id="timerDisplay">
+        ⏱️ الوقت: <span id="timerValue">00:00</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-thermometer-half"></i>
+                <div class="logo-text">
+                    <h1>مختبر توصيل الحرارة التفاعلي</h1>
+                    <p>اكتشف الفرق بين المواد الموصلة والعازلة للحرارة</p>
+                </div>
+            </div>
+            
+            <div class="temperature-display">
+                <h3>درجة الحرارة</h3>
+                <div class="temp-value" id="temperatureValue">85°C</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2><i class="fas fa-fire"></i> تجربة توصيل الحرارة</h2>
+                    <p>اكتشف كيف تنتقل الحرارة عبر المواد المختلفة</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn start" id="startExperiment" disabled>
+                        <i class="fas fa-play"></i> بدء التسخين
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> إعادة التجربة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol>
+                    <li>اسحب الكوب الساخن إلى منطقة التجربة</li>
+                    <li>اسحب الملعقة المعدنية وضعها في الماء الساخن</li>
+                    <li>اسحب الملعقة الخشبية وضعها في الماء الساخن</li>
+                    <li>اضغط على "بدء التسخين" وانتظر دقيقتين</li>
+                    <li>المس كل ملعقة لاختبار درجة الحرارة</li>
+                </ol>
+            </div>
+            
+            <div class="experiment-area">
+                <div class="workspace-section" id="workspace">
+                    <h3><i class="fas fa-flask"></i> منطقة التجربة</h3>
+                    
+                    <div class="experiment-steps">
+                        <div class="step" id="step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">ضع الكوب الساخن في منطقة التجربة</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">ضع الملعقة المعدنية في الماء الساخن</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">ضع الملعقة الخشبية في الماء الساخن</div>
+                        </div>
+                        <div class="step" id="step4">
+                            <div class="step-icon">4</div>
+                            <div class="step-text">ابدأ التسخين وانتظر دقيقتين</div>
+                        </div>
+                        <div class="step" id="step5">
+                            <div class="step-icon">5</div>
+                            <div class="step-text">اختبر درجة حرارة كل ملعقة</div>
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-setup" id="experimentSetup">
+                        <div class="drop-zone" id="cupDropZone" data-for="cup">
+                            <div class="component-img cup-img"></div>
+                            <p style="color: var(--primary); font-weight: 700;">أسقط الكوب هنا</p>
+                        </div>
+                        
+                        <div class="hot-water-container hidden" id="hotWaterContainer">
+                            <div class="steam-particles" id="steamParticles"></div>
+                            <div class="heat-visualization" id="heatVisualization"></div>
+                            
+                            <div class="spoon metal hidden" id="metalSpoon">
+                                <div class="temperature-indicator cool" id="metalTempIndicator">
+                                    🌡️ عادي: 25°C
+                                </div>
+                                <div class="conductivity-indicator conductor">
+                                    ⚡ موصل للحرارة
+                                </div>
+                            </div>
+                            
+                            <div class="spoon wood hidden" id="woodSpoon">
+                                <div class="temperature-indicator cool" id="woodTempIndicator">
+                                    🌡️ عادي: 25°C
+                                </div>
+                                <div class="conductivity-indicator insulator">
+                                    🛡️ عازل للحرارة
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="components-panel">
+                    <h3><i class="fas fa-toolbox"></i> أدوات التجربة</h3>
+                    <div class="components-area" id="componentsArea">
+                        <div class="component" draggable="true" data-component="cup" id="cupComponent">
+                            <div class="component-img cup-img"></div>
+                            <div class="component-details">
+                                <h4>كوب ماء ساخن</h4>
+                                <p>درجة الحرارة: 85°C</p>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="metal-spoon" id="metalSpoonComponent">
+                            <div class="component-img metal-spoon-img"></div>
+                            <div class="component-details">
+                                <h4>ملعقة معدنية</h4>
+                                <p>مصنوعة من الستانلس ستيل</p>
+                                <div class="material-type metal">معدن</div>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="wood-spoon" id="woodSpoonComponent">
+                            <div class="component-img wood-spoon-img"></div>
+                            <div class="component-details">
+                                <h4>ملعقة خشبية</h4>
+                                <p>مصنوعة من خشب طبيعي</p>
+                                <div class="material-type wood">خشب</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p><i class="fas fa-hand-point-right"></i> ابدأ بسحب الكوب الساخن إلى منطقة التجربة</p>
+            </div>
+            
+            <div class="result-area">
+                <h3><i class="fas fa-clipboard-list"></i> نتائج التجربة</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p><i class="fas fa-thermometer-half"></i> قم بإعداد التجربة لرؤية النتائج المذهلة حول توصيل الحرارة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التجربة الرئيسية
+            const hotWaterContainer = document.getElementById('hotWaterContainer');
+            const metalSpoon = document.getElementById('metalSpoon');
+            const woodSpoon = document.getElementById('woodSpoon');
+            const startBtn = document.getElementById('startExperiment');
+            const resetBtn = document.getElementById('resetExperiment');
+            const steamParticles = document.getElementById('steamParticles');
+            const heatVisualization = document.getElementById('heatVisualization');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const componentsArea = document.getElementById('componentsArea');
+            const experimentSetup = document.getElementById('experimentSetup');
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerValue = document.getElementById('timerValue');
+            const temperatureValue = document.getElementById('temperatureValue');
+            
+            // مؤشرات درجة الحرارة
+            const metalTempIndicator = document.getElementById('metalTempIndicator');
+            const woodTempIndicator = document.getElementById('woodTempIndicator');
+            
+            // عناصر الخطوات
+            const steps = [
+                document.getElementById('step1'),
+                document.getElementById('step2'), 
+                document.getElementById('step3'),
+                document.getElementById('step4'),
+                document.getElementById('step5')
+            ];
+            
+            // عناصر المكونات
+            const cupComponent = document.getElementById('cupComponent');
+            const metalSpoonComponent = document.getElementById('metalSpoonComponent');
+            const woodSpoonComponent = document.getElementById('woodSpoonComponent');
+            
+            // مناطق الإسقاط
+            const cupDropZone = document.getElementById('cupDropZone');
+            
+            // متغيرات الحالة
+            let experimentStarted = false;
+            let heatingStarted = false;
+            let soundEnabled = true;
+            let timer = 0;
+            let timerInterval = null;
+            let componentsPlaced = {
+                cup: false,
+                metalSpoon: false,
+                woodSpoon: false
+            };
+            
+            // إنشاء الأصوات
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // أصوات مختلفة للتفاعلات
+            const sounds = {
+                drop: () => playSound(300, 0.3, 'sine'),
+                success: () => playSound(500, 0.4, 'square'),
+                sizzle: () => playSound(800, 0.5, 'sawtooth'),
+                heat: () => playSound(200, 0.8, 'triangle'),
+                complete: () => {
+                    playSound(523, 0.3); // C
+                    setTimeout(() => playSound(659, 0.3), 300); // E
+                    setTimeout(() => playSound(784, 0.5), 600); // G
+                }
+            };
+            
+            // تبديل الصوت
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 500 : 300, 0.2);
+            });
+            
+            // إنشاء بخار واقعي
+            function createSteam() {
+                steamParticles.innerHTML = '';
+                const steamCount = 15;
+                
+                for (let i = 0; i < steamCount; i++) {
+                    setTimeout(() => {
+                        const steam = document.createElement('div');
+                        steam.className = 'steam-particle';
+                        
+                        const size = Math.random() * 20 + 10;
+                        steam.style.width = `${size}px`;
+                        steam.style.height = `${size}px`;
+                        steam.style.left = `${Math.random() * 80 + 10}%`;
+                        steam.style.bottom = '20px';
+                        steam.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                        steam.style.animationDelay = '0s';
+                        
+                        steamParticles.appendChild(steam);
+                        
+                        setTimeout(() => {
+                            if (steam.parentNode) {
+                                steam.remove();
+                            }
+                        }, 5000);
+                    }, i * 200);
+                }
+            }
+            
+            // إنشاء موجات حرارية
+            function createHeatWaves() {
+                const wave = document.createElement('div');
+                wave.className = 'heat-wave';
+                wave.style.left = `${Math.random() * 80 + 10}%`;
+                wave.style.top = `${Math.random() * 50 + 25}%`;
+                heatVisualization.appendChild(wave);
+                
+                setTimeout(() => {
+                    wave.remove();
+                }, 3000);
+            }
+            
+            // تحديث حالة الخطوات
+            function updateSteps() {
+                const conditions = [
+                    componentsPlaced.cup,
+                    componentsPlaced.metalSpoon,
+                    componentsPlaced.woodSpoon,
+                    heatingStarted,
+                    false // يتم تحديثها لاحقاً عند الاختبار
+                ];
+                
+                conditions.forEach((condition, index) => {
+                    if (condition) {
+                        if (!steps[index].classList.contains('completed')) {
+                            steps[index].classList.add('completed');
+                            sounds.success();
+                        }
+                    } else {
+                        steps[index].classList.remove('completed');
+                    }
+                });
+                
+                // تفعيل زر البدء
+                const readyToStart = componentsPlaced.cup && componentsPlaced.metalSpoon && componentsPlaced.woodSpoon;
+                startBtn.disabled = !readyToStart || heatingStarted;
+            }
+            
+            // معالجة السحب والإفلات
+            let draggedElement = null;
+            
+            componentsArea.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('component')) {
+                    draggedElement = e.target;
+                    e.dataTransfer.setData('text/plain', e.target.dataset.component);
+                    e.target.classList.add('dragging');
+                    
+                    const componentType = e.target.dataset.component;
+                    highlightDropZone(componentType);
+                    
+                    sounds.drop();
+                }
+            });
+            
+            componentsArea.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('component')) {
+                    e.target.classList.remove('dragging');
+                    removeHighlights();
+                    draggedElement = null;
+                }
+            });
+            
+            function highlightDropZone(componentType) {
+                removeHighlights();
+                
+                if (componentType === 'cup' && !componentsPlaced.cup) {
+                    cupDropZone.classList.add('active');
+                }
+            }
+            
+            function removeHighlights() {
+                cupDropZone.classList.remove('active');
+            }
+            
+            // إعداد مناطق الإسقاط
+            function setupDropZone(zone, validComponent, onDrop) {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const componentType = e.dataTransfer.getData('text/plain');
+                    
+                    if (componentType === validComponent) {
+                        onDrop();
+                        sounds.success();
+                    }
+                    
+                    removeHighlights();
+                });
+            }
+            
+            // إعداد إسقاط الكوب
+            setupDropZone(cupDropZone, 'cup', () => {
+                if (!componentsPlaced.cup) {
+                    hotWaterContainer.classList.remove('hidden');
+                    cupDropZone.classList.add('hidden');
+                    componentsPlaced.cup = true;
+                    cupComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! تم وضع الكوب الساخن. الآن ضع الملاعق', 'success');
+                    updateSteps();
+                    
+                    // بدء إنتاج البخار
+                    createSteam();
+                    setInterval(() => {
+                        if (!hotWaterContainer.classList.contains('hidden')) {
+                            createSteam();
+                        }
+                    }, 3000);
+                    
+                    setTimeout(() => {
+                        if (!componentsPlaced.metalSpoon) {
+                            updateFeedback('اسحب الملعقة المعدنية وضعها في الماء الساخن', 'info');
+                        }
+                    }, 1500);
+                }
+            });
+            
+            // إعداد إسقاط الملاعق على الماء الساخن
+            hotWaterContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            hotWaterContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const componentType = e.dataTransfer.getData('text/plain');
+                
+                if (componentType === 'metal-spoon' && !componentsPlaced.metalSpoon) {
+                    metalSpoon.classList.remove('hidden');
+                    componentsPlaced.metalSpoon = true;
+                    metalSpoonComponent.classList.add('placed');
+                    
+                    updateFeedback('تم وضع الملعقة المعدنية! الآن ضع الملعقة الخشبية', 'success');
+                    sounds.sizzle();
+                    updateSteps();
+                    
+                } else if (componentType === 'wood-spoon' && !componentsPlaced.woodSpoon) {
+                    woodSpoon.classList.remove('hidden');
+                    componentsPlaced.woodSpoon = true;
+                    woodSpoonComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! جميع المكونات جاهزة. اضغط على "بدء التسخين"', 'complete');
+                    sounds.success();
+                    updateSteps();
+                }
+            });
+            
+            // تحديث رسائل التغذية الراجعة
+            function updateFeedback(message, type = 'info') {
+                const icons = {
+                    info: 'fas fa-info-circle',
+                    success: 'fas fa-check-circle',
+                    complete: 'fas fa-star',
+                    warning: 'fas fa-exclamation-triangle',
+                    heat: 'fas fa-fire'
+                };
+                
+                const colors = {
+                    info: '#3b82f6',
+                    success: '#10b981',
+                    complete: '#f59e0b',
+                    warning: '#ef4444',
+                    heat: '#dc2626'
+                };
+                
+                experimentFeedback.innerHTML = `
+                    <p><i class="${icons[type]}" style="color: ${colors[type]};"></i> ${message}</p>
+                `;
+                
+                // تأثير وميض
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // تحديث المؤقت
+            function updateTimer() {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                timerValue.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            // بدء التسخين
+            startBtn.addEventListener('click', () => {
+                if (heatingStarted) return;
+                
+                heatingStarted = true;
+                experimentStarted = true;
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-fire"></i> جارٍ التسخين...';
+                
+                timerDisplay.classList.remove('hidden');
+                updateFeedback('بدء التسخين... انتظر دقيقتين ⏱️', 'heat');
+                sounds.heat();
+                updateSteps();
+                
+                // بدء العد التنازلي
+                timer = 120; // دقيقتان
+                timerInterval = setInterval(() => {
+                    timer--;
+                    updateTimer();
+                    
+                    // تحديث درجات الحرارة تدريجياً
+                    const elapsed = 120 - timer;
+                    const metalTemp = Math.min(85, 25 + (elapsed * 0.5));
+                    const woodTemp = Math.min(35, 25 + (elapsed * 0.08));
+                    
+                    if (elapsed > 10) {
+                        metalTempIndicator.innerHTML = `🔥 ساخن: ${Math.round(metalTemp)}°C`;
+                        metalTempIndicator.className = 'temperature-indicator hot';
+                        metalSpoon.classList.add('heated');
+                    }
+                    
+                    if (elapsed > 60) {
+                        woodTempIndicator.innerHTML = `🌡️ دافئ: ${Math.round(woodTemp)}°C`;
+                    }
+                    
+                    // إنشاء موجات حرارية
+                    if (Math.random() < 0.3) {
+                        createHeatWaves();
+                    }
+                    
+                    if (timer <= 0) {
+                        clearInterval(timerInterval);
+                        finishHeating();
+                    }
+                }, 1000);
+            });
+            
+            // انتهاء التسخين
+            function finishHeating() {
+                updateFeedback('انتهى التسخين! الآن المس كل ملعقة لاختبار الحرارة 🖐️', 'complete');
+                sounds.complete();
+                
+                startBtn.innerHTML = '<i class="fas fa-check"></i> انتهى التسخين';
+                startBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                
+                // تفعيل اختبار الملاعق
+                enableSpoonTesting();
+            }
+            
+            // تفعيل اختبار الملاعق
+            function enableSpoonTesting() {
+                let metalTested = false;
+                let woodTested = false;
+                
+                metalSpoon.addEventListener('click', () => {
+                    if (!metalTested) {
+                        metalTested = true;
+                        metalSpoon.classList.add('tested');
+                        updateFeedback('🔥 الملعقة المعدنية ساخنة جداً! المعدن موصل للحرارة', 'heat');
+                        sounds.sizzle();
+                        
+                        if (woodTested) {
+                            showFinalResults();
+                        }
+                    }
+                });
+                
+                woodSpoon.addEventListener('click', () => {
+                    if (!woodTested) {
+                        woodTested = true;
+                        woodSpoon.classList.add('tested');
+                        updateFeedback('🌡️ الملعقة الخشبية دافئة قليلاً. الخشب عازل للحرارة', 'info');
+                        sounds.success();
+                        
+                        if (metalTested) {
+                            showFinalResults();
+                        }
+                    }
+                });
+                
+                // تحديث الخطوة الأخيرة
+                steps[4].classList.add('completed');
+            }
+            
+            // عرض النتائج النهائية
+            function showFinalResults() {
+                setTimeout(() => {
+                    updateFeedback('🎉 تمت التجربة بنجاح! تحقق من النتائج أدناه', 'complete');
+                    
+                    conclusionDiv.innerHTML = `
+                        <p><strong style="color: #dc2626;">🔥 نتائج تجربة توصيل الحرارة:</strong></p>
+                        <p>✅ <strong>الملعقة المعدنية</strong> - أصبحت ساخنة جداً (85°C)</p>
+                        <p>✅ <strong>الملعقة الخشبية</strong> - بقيت باردة نسبياً (35°C)</p>
+                        
+                        <p style="margin-top: 20px;"><strong style="color: #dc2626;">📚 الشرح العلمي:</strong></p>
+                        <p>🔬 <strong>المعادن موصلة للحرارة</strong> - الإلكترونات الحرة تنقل الطاقة الحرارية بسرعة</p>
+                        <p>🔬 <strong>الخشب عازل للحرارة</strong> - لا يحتوي على إلكترونات حرة، ينقل الحرارة ببطء</p>
+                        <p>🔬 <strong>التوصيل الحراري</strong> - انتقال الحرارة عبر المادة دون حركة المادة نفسها</p>
+                        
+                        <p style="margin-top: 20px;"><strong style="color: #f59e0b;">🌟 تطبيقات عملية:</strong></p>
+                        <p>⚙️ <strong>أواني الطبخ</strong> - قاعدة معدنية لتوصيل الحرارة، مقابض خشبية للعزل</p>
+                        <p>⚙️ <strong>العزل الحراري</strong> - استخدام مواد عازلة في جدران المباني</p>
+                        <p>⚙️ <strong>أدوات المطبخ</strong> - ملاعق خشبية للطبخ، ملاعق معدنية للتقديم</p>
+                        <p>⚙️ <strong>الإلكترونيات</strong> - مشتتات حرارية معدنية لتبريد المعالجات</p>
+                        
+                        <p style="margin-top: 20px;"><strong style="color: #10b981;">🧪 استنتاجات مهمة:</strong></p>
+                        <p>💡 اختيار المواد يعتمد على التطبيق المطلوب</p>
+                        <p>💡 فهم خصائص المواد يساعد في الاختراع والتصميم</p>
+                        <p>💡 الحرارة شكل من أشكال الطاقة تنتقل من الساخن للبارد</p>
+                    `;
+                    
+                    sounds.complete();
+                }, 1000);
+            }
+            
+            // إعادة تعيين التجربة
+            resetBtn.addEventListener('click', () => {
+                // إيقاف المؤقت
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                
+                // إخفاء العناصر
+                hotWaterContainer.classList.add('hidden');
+                metalSpoon.classList.add('hidden');
+                woodSpoon.classList.add('hidden');
+                timerDisplay.classList.add('hidden');
+                cupDropZone.classList.remove('hidden');
+                
+                // إزالة التأثيرات
+                metalSpoon.classList.remove('heated', 'tested');
+                woodSpoon.classList.remove('tested');
+                steamParticles.innerHTML = '';
+                heatVisualization.innerHTML = '';
+                
+                // إعادة تعيين الحالات
+                experimentStarted = false;
+                heatingStarted = false;
+                timer = 0;
+                componentsPlaced = {
+                    cup: false,
+                    metalSpoon: false,
+                    woodSpoon: false
+                };
+                
+                // إعادة تعيين المكونات
+                [cupComponent, metalSpoonComponent, woodSpoonComponent].forEach(component => {
+                    component.classList.remove('placed');
+                });
+                
+                // إعادة تعيين مؤشرات درجة الحرارة
+                metalTempIndicator.innerHTML = '🌡️ عادي: 25°C';
+                metalTempIndicator.className = 'temperature-indicator cool';
+                woodTempIndicator.innerHTML = '🌡️ عادي: 25°C';
+                woodTempIndicator.className = 'temperature-indicator cool';
+                
+                // إعادة تعيين الأزرار
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> بدء التسخين';
+                startBtn.style.background = '';
+                
+                // إعادة تعيين الخطوات
+                steps.forEach(step => step.classList.remove('completed'));
+                
+                // إعادة تعيين الرسائل
+                updateSteps();
+                updateFeedback('ابدأ بسحب الكوب الساخن إلى منطقة التجربة', 'info');
+                conclusionDiv.innerHTML = `
+                    <p><i class="fas fa-thermometer-half"></i> قم بإعداد التجربة لرؤية النتائج المذهلة حول توصيل الحرارة</p>
+                `;
+                
+                sounds.drop();
+                
+                // توجيه المستخدم
+                setTimeout(() => {
+                    cupDropZone.classList.add('highlight');
+                }, 500);
+            });
+            
+            // بدء التوجيه التفاعلي
+            setTimeout(() => {
+                updateFeedback('مرحباً بك في مختبر توصيل الحرارة! ابدأ بسحب الكوب الساخن', 'info');
+                cupDropZone.classList.add('highlight');
+            }, 1000);
+            
+            // تحديث درجة الحرارة في الواجهة
+            setInterval(() => {
+                const currentTemp = 85 + Math.sin(Date.now() / 1000) * 2;
+                temperatureValue.textContent = `${Math.round(currentTemp)}°C`;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
