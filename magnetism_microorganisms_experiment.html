@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة المغناطيسية والكائنات الحية الدقيقة - Magnetism and Microorganisms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            width: 95%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+        }
+
+        .sound-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .sound-btn:hover {
+            background: linear-gradient(45deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .lang-btn:hover {
+            background: linear-gradient(45deg, #229954, #1e8449);
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            min-height: 500px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px dashed #bdc3c7;
+        }
+
+        .tools-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .tool-item {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+            border-radius: 15px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-item:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-item.dragging {
+            transform: scale(1.2) rotate(10deg);
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        .magnet {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .needle {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .glass-tube {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .metal-object {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+        }
+
+        .workspace {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #3498db;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .workspace.drag-over {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #d5f4e6, #a8e6cf);
+        }
+
+        .workspace.magnetic-field {
+            background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+            border-color: #e74c3c;
+        }
+
+        .lab-setup {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .magnet-display {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 100px;
+            height: 40px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 20px;
+            display: none;
+            cursor: move;
+            z-index: 10;
+        }
+
+        .magnet-poles {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .north-pole {
+            flex: 1;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .south-pole {
+            flex: 1;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .magnetic-field-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .field-line {
+            position: absolute;
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            border-radius: 50%;
+            animation: field-pulse 2s infinite;
+        }
+
+        @keyframes field-pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .suspended-needle {
+            position: absolute;
+            top: 150px;
+            left: 200px;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            border-radius: 2px;
+            display: none;
+            transform-origin: center center;
+            transition: transform 0.5s ease;
+            z-index: 8;
+        }
+
+        .suspension-string {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 30px;
+            background: #34495e;
+        }
+
+        .glass-tube-display {
+            position: absolute;
+            bottom: 50px;
+            right: 80px;
+            width: 40px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.3));
+            border: 2px solid #3498db;
+            border-radius: 20px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .organisms-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .organism {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: organism-movement 3s infinite linear;
+        }
+
+        .amoeba {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            animation-duration: 4s;
+        }
+
+        .paramecium {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            animation-duration: 2.5s;
+        }
+
+        @keyframes organism-movement {
+            0% { 
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            25% { 
+                transform: translate(20px, -15px) rotate(90deg);
+            }
+            50% { 
+                transform: translate(10px, 15px) rotate(180deg);
+            }
+            75% { 
+                transform: translate(-15px, 5px) rotate(270deg);
+            }
+            100% { 
+                transform: translate(0, 0) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        .organism.affected {
+            animation: organism-magnetic-effect 1s infinite;
+        }
+
+        @keyframes organism-magnetic-effect {
+            0%, 100% { 
+                transform: scale(1) translateX(0);
+            }
+            50% { 
+                transform: scale(1.2) translateX(5px);
+            }
+        }
+
+        .metal-object-display {
+            position: absolute;
+            top: 200px;
+            right: 50px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 5px;
+            display: none;
+            transition: transform 0.3s ease;
+            z-index: 8;
+        }
+
+        .metal-object-display.attracted {
+            animation: metal-attraction 0.5s infinite alternate;
+        }
+
+        @keyframes metal-attraction {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-10px); }
+        }
+
+        .observations-section {
+            background: linear-gradient(135deg, #fef9e7, #fcf3cf);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #f4d03f;
+        }
+
+        .observations-title {
+            font-size: 1.4em;
+            color: #d68910;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f39c12;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .observation-item h4 {
+            color: #d68910;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .observation-item p {
+            color: #5d4e75;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #e8f5e8, #d4f1d4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #27ae60;
+        }
+
+        .instructions h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .step {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #27ae60;
+            transition: all 0.3s ease;
+        }
+
+        .step.completed {
+            background: #d5f4e6;
+            opacity: 0.7;
+        }
+
+        .step.active {
+            background: #a8e6cf;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .magnetic-info {
+            background: linear-gradient(135deg, #e8f4fd, #d6eaf8);
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .magnetic-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .magnetic-info p {
+            color: #5d4e75;
+            line-height: 1.6;
+        }
+
+        .floating-instruction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            max-width: 300px;
+            animation: pulse-instruction 2s infinite;
+        }
+
+        @keyframes pulse-instruction {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 2em;
+            }
+
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .tool-item {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+
+            .lab-setup {
+                width: 300px;
+                height: 250px;
+            }
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+        }
+
+        [dir="ltr"] .container {
+            direction: ltr;
+        }
+
+        [dir="ltr"] .magnet-display {
+            left: auto;
+            right: 50px;
+        }
+
+        [dir="ltr"] .glass-tube-display {
+            right: auto;
+            left: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title" data-ar="🧲 تجربة المغناطيسية والكائنات الحية الدقيقة" data-en="🧲 Magnetism and Microorganisms Experiment">🧲 تجربة المغناطيسية والكائنات الحية الدقيقة</h1>
+            <p class="subtitle" data-ar="اكتشف تأثير المجال المغناطيسي على الأجسام والكائنات الحية" data-en="Discover the effect of magnetic fields on objects and living organisms">اكتشف تأثير المجال المغناطيسي على الأجسام والكائنات الحية</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn reset-btn" onclick="resetExperiment()" data-ar="🔄 إعادة تعيين" data-en="🔄 Reset">🔄 إعادة تعيين</button>
+            <button class="control-btn sound-btn" onclick="toggleSound()" data-ar="🔊 الصوت: تشغيل" data-en="🔊 Sound: ON">🔊 الصوت: تشغيل</button>
+            <button class="control-btn lang-btn" onclick="toggleLanguage()" data-ar="🌐 English" data-en="🌐 العربية">🌐 English</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="instructions">
+            <h3 data-ar="📋 خطوات التجربة" data-en="📋 Experiment Steps">📋 خطوات التجربة</h3>
+            <div class="step active" data-step="1" data-ar="1. اسحب المغناطيس إلى منطقة العمل" data-en="1. Drag the magnet to the workspace">1. اسحب المغناطيس إلى منطقة العمل</div>
+            <div class="step" data-step="2" data-ar="2. اسحب الإبرة المعلقة لاختبار المجال المغناطيسي" data-en="2. Drag suspended needle to test magnetic field">2. اسحب الإبرة المعلقة لاختبار المجال المغناطيسي</div>
+            <div class="step" data-step="3" data-ar="3. اسحب الأنبوب الزجاجي مع الكائنات الدقيقة" data-en="3. Drag glass tube with microorganisms">3. اسحب الأنبوب الزجاجي مع الكائنات الدقيقة</div>
+            <div class="step" data-step="4" data-ar="4. اسحب الجسم المعدني لاختبار الجذب" data-en="4. Drag metal object to test attraction">4. اسحب الجسم المعدني لاختبار الجذب</div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="tools-section">
+                <h3 class="tools-title" data-ar="🧪 الأدوات" data-en="🧪 Tools">🧪 الأدوات</h3>
+                <div class="tool-item magnet" draggable="true" data-tool="magnet" title="مغناطيس - Magnet">🧲</div>
+                <div class="tool-item needle" draggable="true" data-tool="needle" title="إبرة معلقة - Suspended Needle">🪡</div>
+                <div class="tool-item glass-tube" draggable="true" data-tool="glass-tube" title="أنبوب زجاجي - Glass Tube">🧪</div>
+                <div class="tool-item metal-object" draggable="true" data-tool="metal-object" title="جسم معدني - Metal Object">⚙️</div>
+            </div>
+
+            <div class="workspace" id="workspace">
+                <div class="floating-instruction" id="floatingInstruction" data-ar="اسحب الأدوات هنا لبدء التجربة" data-en="Drag tools here to start the experiment">اسحب الأدوات هنا لبدء التجربة</div>
+                
+                <div class="lab-setup" id="labSetup">
+                    <div class="magnetic-field-lines" id="magneticFieldLines"></div>
+                    
+                    <div class="magnet-display" id="magnetDisplay" draggable="true">
+                        <div class="magnet-poles">
+                            <div class="north-pole" data-ar="ش" data-en="N">ش</div>
+                            <div class="south-pole" data-ar="ج" data-en="S">ج</div>
+                        </div>
+                    </div>
+                    
+                    <div class="suspended-needle" id="suspendedNeedle">
+                        <div class="suspension-string"></div>
+                    </div>
+                    
+                    <div class="glass-tube-display" id="glassTubeDisplay">
+                        <div class="organisms-container" id="organismsContainer"></div>
+                    </div>
+                    
+                    <div class="metal-object-display" id="metalObjectDisplay"></div>
+                </div>
+            </div>
+
+            <div class="observations-section">
+                <h3 class="observations-title" data-ar="👁️ الملاحظات" data-en="👁️ Observations">👁️ الملاحظات</h3>
+                <div id="observationsList">
+                    <div class="observation-item">
+                        <h4 data-ar="الإعداد الأولي" data-en="Initial Setup">الإعداد الأولي</h4>
+                        <p data-ar="جهز الأدوات لدراسة المغناطيسية وتأثيرها" data-en="Prepare tools to study magnetism and its effects">جهز الأدوات لدراسة المغناطيسية وتأثيرها</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="magnetic-info">
+            <h4 data-ar="قانون القطبين المغناطيسيين" data-en="Law of Magnetic Poles">قانون القطبين المغناطيسيين</h4>
+            <p data-ar="الأقطاب المتشابهة تتنافر، والأقطاب المختلفة تتجاذب" data-en="Like poles repel, unlike poles attract">الأقطاب المتشابهة تتنافر، والأقطاب المختلفة تتجاذب</p>
+        </div>
+
+        <table class="results-table" id="resultsTable">
+            <thead>
+                <tr>
+                    <th data-ar="الاختبار" data-en="Test">الاختبار</th>
+                    <th data-ar="الجسم المختبر" data-en="Test Object">الجسم المختبر</th>
+                    <th data-ar="التأثير المغناطيسي" data-en="Magnetic Effect">التأثير المغناطيسي</th>
+                    <th data-ar="الملاحظة" data-en="Observation">الملاحظة</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+                <tr>
+                    <td>1</td>
+                    <td data-ar="مغناطيس" data-en="Magnet">مغناطيس</td>
+                    <td data-ar="مجال مغناطيسي" data-en="Magnetic field">مجال مغناطيسي</td>
+                    <td data-ar="إنتاج خطوط مجال" data-en="Produces field lines">إنتاج خطوط مجال</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let currentStep = 1;
+        let hasMagnet = false;
+        let hasNeedle = false;
+        let hasGlassTube = false;
+        let hasMetalObject = false;
+        let magnetPosition = { x: 50, y: 50 };
+        let phaseNumber = 1;
+
+        // Audio context for sound effects
+        let audioContext;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+
+        function playSound(frequency, duration = 200) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (e) {
+                console.log('Sound play failed');
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.querySelector('.sound-btn');
+            if (currentLanguage === 'ar') {
+                btn.textContent = soundEnabled ? '🔊 الصوت: تشغيل' : '🔇 الصوت: إيقاف';
+            } else {
+                btn.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+            }
+            playSound(soundEnabled ? 800 : 400);
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            const elements = document.querySelectorAll('[data-ar][data-en]');
+            const body = document.body;
+            const container = document.querySelector('.container');
+            
+            if (currentLanguage === 'en') {
+                body.setAttribute('dir', 'ltr');
+                container.setAttribute('dir', 'ltr');
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-en');
+                });
+            } else {
+                body.setAttribute('dir', 'rtl');
+                container.setAttribute('dir', 'rtl');
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-ar');
+                });
+            }
+            playSound(600);
+        }
+
+        function updateProgress() {
+            const progress = (currentStep - 1) * 25;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateStep(step) {
+            // Mark previous steps as completed
+            for (let i = 1; i < step; i++) {
+                const stepEl = document.querySelector(`[data-step="${i}"]`);
+                if (stepEl) {
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('completed');
+                }
+            }
+            
+            // Mark current step as active
+            const currentStepEl = document.querySelector(`[data-step="${step}"]`);
+            if (currentStepEl) {
+                currentStepEl.classList.add('active');
+                currentStepEl.classList.remove('completed');
+            }
+            
+            currentStep = step;
+            updateProgress();
+        }
+
+        function addObservation(titleKey, textKey) {
+            const observationsList = document.getElementById('observationsList');
+            const newObservation = document.createElement('div');
+            newObservation.className = 'observation-item';
+            
+            const title = currentLanguage === 'ar' ? titleKey.ar : titleKey.en;
+            const text = currentLanguage === 'ar' ? textKey.ar : textKey.en;
+            
+            newObservation.innerHTML = `
+                <h4>${title}</h4>
+                <p>${text}</p>
+            `;
+            
+            observationsList.appendChild(newObservation);
+            playSound(500, 300);
+        }
+
+        function addResult(test, object, effect, observation) {
+            const resultsBody = document.getElementById('resultsBody');
+            const newRow = document.createElement('tr');
+            
+            const objectText = currentLanguage === 'ar' ? object.ar : object.en;
+            const effectText = currentLanguage === 'ar' ? effect.ar : effect.en;
+            const obsText = currentLanguage === 'ar' ? observation.ar : observation.en;
+            
+            newRow.innerHTML = `
+                <td>${test}</td>
+                <td>${objectText}</td>
+                <td>${effectText}</td>
+                <td>${obsText}</td>
+            `;
+            
+            resultsBody.appendChild(newRow);
+        }
+
+        function createMagneticFieldLines() {
+            const fieldContainer = document.getElementById('magneticFieldLines');
+            fieldContainer.innerHTML = '';
+            
+            if (!hasMagnet) return;
+            
+            // Create concentric field lines around magnet
+            for (let i = 1; i <= 4; i++) {
+                const fieldLine = document.createElement('div');
+                fieldLine.className = 'field-line';
+                
+                const size = 60 + (i * 30);
+                fieldLine.style.width = size + 'px';
+                fieldLine.style.height = size + 'px';
+                fieldLine.style.left = (magnetPosition.x + 50 - size/2) + 'px';
+                fieldLine.style.top = (magnetPosition.y + 20 - size/2) + 'px';
+                fieldLine.style.animationDelay = (i * 0.2) + 's';
+                
+                fieldContainer.appendChild(fieldLine);
+            }
+        }
+
+        function createMicroorganisms() {
+            const container = document.getElementById('organismsContainer');
+            container.innerHTML = '';
+            
+            // Create amoeba
+            for (let i = 0; i < 3; i++) {
+                const amoeba = document.createElement('div');
+                amoeba.className = 'organism amoeba';
+                amoeba.style.left = Math.random() * 25 + 'px';
+                amoeba.style.top = Math.random() * 100 + 'px';
+                amoeba.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(amoeba);
+            }
+            
+            // Create paramecium
+            for (let i = 0; i < 4; i++) {
+                const paramecium = document.createElement('div');
+                paramecium.className = 'organism paramecium';
+                paramecium.style.left = Math.random() * 25 + 'px';
+                paramecium.style.top = Math.random() * 100 + 'px';
+                paramecium.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(paramecium);
+            }
+        }
+
+        function updateMagneticEffects() {
+            if (!hasMagnet) return;
+            
+            const workspace = document.getElementById('workspace');
+            workspace.classList.add('magnetic-field');
+            
+            // Update needle orientation
+            if (hasNeedle) {
+                const needle = document.getElementById('suspendedNeedle');
+                const angle = calculateMagneticAngle(magnetPosition);
+                needle.style.transform = `rotate(${angle}deg)`;
+            }
+            
+            // Update metal object attraction
+            if (hasMetalObject) {
+                const metalObj = document.getElementById('metalObjectDisplay');
+                const distance = calculateDistance(magnetPosition, {x: 200, y: 200});
+                if (distance < 100) {
+                    metalObj.classList.add('attracted');
+                } else {
+                    metalObj.classList.remove('attracted');
+                }
+            }
+            
+            // Update organism behavior
+            if (hasGlassTube) {
+                const organisms = document.querySelectorAll('.organism');
+                organisms.forEach(org => {
+                    const distance = calculateDistance(magnetPosition, {x: 320, y: 200});
+                    if (distance < 120) {
+                        org.classList.add('affected');
+                    } else {
+                        org.classList.remove('affected');
+                    }
+                });
+            }
+            
+            createMagneticFieldLines();
+        }
+
+        function calculateMagneticAngle(magnetPos) {
+            // Simplified calculation for needle orientation
+            const needlePos = {x: 200, y: 150};
+            const dx = magnetPos.x - needlePos.x;
+            const dy = magnetPos.y - needlePos.y;
+            return Math.atan2(dy, dx) * 180 / Math.PI;
+        }
+
+        function calculateDistance(pos1, pos2) {
+            const dx = pos1.x - pos2.x;
+            const dy = pos1.y - pos2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Make magnet draggable
+        function makeMagnetDraggable() {
+            const magnet = document.getElementById('magnetDisplay');
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            magnet.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = magnetPosition.x;
+                initialY = magnetPosition.y;
+                magnet.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                magnetPosition.x = Math.max(0, Math.min(300, initialX + dx));
+                magnetPosition.y = Math.max(0, Math.min(250, initialY + dy));
+                
+                magnet.style.left = magnetPosition.x + 'px';
+                magnet.style.top = magnetPosition.y + 'px';
+                
+                updateMagneticEffects();
+                playSound(400 + magnetPosition.x, 50);
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    magnet.style.cursor = 'move';
+                }
+            });
+        }
+
+        // Drag and drop functionality
+        document.querySelectorAll('.tool-item').forEach(tool => {
+            tool.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', tool.dataset.tool);
+                tool.classList.add('dragging');
+                playSound(300);
+            });
+
+            tool.addEventListener('dragend', () => {
+                tool.classList.remove('dragging');
+            });
+        });
+
+        const workspace = document.getElementById('workspace');
+
+        workspace.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            workspace.classList.add('drag-over');
+        });
+
+        workspace.addEventListener('dragleave', () => {
+            workspace.classList.remove('drag-over');
+        });
+
+        workspace.addEventListener('drop', (e) => {
+            e.preventDefault();
+            workspace.classList.remove('drag-over');
+            
+            const toolType = e.dataTransfer.getData('text/plain');
+            handleToolDrop(toolType);
+        });
+
+        function handleToolDrop(toolType) {
+            const floatingInstruction = document.getElementById('floatingInstruction');
+            
+            switch (toolType) {
+                case 'magnet':
+                    if (!hasMagnet) {
+                        hasMagnet = true;
+                        document.getElementById('magnetDisplay').style.display = 'block';
+                        floatingInstruction.style.display = 'none';
+                        updateStep(2);
+                        makeMagnetDraggable();
+                        updateMagneticEffects();
+                        addObservation(
+                            {ar: 'تم وضع المغناطيس', en: 'Magnet placed'},
+                            {ar: 'المغناطيس ينتج مجالاً مغناطيسياً حوله', en: 'Magnet produces magnetic field around it'}
+                        );
+                        playSound(700, 400);
+                    }
+                    break;
+
+                case 'needle':
+                    if (hasMagnet && !hasNeedle) {
+                        hasNeedle = true;
+                        document.getElementById('suspendedNeedle').style.display = 'block';
+                        updateStep(3);
+                        updateMagneticEffects();
+                        addObservation(
+                            {ar: 'تم وضع الإبرة المعلقة', en: 'Suspended needle placed'},
+                            {ar: 'الإبرة تتجه نحو المغناطيس وتدور حسب المجال', en: 'Needle points toward magnet and rotates with field'}
+                        );
+                        addResult(++phaseNumber, 
+                            {ar: 'إبرة معدنية', en: 'Metal needle'}, 
+                            {ar: 'جذب واتجاه', en: 'Attraction and orientation'}, 
+                            {ar: 'تشير نحو المغناطيس', en: 'Points toward magnet'}
+                        );
+                        playSound(800, 400);
+                    }
+                    break;
+
+                case 'glass-tube':
+                    if (hasNeedle && !hasGlassTube) {
+                        hasGlassTube = true;
+                        document.getElementById('glassTubeDisplay').style.display = 'block';
+                        createMicroorganisms();
+                        updateStep(4);
+                        updateMagneticEffects();
+                        addObservation(
+                            {ar: 'تم وضع الأنبوب مع الكائنات الدقيقة', en: 'Glass tube with microorganisms placed'},
+                            {ar: 'الكائنات الدقيقة تتأثر بالمجال المغناطيسي القوي', en: 'Microorganisms affected by strong magnetic field'}
+                        );
+                        addResult(++phaseNumber, 
+                            {ar: 'أميبا وبراميسيوم', en: 'Amoeba and Paramecium'}, 
+                            {ar: 'تأثر طفيف', en: 'Slight effect'}, 
+                            {ar: 'تغير في الحركة', en: 'Change in movement'}
+                        );
+                        playSound(600, 400);
+                    }
+                    break;
+
+                case 'metal-object':
+                    if (hasGlassTube && !hasMetalObject) {
+                        hasMetalObject = true;
+                        document.getElementById('metalObjectDisplay').style.display = 'block';
+                        updateMagneticEffects();
+                        addObservation(
+                            {ar: 'تم وضع الجسم المعدني', en: 'Metal object placed'},
+                            {ar: 'الجسم المعدني ينجذب بقوة نحو المغناطيس', en: 'Metal object strongly attracted to magnet'}
+                        );
+                        addResult(++phaseNumber, 
+                            {ar: 'قطعة حديد', en: 'Iron piece'}, 
+                            {ar: 'جذب قوي', en: 'Strong attraction'}, 
+                            {ar: 'ينجذب نحو المغناطيس', en: 'Attracts toward magnet'}
+                        );
+                        
+                        setTimeout(() => {
+                            addObservation(
+                                {ar: 'اكتملت التجربة', en: 'Experiment completed'},
+                                {ar: 'تم اختبار تأثير المغناطيسية على مواد وكائنات مختلفة', en: 'Tested magnetic effects on different materials and organisms'}
+                            );
+                        }, 1000);
+                        
+                        playSound(900, 400);
+                    }
+                    break;
+            }
+        }
+
+        function resetExperiment() {
+            currentStep = 1;
+            hasMagnet = false;
+            hasNeedle = false;
+            hasGlassTube = false;
+            hasMetalObject = false;
+            magnetPosition = { x: 50, y: 50 };
+            phaseNumber = 1;
+            
+            // Reset UI
+            document.getElementById('magnetDisplay').style.display = 'none';
+            document.getElementById('suspendedNeedle').style.display = 'none';
+            document.getElementById('glassTubeDisplay').style.display = 'none';
+            document.getElementById('metalObjectDisplay').style.display = 'none';
+            document.getElementById('magneticFieldLines').innerHTML = '';
+            document.getElementById('organismsContainer').innerHTML = '';
+            document.getElementById('floatingInstruction').style.display = 'block';
+            
+            const workspace = document.getElementById('workspace');
+            workspace.classList.remove('magnetic-field');
+            
+            updateStep(1);
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `
+                <div class="observation-item">
+                    <h4 data-ar="الإعداد الأولي" data-en="Initial Setup">الإعداد الأولي</h4>
+                    <p data-ar="جهز الأدوات لدراسة المغناطيسية وتأثيرها" data-en="Prepare tools to study magnetism and its effects">جهز الأدوات لدراسة المغناطيسية وتأثيرها</p>
+                </div>
+            `;
+            
+            // Reset results table
+            const resultsBody = document.getElementById('resultsBody');
+            resultsBody.innerHTML = `
+                <tr>
+                    <td>1</td>
+                    <td data-ar="مغناطيس" data-en="Magnet">مغناطيس</td>
+                    <td data-ar="مجال مغناطيسي" data-en="Magnetic field">مجال مغناطيسي</td>
+                    <td data-ar="إنتاج خطوط مجال" data-en="Produces field lines">إنتاج خطوط مجال</td>
+                </tr>
+            `;
+            
+            // Reset steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.querySelector('[data-step="1"]').classList.add('active');
+            
+            // Update language
+            if (currentLanguage === 'en') {
+                toggleLanguage();
+                toggleLanguage();
+            }
+            
+            playSound(400, 500);
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
