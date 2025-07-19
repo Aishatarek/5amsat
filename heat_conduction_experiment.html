@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة توصيل الحرارة | Heat Conduction Experiment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #e67e22;
+            --secondary: #f39c12;
+            --accent: #d35400;
+            --hot-color: #e74c3c;
+            --warm-color: #f39c12;
+            --cool-color: #3498db;
+            --metal-color: #7f8c8d;
+            --wood-color: #a0522d;
+            --plastic-color: #2ecc71;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --heat-gradient: linear-gradient(135deg, #e67e22, #f39c12, #e74c3c);
+            --metal-gradient: linear-gradient(135deg, #bdc3c7, #95a5a6, #7f8c8d);
+            --wood-gradient: linear-gradient(135deg, #d35400, #a0522d, #8b4513);
+            --plastic-gradient: linear-gradient(135deg, #2ecc71, #27ae60, #229954);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e67e22, #f39c12, #d35400);
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع جزيئات الحرارة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="heat-particle" cx="50%" cy="50%"><stop offset="0%" stop-color="orange" stop-opacity="0.8"/><stop offset="100%" stop-color="red" stop-opacity="0.3"/></radialGradient></defs><circle cx="15" cy="10" r="2" fill="url(%23heat-particle)"><animate attributeName="r" values="1;3;1" dur="2s" repeatCount="indefinite"/><animate attributeName="cy" values="10;5;10" dur="3s" repeatCount="indefinite"/></circle><circle cx="50" cy="8" r="1.5" fill="url(%23heat-particle)"><animate attributeName="r" values="0.5;2.5;0.5" dur="2.5s" repeatCount="indefinite"/><animate attributeName="cy" values="8;3;8" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="85" cy="12" r="2.5" fill="url(%23heat-particle)"><animate attributeName="r" values="1.5;3.5;1.5" dur="3s" repeatCount="indefinite"/><animate attributeName="cy" values="12;4;12" dur="4s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: heat-flow 20s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes heat-flow {
+            0% { transform: translateX(-200px) translateY(10px); }
+            50% { transform: translateX(100px) translateY(-5px); }
+            100% { transform: translateX(400px) translateY(10px); }
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            background: var(--heat-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(230, 126, 34, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .language-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(230, 126, 34, 0.6);
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 25px 60px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--heat-gradient);
+            opacity: 0.1;
+            animation: header-heat 8s infinite;
+        }
+        
+        @keyframes header-heat {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4.5rem;
+            background: var(--heat-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: heat-dance 4s infinite;
+        }
+        
+        @keyframes heat-dance {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(3deg); filter: brightness(1.2); }
+            50% { transform: scale(1.15) rotate(-3deg); filter: brightness(1.4); }
+            75% { transform: scale(1.05) rotate(2deg); filter: brightness(1.1); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--heat-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: var(--heat-gradient);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(230, 126, 34, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 280px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .status-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 30px 70px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(211, 84, 0, 0.1));
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(230, 126, 34, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--heat-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(230, 126, 34, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            border-right: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="3" fill="lightgreen" opacity="0.1"><animate attributeName="r" values="2;7;2" dur="6s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-float 20s infinite linear;
+        }
+        
+        @keyframes instruction-float {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: var(--success);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #1e7e34;
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            min-height: 600px;
+            align-items: start;
+        }
+        
+        .tools-section {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9), rgba(233, 236, 239, 0.9));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--light);
+            text-align: center;
+            height: fit-content;
+        }
+        
+        .tools-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* Draggable Items */
+        .draggable-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .draggable-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(211, 84, 0, 0.4);
+        }
+        
+        .draggable-item.dragging {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            opacity: 0.8;
+            cursor: grabbing;
+            box-shadow: 0 20px 50px rgba(211, 84, 0, 0.6);
+        }
+        
+        .draggable-item.used {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.9);
+            filter: grayscale(50%);
+        }
+        
+        .draggable-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(211, 84, 0, 0.3), transparent);
+            transition: left 1s;
+        }
+        
+        .draggable-item:hover::before {
+            left: 100%;
+        }
+        
+        .item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .draggable-item:hover .item-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .item-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .item-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        /* Spoon Specific Styles */
+        .metal-spoon {
+            background: var(--metal-gradient);
+            border: 3px solid #95a5a6;
+        }
+        
+        .metal-spoon:hover {
+            border-color: #7f8c8d;
+            box-shadow: 0 15px 35px rgba(127, 140, 141, 0.5);
+        }
+        
+        .metal-spoon .item-icon {
+            color: #7f8c8d;
+        }
+        
+        .wood-spoon {
+            background: var(--wood-gradient);
+            border: 3px solid #a0522d;
+        }
+        
+        .wood-spoon:hover {
+            border-color: #8b4513;
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.5);
+        }
+        
+        .wood-spoon .item-icon {
+            color: #8b4513;
+        }
+        
+        .plastic-spoon {
+            background: var(--plastic-gradient);
+            border: 3px solid #27ae60;
+        }
+        
+        .plastic-spoon:hover {
+            border-color: #229954;
+            box-shadow: 0 15px 35px rgba(34, 153, 84, 0.5);
+        }
+        
+        .plastic-spoon .item-icon {
+            color: #229954;
+        }
+        
+        .experiment-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(211, 84, 0, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.2);
+            border: 3px solid var(--primary);
+            position: relative;
+            min-height: 500px;
+        }
+        
+        /* Drop Zone */
+        .drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+            pointer-events: all;
+        }
+        
+        .drop-zone.invalid-drop {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .hot-water-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+        
+        .hot-water {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e74c3c, #f39c12, #e67e22);
+            border: 4px solid #c0392b;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+        
+        .hot-water::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 30%;
+            height: 60%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            border-radius: 10px;
+            transform: rotate(-10deg);
+        }
+        
+        .steam-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .steam-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            border-radius: 50%;
+            animation: steam-rise 3s linear infinite;
+        }
+        
+        @keyframes steam-rise {
+            0% {
+                transform: translateY(0) scale(0.3);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-150px) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .spoons-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .spoon {
+            width: 30px;
+            height: 120px;
+            border-radius: 15px 15px 5px 5px;
+            position: relative;
+            opacity: 0;
+            transition: all 1s ease;
+            cursor: pointer;
+        }
+        
+        .spoon.visible {
+            opacity: 1;
+        }
+        
+        .spoon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+        }
+        
+        .spoon.metal {
+            background: var(--metal-gradient);
+            color: #7f8c8d;
+            border: 2px solid #95a5a6;
+        }
+        
+        .spoon.wood {
+            background: var(--wood-gradient);
+            color: #8b4513;
+            border: 2px solid #a0522d;
+        }
+        
+        .spoon.plastic {
+            background: var(--plastic-gradient);
+            color: #229954;
+            border: 2px solid #27ae60;
+        }
+        
+        .spoon.heating {
+            animation: heat-conduction 2s ease-in-out infinite;
+        }
+        
+        @keyframes heat-conduction {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px currentColor; }
+        }
+        
+        .temperature-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .temperature-indicator.hot {
+            background: var(--hot-color);
+            opacity: 1;
+        }
+        
+        .temperature-indicator.warm {
+            background: var(--warm-color);
+            opacity: 1;
+        }
+        
+        .temperature-indicator.cool {
+            background: var(--cool-color);
+            opacity: 1;
+        }
+        
+        /* Drag Feedback */
+        .drag-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drag-feedback.show {
+            opacity: 1;
+        }
+        
+        .process-info {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(243, 156, 18, 0.1));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.2);
+            border: 3px solid var(--secondary);
+            height: fit-content;
+        }
+        
+        .process-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .process-step {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            transition: all 0.5s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .process-step.active {
+            opacity: 1;
+            border-left-color: var(--secondary);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .process-step.completed {
+            opacity: 1;
+            border-left-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .measurement-panel {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 2px solid var(--success);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .measurement-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+        
+        .measurement-icon {
+            font-size: 2rem;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .measurement-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .measurement-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .experiment-feedback {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.15), rgba(211, 84, 0, 0.15));
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(230, 126, 34, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-heat 10s infinite;
+        }
+        
+        @keyframes feedback-heat {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--success);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(46, 204, 113, 0.05));
+            padding: 35px;
+            border-radius: 20px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 18px;
+            color: #1e7e34;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--heat-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* English Language Styles */
+        .lang-en {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .lang-en .instructions {
+            border-right: none;
+            border-left: 8px solid var(--success);
+        }
+        
+        .lang-en .experiment-header,
+        .lang-en .experiment-feedback,
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-right: none;
+            border-left: 8px solid var(--primary);
+        }
+        
+        .lang-en .experiment-feedback,
+        .lang-en .result-area {
+            border-left: 8px solid var(--accent);
+        }
+        
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-left: 8px solid var(--success);
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .measurement-panel {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .hot-water-container {
+                width: 250px;
+                height: 150px;
+            }
+            
+            .spoons-container {
+                gap: 20px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .draggable-item {
+                margin-bottom: 15px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <button class="language-toggle" id="languageToggle">
+        <i class="fas fa-language"></i> English
+    </button>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <!-- Drag Feedback -->
+    <div class="drag-feedback" id="dragFeedback">اسحب الملعقة إلى الماء الساخن</div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-thermometer-three-quarters"></i>
+                <div class="logo-text">
+                    <h1 id="headerTitle">مختبر توصيل الحرارة</h1>
+                    <p id="headerSubtitle">فهم المواد الموصلة والعازلة للحرارة</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3 id="statusTitle">حالة التجربة</h3>
+                <div class="status-value" id="experimentStatus">جاهز</div>
+                <div class="status-description" id="statusDescription">ابدأ التجربة</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2 id="experimentTitle"><i class="fas fa-fire"></i> تجربة توصيل الحرارة</h2>
+                    <p id="experimentSubtitle">فهم المواد الموصلة والعازلة للحرارة</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startExperiment">
+                        <i class="fas fa-play"></i> <span id="startBtn">بدء التجربة</span>
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> <span id="resetBtn">إعادة التجربة</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3 id="instructionsTitle"><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol id="instructionsList">
+                    <li id="step1">اسحب الملاعق إلى الماء الساخن</li>
+                    <li id="step2">انتظر دقيقتين لانتقال الحرارة</li>
+                    <li id="step3">انقر على كل ملعقة لاختبار درجة حرارتها</li>
+                    <li id="step4">قارن بين مدى توصيل كل مادة للحرارة</li>
+                </ol>
+            </div>
+            
+            <div class="measurement-panel">
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-thermometer-three-quarters"></i></div>
+                    <div class="measurement-value" id="waterTemp">80°C</div>
+                    <div class="measurement-label" id="waterTempLabel">درجة حرارة الماء</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-clock"></i></div>
+                    <div class="measurement-value" id="heatTime">0s</div>
+                    <div class="measurement-label" id="timeLabel">وقت التسخين</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div class="measurement-value" id="metalTemp">25°C</div>
+                    <div class="measurement-label" id="metalLabel">المعدن</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-tree"></i></div>
+                    <div class="measurement-value" id="woodTemp">25°C</div>
+                    <div class="measurement-label" id="woodLabel">الخشب</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-leaf"></i></div>
+                    <div class="measurement-value" id="plasticTemp">25°C</div>
+                    <div class="measurement-label" id="plasticLabel">البلاستيك</div>
+                </div>
+            </div>
+            
+            <div class="experiment-area">
+                <!-- Tools Section -->
+                <div class="tools-section">
+                    <div class="tools-header">
+                        <i class="fas fa-tools"></i>
+                        <span id="toolsTitle">الأدوات المطلوبة</span>
+                    </div>
+                    
+                    <div class="draggable-item metal-spoon" draggable="true" data-type="metal" id="metalTool">
+                        <div class="item-icon"><i class="fas fa-utensil-spoon"></i></div>
+                        <div class="item-name" id="metalName">ملعقة معدنية</div>
+                        <div class="item-description" id="metalDesc">اسحبني إلى الماء الساخن!</div>
+                    </div>
+                    
+                    <div class="draggable-item wood-spoon" draggable="true" data-type="wood" id="woodTool">
+                        <div class="item-icon"><i class="fas fa-utensil-spoon"></i></div>
+                        <div class="item-name" id="woodName">ملعقة خشبية</div>
+                        <div class="item-description" id="woodDesc">اسحبني إلى الماء الساخن!</div>
+                    </div>
+                    
+                    <div class="draggable-item plastic-spoon" draggable="true" data-type="plastic" id="plasticTool">
+                        <div class="item-icon"><i class="fas fa-utensil-spoon"></i></div>
+                        <div class="item-name" id="plasticName">ملعقة بلاستيكية</div>
+                        <div class="item-description" id="plasticDesc">اسحبني إلى الماء الساخن!</div>
+                    </div>
+                </div>
+                
+                <!-- Experiment Container -->
+                <div class="experiment-container" id="experimentContainer">
+                    <div class="drop-zone" id="dropZone"></div>
+                    
+                    <div class="hot-water-container">
+                        <div class="hot-water" id="hotWater">
+                            <div class="steam-particles" id="steamParticles"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="spoons-container" id="spoonsContainer">
+                        <div class="spoon metal" id="metalSpoon" data-material="metal">
+                            <div class="temperature-indicator" id="metalIndicator">25°C</div>
+                        </div>
+                        <div class="spoon wood" id="woodSpoon" data-material="wood">
+                            <div class="temperature-indicator" id="woodIndicator">25°C</div>
+                        </div>
+                        <div class="spoon plastic" id="plasticSpoon" data-material="plastic">
+                            <div class="temperature-indicator" id="plasticIndicator">25°C</div>
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-status" id="experimentStatusText">
+                        <p id="currentStepText">ابدأ التجربة أولاً</p>
+                    </div>
+                </div>
+                
+                <!-- Process Information -->
+                <div class="process-info">
+                    <div class="process-header">
+                        <i class="fas fa-cogs"></i>
+                        <span id="processTitle">مراحل العملية</span>
+                    </div>
+                    
+                    <div class="process-step" id="step-1">
+                        <div class="step-title">
+                            <i class="fas fa-play-circle"></i>
+                            <span id="processStep1">بداية التجربة</span>
+                        </div>
+                        <div class="step-description" id="processDesc1">تحضير الماء الساخن والملاعق</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-2">
+                        <div class="step-title">
+                            <i class="fas fa-utensil-spoon"></i>
+                            <span id="processStep2">وضع الملاعق</span>
+                        </div>
+                        <div class="step-description" id="processDesc2">اسحب الملاعق إلى الماء الساخن</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-3">
+                        <div class="step-title">
+                            <i class="fas fa-thermometer-half"></i>
+                            <span id="processStep3">انتقال الحرارة</span>
+                        </div>
+                        <div class="step-description" id="processDesc3">مراقبة توصيل الحرارة</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-4">
+                        <div class="step-title">
+                            <i class="fas fa-hand-pointer"></i>
+                            <span id="processStep4">اختبار الحرارة</span>
+                        </div>
+                        <div class="step-description" id="processDesc4">انقر على الملاعق لاختبارها</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p id="feedbackText"><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب الملاعق إلى الماء الساخن</p>
+            </div>
+            
+            <div class="result-area">
+                <h3 id="resultsTitle"><i class="fas fa-chart-line"></i> نتائج تجربة توصيل الحرارة</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p id="conclusionText"><i class="fas fa-thermometer-three-quarters"></i> ابدأ التجربة لاكتشاف المواد الموصلة والعازلة للحرارة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Translation data
+            const translations = {
+                ar: {
+                    headerTitle: 'مختبر توصيل الحرارة',
+                    headerSubtitle: 'فهم المواد الموصلة والعازلة للحرارة',
+                    statusTitle: 'حالة التجربة',
+                    experimentTitle: 'تجربة توصيل الحرارة',
+                    experimentSubtitle: 'فهم المواد الموصلة والعازلة للحرارة',
+                    startBtn: 'بدء التجربة',
+                    resetBtn: 'إعادة التجربة',
+                    instructionsTitle: 'تعليمات التجربة',
+                    step1: 'اسحب الملاعق إلى الماء الساخن',
+                    step2: 'انتظر دقيقتين لانتقال الحرارة',
+                    step3: 'انقر على كل ملعقة لاختبار درجة حرارتها',
+                    step4: 'قارن بين مدى توصيل كل مادة للحرارة',
+                    waterTempLabel: 'درجة حرارة الماء',
+                    timeLabel: 'وقت التسخين',
+                    metalLabel: 'المعدن',
+                    woodLabel: 'الخشب',
+                    plasticLabel: 'البلاستيك',
+                    toolsTitle: 'الأدوات المطلوبة',
+                    metalName: 'ملعقة معدنية',
+                    metalDesc: 'اسحبني إلى الماء الساخن!',
+                    woodName: 'ملعقة خشبية',
+                    woodDesc: 'اسحبني إلى الماء الساخن!',
+                    plasticName: 'ملعقة بلاستيكية',
+                    plasticDesc: 'اسحبني إلى الماء الساخن!',
+                    processTitle: 'مراحل العملية',
+                    processStep1: 'بداية التجربة',
+                    processDesc1: 'تحضير الماء الساخن والملاعق',
+                    processStep2: 'وضع الملاعق',
+                    processDesc2: 'اسحب الملاعق إلى الماء الساخن',
+                    processStep3: 'انتقال الحرارة',
+                    processDesc3: 'مراقبة توصيل الحرارة',
+                    processStep4: 'اختبار الحرارة',
+                    processDesc4: 'انقر على الملاعق لاختبارها',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب الملاعق إلى الماء الساخن',
+                    resultsTitle: 'نتائج تجربة توصيل الحرارة',
+                    conclusionText: '<i class="fas fa-thermometer-three-quarters"></i> ابدأ التجربة لاكتشاف المواد الموصلة والعازلة للحرارة',
+                    ready: 'جاهز',
+                    startExp: 'ابدأ التجربة',
+                    currentStepText: 'ابدأ التجربة أولاً',
+                    dragSpoons: 'اسحب الملاعق إلى الماء الساخن',
+                    langBtn: 'English',
+                    dragFeedback: 'اسحب الملعقة إلى الماء الساخن'
+                },
+                en: {
+                    headerTitle: 'Heat Conduction Laboratory',
+                    headerSubtitle: 'Understanding conductive and insulating materials',
+                    statusTitle: 'Experiment Status',
+                    experimentTitle: 'Heat Conduction Experiment',
+                    experimentSubtitle: 'Understanding conductive and insulating materials',
+                    startBtn: 'Start Experiment',
+                    resetBtn: 'Reset Experiment',
+                    instructionsTitle: 'Experiment Instructions',
+                    step1: 'Drag spoons to hot water',
+                    step2: 'Wait two minutes for heat transfer',
+                    step3: 'Click each spoon to test its temperature',
+                    step4: 'Compare heat conduction of each material',
+                    waterTempLabel: 'Water Temperature',
+                    timeLabel: 'Heating Time',
+                    metalLabel: 'Metal',
+                    woodLabel: 'Wood',
+                    plasticLabel: 'Plastic',
+                    toolsTitle: 'Required Tools',
+                    metalName: 'Metal Spoon',
+                    metalDesc: 'Drag me to hot water!',
+                    woodName: 'Wooden Spoon',
+                    woodDesc: 'Drag me to hot water!',
+                    plasticName: 'Plastic Spoon',
+                    plasticDesc: 'Drag me to hot water!',
+                    processTitle: 'Process Stages',
+                    processStep1: 'Experiment Start',
+                    processDesc1: 'Preparing hot water and spoons',
+                    processStep2: 'Placing Spoons',
+                    processDesc2: 'Drag spoons to hot water',
+                    processStep3: 'Heat Transfer',
+                    processDesc3: 'Monitoring heat conduction',
+                    processStep4: 'Temperature Test',
+                    processDesc4: 'Click spoons to test them',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag spoons to hot water',
+                    resultsTitle: 'Heat Conduction Experiment Results',
+                    conclusionText: '<i class="fas fa-thermometer-three-quarters"></i> Start the experiment to discover conductive and insulating materials',
+                    ready: 'Ready',
+                    startExp: 'Start Experiment',
+                    currentStepText: 'Start the experiment first',
+                    dragSpoons: 'Drag spoons to hot water',
+                    langBtn: 'العربية',
+                    dragFeedback: 'Drag spoon to hot water'
+                }
+            };
+            
+            // Language management
+            let currentLang = 'ar';
+            const languageToggle = document.getElementById('languageToggle');
+            const body = document.body;
+            
+            function updateLanguage(lang) {
+                currentLang = lang;
+                const texts = translations[lang];
+                
+                // Update all text elements
+                Object.keys(texts).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (key.includes('Text') || key.includes('feedbackText') || key.includes('conclusionText')) {
+                            element.innerHTML = texts[key];
+                        } else {
+                            element.textContent = texts[key];
+                        }
+                    }
+                });
+                
+                // Update body class for RTL/LTR
+                if (lang === 'en') {
+                    body.classList.add('lang-en');
+                    body.dir = 'ltr';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                } else {
+                    body.classList.remove('lang-en');
+                    body.dir = 'rtl';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                }
+            }
+            
+            languageToggle.addEventListener('click', () => {
+                updateLanguage(currentLang === 'ar' ? 'en' : 'ar');
+            });
+            
+            // Experiment elements
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const startBtn = document.getElementById('startExperiment');
+            const resetBtn = document.getElementById('resetExperiment');
+            const dragFeedback = document.getElementById('dragFeedback');
+            
+            // Visual elements
+            const steamParticles = document.getElementById('steamParticles');
+            const spoonsContainer = document.getElementById('spoonsContainer');
+            const metalSpoon = document.getElementById('metalSpoon');
+            const woodSpoon = document.getElementById('woodSpoon');
+            const plasticSpoon = document.getElementById('plasticSpoon');
+            const experimentContainer = document.getElementById('experimentContainer');
+            const dropZone = document.getElementById('dropZone');
+            
+            // Draggable elements
+            const metalTool = document.getElementById('metalTool');
+            const woodTool = document.getElementById('woodTool');
+            const plasticTool = document.getElementById('plasticTool');
+            
+            // Status elements
+            const experimentStatus = document.getElementById('experimentStatus');
+            const statusDescription = document.getElementById('statusDescription');
+            const heatTime = document.getElementById('heatTime');
+            const metalTemp = document.getElementById('metalTemp');
+            const woodTemp = document.getElementById('woodTemp');
+            const plasticTemp = document.getElementById('plasticTemp');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const currentStepText = document.getElementById('currentStepText');
+            
+            // State variables
+            let soundEnabled = true;
+            let experimentStarted = false;
+            let spoonsPlaced = {metal: false, wood: false, plastic: false};
+            let heatingStartTime = 0;
+            let heatingTimer = null;
+            let draggedElement = null;
+            let temperatures = {metal: 25, wood: 25, plastic: 25};
+            
+            // Audio context for sounds
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // Sound effects
+            const sounds = {
+                start: () => playSound(500, 0.5, 'sine'),
+                drag: () => playSound(350, 0.3, 'triangle'),
+                drop: () => playSound(450, 0.5, 'square'),
+                placeSpoon: () => playSound(400, 0.6, 'triangle'),
+                heating: () => playSound(250, 1.5, 'sawtooth'),
+                test: () => playSound(600, 0.4, 'sine'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 200);
+                    setTimeout(() => playSound(784, 0.4), 400);
+                },
+                error: () => playSound(200, 0.5, 'sawtooth')
+            };
+            
+            // Sound toggle
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // Drag and Drop functionality
+            function handleDragStart(e) {
+                if (!experimentStarted) {
+                    e.preventDefault();
+                    const message = currentLang === 'ar' ? 'يجب بدء التجربة أولاً!' : 'Must start experiment first!';
+                    showDragFeedback(message);
+                    sounds.error();
+                    return;
+                }
+                
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+                sounds.drag();
+                
+                const type = e.target.dataset.type;
+                const message = currentLang === 'ar' ? 
+                    `اسحب ملعقة ${type === 'metal' ? 'المعدن' : type === 'wood' ? 'الخشب' : 'البلاستيك'} إلى الماء الساخن` :
+                    `Drag ${type} spoon to hot water`;
+                
+                showDragFeedback(message);
+            }
+            
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                draggedElement = null;
+                hideDragFeedback();
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }
+            
+            function handleDragLeave(e) {
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                if (!draggedElement) return;
+                
+                const type = draggedElement.dataset.type;
+                
+                if (!spoonsPlaced[type]) {
+                    placeSpoon(type);
+                } else {
+                    dropZone.classList.add('invalid-drop');
+                    sounds.error();
+                    setTimeout(() => {
+                        dropZone.classList.remove('invalid-drop');
+                    }, 1000);
+                }
+            }
+            
+            function showDragFeedback(message) {
+                dragFeedback.textContent = message;
+                dragFeedback.classList.add('show');
+            }
+            
+            function hideDragFeedback() {
+                dragFeedback.classList.remove('show');
+            }
+            
+            // Add event listeners to draggable elements
+            [metalTool, woodTool, plasticTool].forEach(tool => {
+                tool.addEventListener('dragstart', handleDragStart);
+                tool.addEventListener('dragend', handleDragEnd);
+            });
+            
+            // Add event listeners to drop zone
+            experimentContainer.addEventListener('dragover', handleDragOver);
+            experimentContainer.addEventListener('dragleave', handleDragLeave);
+            experimentContainer.addEventListener('drop', handleDrop);
+            
+            // Create steam particles
+            function createSteamParticles() {
+                setInterval(() => {
+                    if (!experimentStarted) return;
+                    
+                    const particle = document.createElement('div');
+                    particle.className = 'steam-particle';
+                    
+                    const size = Math.random() * 8 + 4;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${Math.random() * 200 + 50}px`;
+                    particle.style.bottom = '0px';
+                    
+                    steamParticles.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.remove();
+                        }
+                    }, 3000);
+                }, 500);
+            }
+            
+            // Place spoon function
+            function placeSpoon(type) {
+                spoonsPlaced[type] = true;
+                document.getElementById(`${type}Tool`).classList.add('used');
+                document.getElementById(`${type}Tool`).draggable = false;
+                document.getElementById(`${type}Spoon`).classList.add('visible');
+                
+                sounds.placeSpoon();
+                
+                const allPlaced = Object.values(spoonsPlaced).every(placed => placed);
+                
+                if (allPlaced) {
+                    startHeating();
+                }
+                
+                updateProcessStep(2);
+                
+                const statusText = currentLang === 'ar' ? 'توضع الملاعق' : 'Placing Spoons';
+                const descText = currentLang === 'ar' ? 'في الماء الساخن' : 'In hot water';
+                const stepText = allPlaced ? 
+                    (currentLang === 'ar' ? 'انتظر انتقال الحرارة' : 'Wait for heat transfer') :
+                    (currentLang === 'ar' ? 'اسحب باقي الملاعق' : 'Drag remaining spoons');
+                const feedbackText = allPlaced ?
+                    (currentLang === 'ar' ? '<i class="fas fa-thermometer-half"></i> تم وضع جميع الملاعق! انتظر انتقال الحرارة' :
+                     '<i class="fas fa-thermometer-half"></i> All spoons placed! Wait for heat transfer') :
+                    (currentLang === 'ar' ? `<i class="fas fa-utensil-spoon"></i> تم وضع ملعقة ${type === 'metal' ? 'المعدن' : type === 'wood' ? 'الخشب' : 'البلاستيك'}! اسحب الباقي` :
+                     `<i class="fas fa-utensil-spoon"></i> ${type} spoon placed! Drag the rest`);
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'warning');
+            }
+            
+            // Start heating function
+            function startHeating() {
+                heatingStartTime = Date.now();
+                heatingTimer = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - heatingStartTime) / 1000);
+                    heatTime.textContent = `${elapsed}s`;
+                    
+                    // Update temperatures based on material properties
+                    if (elapsed >= 1) {
+                        // Metal conducts heat fastest
+                        temperatures.metal = Math.min(75, 25 + (elapsed * 4));
+                        metalTemp.textContent = `${Math.round(temperatures.metal)}°C`;
+                        
+                        // Wood conducts heat slowly
+                        temperatures.wood = Math.min(35, 25 + (elapsed * 0.8));
+                        woodTemp.textContent = `${Math.round(temperatures.wood)}°C`;
+                        
+                        // Plastic conducts heat very slowly
+                        temperatures.plastic = Math.min(30, 25 + (elapsed * 0.4));
+                        plasticTemp.textContent = `${Math.round(temperatures.plastic)}°C`;
+                    }
+                    
+                    if (elapsed >= 30) { // 30 seconds simulation
+                        completeHeating();
+                    }
+                }, 100);
+                
+                updateProcessStep(3);
+                sounds.heating();
+                
+                // Add heating animation to spoons
+                [metalSpoon, woodSpoon, plasticSpoon].forEach(spoon => {
+                    spoon.classList.add('heating');
+                });
+                
+                const statusText = currentLang === 'ar' ? 'انتقال الحرارة' : 'Heat Transfer';
+                const descText = currentLang === 'ar' ? 'جاري التسخين' : 'Heating in progress';
+                const stepText = currentLang === 'ar' ? 'راقب انتقال الحرارة' : 'Watch heat transfer';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-fire"></i> بدأ انتقال الحرارة! لاحظ الفرق بين المواد' :
+                    '<i class="fas fa-fire"></i> Heat transfer started! Notice the difference between materials';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'info');
+            }
+            
+            // Complete heating function
+            function completeHeating() {
+                clearInterval(heatingTimer);
+                
+                // Remove heating animation
+                [metalSpoon, woodSpoon, plasticSpoon].forEach(spoon => {
+                    spoon.classList.remove('heating');
+                });
+                
+                // Enable spoon testing
+                [metalSpoon, woodSpoon, plasticSpoon].forEach(spoon => {
+                    spoon.addEventListener('click', testSpoonTemperature);
+                    spoon.style.cursor = 'pointer';
+                });
+                
+                updateProcessStep(4);
+                
+                const statusText = currentLang === 'ar' ? 'جاهز للاختبار' : 'Ready for Testing';
+                const descText = currentLang === 'ar' ? 'انقر على الملاعق' : 'Click on spoons';
+                const stepText = currentLang === 'ar' ? 'انقر على الملاعق لاختبارها' : 'Click spoons to test them';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-hand-pointer"></i> انتهى التسخين! انقر على كل ملعقة لاختبار حرارتها' :
+                    '<i class="fas fa-hand-pointer"></i> Heating completed! Click each spoon to test its temperature';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'success');
+                
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // Test spoon temperature
+            function testSpoonTemperature(e) {
+                const spoon = e.target;
+                const material = spoon.dataset.material;
+                const temp = temperatures[material];
+                const indicator = document.getElementById(`${material}Indicator`);
+                
+                indicator.textContent = `${Math.round(temp)}°C`;
+                
+                // Set indicator color based on temperature
+                if (temp > 60) {
+                    indicator.className = 'temperature-indicator hot';
+                } else if (temp > 35) {
+                    indicator.className = 'temperature-indicator warm';
+                } else {
+                    indicator.className = 'temperature-indicator cool';
+                }
+                
+                sounds.test();
+                
+                // Pulse effect
+                spoon.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    spoon.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // Update process steps
+            function updateProcessStep(stepNumber, status = 'active') {
+                // Reset all steps
+                for (let i = 1; i <= 4; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    step.classList.remove('active', 'completed');
+                }
+                
+                // Update current step
+                for (let i = 1; i <= stepNumber; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    if (i < stepNumber) {
+                        step.classList.add('completed');
+                    } else if (i === stepNumber) {
+                        step.classList.add(status);
+                    }
+                }
+            }
+            
+            // Update experiment feedback
+            function updateFeedback(message, type = 'info') {
+                document.getElementById('feedbackText').innerHTML = message;
+                
+                // Visual feedback
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // Show final results
+            function showFinalResults() {
+                const conclusion = currentLang === 'ar' ? `
+                    <p><strong style="color: #e67e22;">🌡️ نتائج تجربة توصيل الحرارة:</strong></p>
+                    <p>✅ <strong>المعدن:</strong> وصل إلى ${Math.round(temperatures.metal)}°C - موصل ممتاز للحرارة</p>
+                    <p>🌳 <strong>الخشب:</strong> وصل إلى ${Math.round(temperatures.wood)}°C - عازل جزئي للحرارة</p>
+                    <p>🌿 <strong>البلاستيك:</strong> وصل إلى ${Math.round(temperatures.plastic)}°C - عازل جيد للحرارة</p>
+                    <p>⏱️ <strong>وقت التسخين:</strong> ${document.getElementById('heatTime').textContent}</p>
+                    <p>🎯 <strong>طريقة التفاعل:</strong> السحب والإفلات (Drag & Drop)</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 الشرح العلمي:</strong></p>
+                    <p>🔥 <strong>توصيل الحرارة:</strong> انتقال الطاقة الحرارية من جسم ساخن إلى جسم بارد</p>
+                    <p>⚡ <strong>المواد الموصلة:</strong> تسمح بانتقال الحرارة بسهولة (المعادن)</p>
+                    <p>🛡️ <strong>المواد العازلة:</strong> تقاوم انتقال الحرارة (الخشب والبلاستيك)</p>
+                    <p>🧬 <strong>التركيب الذري:</strong> الإلكترونات الحرة في المعادن تنقل الحرارة</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">📊 مقارنة معدل التوصيل:</strong></p>
+                    <p>🥇 <strong>المعدن:</strong> معدل توصيل عالي جداً - ارتفع ${Math.round(temperatures.metal - 25)}°C</p>
+                    <p>🥈 <strong>الخشب:</strong> معدل توصيل منخفض - ارتفع ${Math.round(temperatures.wood - 25)}°C</p>
+                    <p>🥉 <strong>البلاستيك:</strong> معدل توصيل منخفض جداً - ارتفع ${Math.round(temperatures.plastic - 25)}°C</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #8e44ad;">🏠 التطبيقات في الحياة:</strong></p>
+                    <p>🍳 <strong>أواني الطبخ:</strong> قاعدة معدنية لنقل الحرارة + مقابض خشبية للحماية</p>
+                    <p>🏠 <strong>العزل الحراري:</strong> استخدام مواد عازلة في الجدران والنوافذ</p>
+                    <p>❄️ <strong>الثلاجات:</strong> عزل حراري لمنع دخول الحرارة من الخارج</p>
+                    <p>🔌 <strong>الأسلاك الكهربائية:</strong> نحاس موصل مع غلاف بلاستيكي عازل</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e74c3c;">⚠️ نصائح السلامة:</strong></p>
+                    <p>🧤 <strong>ارتدِ قفازات:</strong> عند التعامل مع الأجسام الساخنة</p>
+                    <p>🌡️ <strong>تحقق من الحرارة:</strong> اختبر الحرارة قبل اللمس المباشر</p>
+                    <p>💨 <strong>تهوية جيدة:</strong> عند التعامل مع البخار والحرارة</p>
+                    <p>🧯 <strong>أدوات الإطفاء:</strong> يجب أن تكون متوفرة دائماً</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 الاستنتاج النهائي:</strong></p>
+                    <p>💡 المعدن يوصل الحرارة أسرع من الخشب والبلاستيك</p>
+                    <p>💡 المواد العازلة تحمي من الحروق وتوفر الطاقة</p>
+                    <p>💡 فهم خصائص المواد يساعد في اختيار الأدوات المناسبة</p>
+                    <p>💡 التجربة التفاعلية بالسحب والإفلات جعلت التعلم ممتعاً وآمناً!</p>
+                ` : `
+                    <p><strong style="color: #e67e22;">🌡️ Heat Conduction Experiment Results:</strong></p>
+                    <p>✅ <strong>Metal:</strong> Reached ${Math.round(temperatures.metal)}°C - Excellent heat conductor</p>
+                    <p>🌳 <strong>Wood:</strong> Reached ${Math.round(temperatures.wood)}°C - Partial heat insulator</p>
+                    <p>🌿 <strong>Plastic:</strong> Reached ${Math.round(temperatures.plastic)}°C - Good heat insulator</p>
+                    <p>⏱️ <strong>Heating Time:</strong> ${document.getElementById('heatTime').textContent}</p>
+                    <p>🎯 <strong>Interaction Method:</strong> Drag & Drop</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 Scientific Explanation:</strong></p>
+                    <p>🔥 <strong>Heat Conduction:</strong> Transfer of thermal energy from hot to cold objects</p>
+                    <p>⚡ <strong>Conductive Materials:</strong> Allow easy heat transfer (metals)</p>
+                    <p>🛡️ <strong>Insulating Materials:</strong> Resist heat transfer (wood and plastic)</p>
+                    <p>🧬 <strong>Atomic Structure:</strong> Free electrons in metals transfer heat</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">📊 Conduction Rate Comparison:</strong></p>
+                    <p>🥇 <strong>Metal:</strong> Very high conduction rate - increased ${Math.round(temperatures.metal - 25)}°C</p>
+                    <p>🥈 <strong>Wood:</strong> Low conduction rate - increased ${Math.round(temperatures.wood - 25)}°C</p>
+                    <p>🥉 <strong>Plastic:</strong> Very low conduction rate - increased ${Math.round(temperatures.plastic - 25)}°C</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #8e44ad;">🏠 Life Applications:</strong></p>
+                    <p>🍳 <strong>Cookware:</strong> Metal base for heat transfer + wooden handles for protection</p>
+                    <p>🏠 <strong>Thermal Insulation:</strong> Using insulating materials in walls and windows</p>
+                    <p>❄️ <strong>Refrigerators:</strong> Thermal insulation to prevent external heat entry</p>
+                    <p>🔌 <strong>Electric Wires:</strong> Copper conductor with plastic insulating cover</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e74c3c;">⚠️ Safety Tips:</strong></p>
+                    <p>🧤 <strong>Wear Gloves:</strong> When handling hot objects</p>
+                    <p>🌡️ <strong>Check Temperature:</strong> Test heat before direct contact</p>
+                    <p>💨 <strong>Good Ventilation:</strong> When dealing with steam and heat</p>
+                    <p>🧯 <strong>Fire Extinguisher:</strong> Should always be available</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 Final Conclusion:</strong></p>
+                    <p>💡 Metal conducts heat faster than wood and plastic</p>
+                    <p>💡 Insulating materials protect from burns and save energy</p>
+                    <p>💡 Understanding material properties helps choose appropriate tools</p>
+                    <p>💡 Interactive drag & drop experiment made learning fun and safe!</p>
+                `;
+                
+                conclusionDiv.innerHTML = conclusion;
+                sounds.complete();
+            }
+            
+            // Start experiment
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                
+                // Start creating steam particles
+                createSteamParticles();
+                
+                const statusText = currentLang === 'ar' ? 'بدء التجربة' : 'Starting Experiment';
+                const descText = currentLang === 'ar' ? 'جاهز للتفاعل' : 'Ready for interaction';
+                const stepText = currentLang === 'ar' ? 'اسحب الملاعق إلى الماء الساخن' : 'Drag spoons to hot water';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-play-circle"></i> بدأت التجربة! اسحب الملاعق إلى الماء الساخن' :
+                    '<i class="fas fa-play-circle"></i> Experiment started! Drag spoons to hot water';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'success');
+                updateProcessStep(1);
+                sounds.start();
+            });
+            
+            // Reset experiment
+            resetBtn.addEventListener('click', () => {
+                // Reset state
+                experimentStarted = false;
+                spoonsPlaced = {metal: false, wood: false, plastic: false};
+                temperatures = {metal: 25, wood: 25, plastic: 25};
+                draggedElement = null;
+                
+                if (heatingTimer) {
+                    clearInterval(heatingTimer);
+                }
+                
+                // Reset UI
+                startBtn.disabled = false;
+                [metalTool, woodTool, plasticTool].forEach(tool => {
+                    tool.classList.remove('used');
+                    tool.draggable = true;
+                });
+                
+                // Reset visual elements
+                [metalSpoon, woodSpoon, plasticSpoon].forEach(spoon => {
+                    spoon.classList.remove('visible', 'heating');
+                    spoon.style.cursor = 'default';
+                    spoon.removeEventListener('click', testSpoonTemperature);
+                });
+                
+                // Reset temperature indicators
+                ['metal', 'wood', 'plastic'].forEach(material => {
+                    const indicator = document.getElementById(`${material}Indicator`);
+                    indicator.className = 'temperature-indicator';
+                    indicator.textContent = '25°C';
+                });
+                
+                steamParticles.innerHTML = '';
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                // Reset status
+                const readyText = currentLang === 'ar' ? 'جاهز' : 'Ready';
+                const startText = currentLang === 'ar' ? 'ابدأ التجربة' : 'Start Experiment';
+                const stepText = currentLang === 'ar' ? 'ابدأ التجربة أولاً' : 'Start the experiment first';
+                const resetFeedback = currentLang === 'ar' ? 
+                    '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب الملاعق إلى الماء الساخن' :
+                    '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag spoons to hot water';
+                
+                experimentStatus.textContent = readyText;
+                statusDescription.textContent = startText;
+                currentStepText.textContent = stepText;
+                heatTime.textContent = '0s';
+                metalTemp.textContent = '25°C';
+                woodTemp.textContent = '25°C';
+                plasticTemp.textContent = '25°C';
+                
+                updateFeedback(resetFeedback, 'info');
+                updateProcessStep(1);
+                hideDragFeedback();
+                
+                const resetConclusion = currentLang === 'ar' ?
+                    '<i class="fas fa-thermometer-three-quarters"></i> ابدأ التجربة لاكتشاف المواد الموصلة والعازلة للحرارة' :
+                    '<i class="fas fa-thermometer-three-quarters"></i> Start the experiment to discover conductive and insulating materials';
+                
+                conclusionDiv.innerHTML = `<p>${resetConclusion}</p>`;
+                
+                sounds.start();
+            });
+            
+            // Initial setup
+            updateProcessStep(1);
+            updateLanguage('ar');
+        });
+    </script>
+</body>
+</html>

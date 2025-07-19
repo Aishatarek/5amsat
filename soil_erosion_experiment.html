@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة تآكل التربة بالماء - Soil Erosion Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB, #4682B4, #2F4F4F);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4682B4, #87CEEB);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #f44336, #da190b);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .reset-btn:hover {
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .sound-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .sound-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #dee2e6;
+        }
+
+        .experiment-section {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #4caf50;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tool {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .tool.dragging {
+            opacity: 0.7;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        .tool.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .soil-tool {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .water-tool {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .slope-container {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #f5f5dc, #ddd);
+            border: 3px solid #999;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .drop-zone {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .soil-slope {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            border-radius: 0 15px 0 0;
+            transition: all 0.5s ease;
+        }
+
+        .water-stream {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 0;
+            height: 0;
+            background: linear-gradient(to bottom, rgba(33, 150, 243, 0.8), rgba(33, 150, 243, 0.4));
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .erosion-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .erosion-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #8B4513;
+            border-radius: 50%;
+            opacity: 0;
+            animation: erode 3s ease-out infinite;
+        }
+
+        @keyframes erode {
+            0% {
+                opacity: 1;
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateY(150px) translateX(100px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(280px) translateX(200px);
+            }
+        }
+
+        .water-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #2196F3;
+            border-radius: 50%;
+            opacity: 0;
+            animation: flow 2s linear infinite;
+        }
+
+        @keyframes flow {
+            0% {
+                opacity: 1;
+                transform: translateY(0) translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(280px) translateX(250px);
+            }
+        }
+
+        .progress-section {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #ffcc02;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            margin: 0 5px;
+            border-radius: 25px;
+            background: #e0e0e0;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .step.completed {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .observations {
+            background: linear-gradient(135deg, #f1f8e9, #dcedc8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #8bc34a;
+        }
+
+        .observation-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.5s ease;
+        }
+
+        .observation-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #4caf50;
+            text-align: center;
+        }
+
+        .conclusion h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .conclusion ul {
+            text-align: right;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .conclusion li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            list-style-type: none;
+            position: relative;
+            padding-right: 30px;
+        }
+
+        .conclusion li::before {
+            content: "✓";
+            position: absolute;
+            right: 10px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .erosion-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .erosion-meter {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+
+        .erosion-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF5722, #F44336);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tool {
+                width: 100px;
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .slope-container {
+                height: 250px;
+            }
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        body.en {
+            direction: ltr;
+            text-align: left;
+        }
+
+        body.en .conclusion ul {
+            text-align: left;
+        }
+
+        body.en .conclusion li {
+            padding-left: 30px;
+            padding-right: 10px;
+        }
+
+        body.en .conclusion li::before {
+            left: 10px;
+            right: auto;
+        }
+
+        body.en .observation-item {
+            border-left: none;
+            border-right: 4px solid #4CAF50;
+        }
+
+        .slope-animation {
+            animation: buildSlope 2s ease-out;
+        }
+
+        @keyframes buildSlope {
+            0% { width: 0; height: 0; }
+            100% { width: 70%; height: 50%; }
+        }
+
+        .water-flow-animation {
+            animation: pourWater 1s ease-in;
+        }
+
+        @keyframes pourWater {
+            0% { width: 0; height: 0; }
+            100% { width: 80px; height: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-toggle">
+        <button class="control-btn" onclick="toggleLanguage()" id="langToggle">English</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 id="title">تجربة تآكل التربة بالماء</h1>
+            <p id="subtitle">شاهد كيف يؤثر الماء على التربة ويسبب التآكل</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="resetExperiment()" id="resetBtn">إعادة تشغيل التجربة</button>
+            <button class="control-btn sound-btn" onclick="toggleSound()" id="soundBtn">🔊 الصوت مفعل</button>
+        </div>
+
+        <div class="progress-section">
+            <h3 id="progressTitle">مراحل التجربة</h3>
+            <div class="step-indicator">
+                <div class="step active" id="step1">1. بناء المنحدر</div>
+                <div class="step" id="step2">2. سكب الماء</div>
+                <div class="step" id="step3">3. مراقبة التآكل</div>
+                <div class="step" id="step4">4. النتائج</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="tools-section">
+                <div class="section-title" id="toolsTitle">الأدوات المتاحة</div>
+                <p id="toolsInstructions">اسحب الأدوات إلى منطقة التجربة</p>
+                <div class="tools-grid">
+                    <div class="tool soil-tool" draggable="true" data-tool="soil" id="soilTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🏔️</div>
+                        <div id="soilLabel">تربة</div>
+                    </div>
+                    <div class="tool water-tool" draggable="true" data-tool="water" id="waterTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🚿</div>
+                        <div id="waterLabel">ماء</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experiment-section">
+                <div class="section-title" id="experimentTitle">منطقة التجربة</div>
+                <div class="slope-container">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="erosion-particles" id="erosionParticles"></div>
+                        <div class="soil-slope" id="soilSlope"></div>
+                        <div class="water-stream" id="waterStream"></div>
+                    </div>
+                </div>
+                
+                <div class="erosion-indicator">
+                    <span id="erosionLabel">مستوى التآكل:</span>
+                    <div class="erosion-meter">
+                        <div class="erosion-fill" id="erosionFill"></div>
+                    </div>
+                    <span id="erosionPercent">0%</span>
+                </div>
+                
+                <div class="timer" id="timer">الوقت: 0 ثانية</div>
+            </div>
+        </div>
+
+        <div class="observations" id="observationsSection">
+            <h3 id="observationsTitle">الملاحظات</h3>
+            <div id="observationsList">
+                <p id="initialObservation">ابدأ التجربة لرؤية الملاحظات...</p>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusionSection" style="display: none;">
+            <h3 id="conclusionTitle">الاستنتاج</h3>
+            <ul id="conclusionList">
+                <li id="conclusion1">الماء سبب رئيسي في تآكل التربة</li>
+                <li id="conclusion2">المنحدرات أكثر عرضة للتآكل</li>
+                <li id="conclusion3">التآكل عملية طبيعية مستمرة</li>
+                <li id="conclusion4">النباتات تساعد في منع التآكل</li>
+                <li id="conclusion5">التآكل يغير شكل الأرض تدريجياً</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // العناصر الأساسية
+        const dropZone = document.getElementById('dropZone');
+        const soilSlope = document.getElementById('soilSlope');
+        const waterStream = document.getElementById('waterStream');
+        const erosionParticles = document.getElementById('erosionParticles');
+        const progressFill = document.getElementById('progressFill');
+        const erosionFill = document.getElementById('erosionFill');
+        const erosionPercent = document.getElementById('erosionPercent');
+        const timer = document.getElementById('timer');
+        const observationsList = document.getElementById('observationsList');
+        const conclusionSection = document.getElementById('conclusionSection');
+
+        // متغيرات التجربة
+        let experimentState = {
+            soilAdded: false,
+            waterAdded: false,
+            erosionStarted: false,
+            erosionLevel: 0,
+            timer: 0,
+            timerInterval: null,
+            erosionInterval: null,
+            currentStep: 1,
+            soundEnabled: true,
+            currentLang: 'ar'
+        };
+
+        // الترجمات
+        const translations = {
+            ar: {
+                title: "تجربة تآكل التربة بالماء",
+                subtitle: "شاهد كيف يؤثر الماء على التربة ويسبب التآكل",
+                resetBtn: "إعادة تشغيل التجربة",
+                soundBtn: "🔊 الصوت مفعل",
+                soundBtnOff: "🔇 الصوت مغلق",
+                toolsTitle: "الأدوات المتاحة",
+                toolsInstructions: "اسحب الأدوات إلى منطقة التجربة",
+                soilLabel: "تربة",
+                waterLabel: "ماء",
+                experimentTitle: "منطقة التجربة",
+                progressTitle: "مراحل التجربة",
+                step1: "1. بناء المنحدر",
+                step2: "2. سكب الماء",
+                step3: "3. مراقبة التآكل",
+                step4: "4. النتائج",
+                observationsTitle: "الملاحظات",
+                initialObservation: "ابدأ التجربة لرؤية الملاحظات...",
+                conclusionTitle: "الاستنتاج",
+                conclusion1: "الماء سبب رئيسي في تآكل التربة",
+                conclusion2: "المنحدرات أكثر عرضة للتآكل",
+                conclusion3: "التآكل عملية طبيعية مستمرة",
+                conclusion4: "النباتات تساعد في منع التآكل",
+                conclusion5: "التآكل يغير شكل الأرض تدريجياً",
+                timerText: "الوقت: {time} ثانية",
+                erosionLabel: "مستوى التآكل:",
+                langToggle: "English"
+            },
+            en: {
+                title: "Soil Erosion by Water Experiment",
+                subtitle: "Observe how water affects soil and causes erosion",
+                resetBtn: "Reset Experiment",
+                soundBtn: "🔊 Sound On",
+                soundBtnOff: "🔇 Sound Off",
+                toolsTitle: "Available Tools",
+                toolsInstructions: "Drag tools to the experiment area",
+                soilLabel: "Soil",
+                waterLabel: "Water",
+                experimentTitle: "Experiment Area",
+                progressTitle: "Experiment Stages",
+                step1: "1. Build Slope",
+                step2: "2. Pour Water",
+                step3: "3. Observe Erosion",
+                step4: "4. Results",
+                observationsTitle: "Observations",
+                initialObservation: "Start the experiment to see observations...",
+                conclusionTitle: "Conclusion",
+                conclusion1: "Water is a main cause of soil erosion",
+                conclusion2: "Slopes are more susceptible to erosion",
+                conclusion3: "Erosion is a continuous natural process",
+                conclusion4: "Plants help prevent erosion",
+                conclusion5: "Erosion gradually changes land shape",
+                timerText: "Time: {time} seconds",
+                erosionLabel: "Erosion Level:",
+                langToggle: "العربية"
+            }
+        };
+
+        // الأصوات
+        let audioContext;
+        let sounds = {};
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                createSounds();
+            } catch (error) {
+                console.log('Audio not supported');
+                experimentState.soundEnabled = false;
+            }
+        }
+
+        function createSounds() {
+            // صوت بناء المنحدر
+            sounds.buildSlope = createTone(250, 0.8, 'sawtooth');
+            // صوت تدفق الماء
+            sounds.waterFlow = createTone(400, 2, 'sine');
+            // صوت التآكل
+            sounds.erosion = createTone(150, 0.5, 'triangle');
+            // صوت إكمال التجربة
+            sounds.complete = createTone(800, 1, 'square');
+        }
+
+        function createTone(frequency, duration, type = 'sine') {
+            return () => {
+                if (!experimentState.soundEnabled || !audioContext) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            };
+        }
+
+        function playSound(soundName) {
+            if (sounds[soundName] && experimentState.soundEnabled) {
+                sounds[soundName]();
+            }
+        }
+
+        // إدارة السحب والإفلات
+        function setupDragAndDrop() {
+            const tools = document.querySelectorAll('.tool');
+            
+            tools.forEach(tool => {
+                tool.addEventListener('dragstart', handleDragStart);
+                tool.addEventListener('dragend', handleDragEnd);
+            });
+            
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('drop', handleDrop);
+            dropZone.addEventListener('dragenter', handleDragEnter);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+        }
+
+        function handleDragStart(e) {
+            if (e.target.classList.contains('used')) {
+                e.preventDefault();
+                return;
+            }
+            e.dataTransfer.setData('text/plain', e.target.dataset.tool);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const toolType = e.dataTransfer.getData('text/plain');
+            
+            if (toolType === 'soil' && !experimentState.soilAdded) {
+                buildSoilSlope();
+            } else if (toolType === 'water' && experimentState.soilAdded && !experimentState.waterAdded) {
+                pourWater();
+            }
+        }
+
+        // بناء منحدر التربة
+        function buildSoilSlope() {
+            experimentState.soilAdded = true;
+            playSound('buildSlope');
+            
+            document.getElementById('soilTool').classList.add('used');
+            
+            // إنشاء المنحدر
+            soilSlope.style.width = '70%';
+            soilSlope.style.height = '50%';
+            soilSlope.classList.add('slope-animation');
+            
+            updateStep(2);
+            addObservation("تم بناء منحدر التربة في الصينية");
+            updateProgress(25);
+        }
+
+        // سكب الماء
+        function pourWater() {
+            experimentState.waterAdded = true;
+            playSound('waterFlow');
+            
+            document.getElementById('waterTool').classList.add('used');
+            
+            // إنشاء تدفق الماء
+            waterStream.style.width = '80px';
+            waterStream.style.height = '100%';
+            waterStream.classList.add('water-flow-animation');
+            
+            updateStep(3);
+            addObservation("تم سكب الماء وبدأ التدفق على المنحدر");
+            updateProgress(50);
+            
+            // بدء العداد
+            startTimer();
+            
+            // بدء عملية التآكل
+            setTimeout(() => {
+                startErosion();
+            }, 1000);
+        }
+
+        // بدء عملية التآكل
+        function startErosion() {
+            experimentState.erosionStarted = true;
+            playSound('erosion');
+            
+            addObservation("بدأ الماء يجرف جزيئات التربة من المنحدر");
+            
+            // إنشاء جزيئات التآكل
+            createErosionParticles();
+            
+            // بدء قياس التآكل
+            experimentState.erosionInterval = setInterval(() => {
+                if (experimentState.erosionLevel < 100) {
+                    experimentState.erosionLevel += 2;
+                    updateErosionLevel();
+                    
+                    // إضافة ملاحظات حسب مستوى التآكل
+                    if (experimentState.erosionLevel === 20) {
+                        addObservation("تبدأ أجزاء من التربة في الانهيار");
+                    } else if (experimentState.erosionLevel === 40) {
+                        addObservation("يتشكل مجرى مائي واضح في المنحدر");
+                    } else if (experimentState.erosionLevel === 60) {
+                        addObservation("تتجمع جزيئات التربة في القاع");
+                    } else if (experimentState.erosionLevel === 80) {
+                        addObservation("المنحدر يصبح أكثر انحداراً وعمقاً");
+                    } else if (experimentState.erosionLevel >= 100) {
+                        completeExperiment();
+                    }
+                }
+            }, 200);
+        }
+
+        // إنشاء جزيئات التآكل
+        function createErosionParticles() {
+            const particleInterval = setInterval(() => {
+                if (!experimentState.erosionStarted) {
+                    clearInterval(particleInterval);
+                    return;
+                }
+                
+                // جزيئات التربة المتآكلة
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'erosion-particle';
+                        particle.style.left = Math.random() * 200 + 100 + 'px';
+                        particle.style.top = Math.random() * 50 + 50 + 'px';
+                        particle.style.animationDelay = Math.random() * 0.5 + 's';
+                        erosionParticles.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 3000);
+                    }, i * 100);
+                }
+                
+                // جزيئات الماء
+                for (let i = 0; i < 2; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'water-particle';
+                        particle.style.left = Math.random() * 80 + 20 + 'px';
+                        particle.style.top = '20px';
+                        particle.style.animationDelay = Math.random() * 0.3 + 's';
+                        erosionParticles.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 2000);
+                    }, i * 150);
+                }
+            }, 300);
+        }
+
+        // تحديث مستوى التآكل
+        function updateErosionLevel() {
+            erosionFill.style.width = experimentState.erosionLevel + '%';
+            erosionPercent.textContent = Math.round(experimentState.erosionLevel) + '%';
+            
+            // تحديث شكل المنحدر
+            const slopeHeight = 50 - (experimentState.erosionLevel * 0.2);
+            const slopeWidth = 70 - (experimentState.erosionLevel * 0.1);
+            soilSlope.style.height = Math.max(20, slopeHeight) + '%';
+            soilSlope.style.width = Math.max(40, slopeWidth) + '%';
+        }
+
+        // إكمال التجربة
+        function completeExperiment() {
+            clearInterval(experimentState.erosionInterval);
+            playSound('complete');
+            
+            updateStep(4);
+            updateProgress(100);
+            
+            addObservation("اكتملت عملية التآكل - لاحظ التغيرات في شكل المنحدر");
+            
+            setTimeout(() => {
+                conclusionSection.style.display = 'block';
+                conclusionSection.scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+
+        // بدء العداد
+        function startTimer() {
+            experimentState.timerInterval = setInterval(() => {
+                experimentState.timer++;
+                updateTimer();
+            }, 1000);
+        }
+
+        // تحديث العداد
+        function updateTimer() {
+            const text = translations[experimentState.currentLang].timerText.replace('{time}', experimentState.timer);
+            timer.textContent = text;
+        }
+
+        // تحديث المرحلة
+        function updateStep(stepNumber) {
+            experimentState.currentStep = stepNumber;
+            
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active', 'completed');
+                
+                if (i < stepNumber) {
+                    step.classList.add('completed');
+                } else if (i === stepNumber) {
+                    step.classList.add('active');
+                }
+            }
+        }
+
+        // تحديث شريط التقدم
+        function updateProgress(percentage) {
+            progressFill.style.width = percentage + '%';
+        }
+
+        // إضافة ملاحظة
+        function addObservation(text) {
+            const observationItem = document.createElement('div');
+            observationItem.className = 'observation-item';
+            observationItem.textContent = text;
+            
+            observationsList.appendChild(observationItem);
+            
+            setTimeout(() => {
+                observationItem.classList.add('visible');
+            }, 100);
+        }
+
+        // إعادة تشغيل التجربة
+        function resetExperiment() {
+            // إيقاف العدادات
+            if (experimentState.timerInterval) {
+                clearInterval(experimentState.timerInterval);
+            }
+            if (experimentState.erosionInterval) {
+                clearInterval(experimentState.erosionInterval);
+            }
+            
+            // إعادة تعيين حالة التجربة
+            experimentState = {
+                soilAdded: false,
+                waterAdded: false,
+                erosionStarted: false,
+                erosionLevel: 0,
+                timer: 0,
+                timerInterval: null,
+                erosionInterval: null,
+                currentStep: 1,
+                soundEnabled: experimentState.soundEnabled,
+                currentLang: experimentState.currentLang
+            };
+            
+            // إعادة تعيين العناصر المرئية
+            soilSlope.style.width = '0';
+            soilSlope.style.height = '0';
+            waterStream.style.width = '0';
+            waterStream.style.height = '0';
+            
+            // إزالة الرسوم المتحركة
+            soilSlope.classList.remove('slope-animation');
+            waterStream.classList.remove('water-flow-animation');
+            
+            // إعادة تفعيل الأدوات
+            document.getElementById('soilTool').classList.remove('used');
+            document.getElementById('waterTool').classList.remove('used');
+            
+            // إعادة تعيين التقدم
+            updateStep(1);
+            updateProgress(0);
+            updateErosionLevel();
+            updateTimer();
+            
+            // مسح الملاحظات
+            observationsList.innerHTML = `<p id="initialObservation">${translations[experimentState.currentLang].initialObservation}</p>`;
+            
+            // إخفاء الاستنتاج
+            conclusionSection.style.display = 'none';
+            
+            // مسح الجزيئات
+            erosionParticles.innerHTML = '';
+        }
+
+        // تبديل الصوت
+        function toggleSound() {
+            experimentState.soundEnabled = !experimentState.soundEnabled;
+            const soundBtn = document.getElementById('soundBtn');
+            const key = experimentState.soundEnabled ? 'soundBtn' : 'soundBtnOff';
+            soundBtn.textContent = translations[experimentState.currentLang][key];
+        }
+
+        // تبديل اللغة
+        function toggleLanguage() {
+            experimentState.currentLang = experimentState.currentLang === 'ar' ? 'en' : 'ar';
+            document.body.className = experimentState.currentLang;
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const lang = experimentState.currentLang;
+            const t = translations[lang];
+            
+            // تحديث النصوص
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('resetBtn').textContent = t.resetBtn;
+            document.getElementById('toolsTitle').textContent = t.toolsTitle;
+            document.getElementById('toolsInstructions').textContent = t.toolsInstructions;
+            document.getElementById('soilLabel').textContent = t.soilLabel;
+            document.getElementById('waterLabel').textContent = t.waterLabel;
+            document.getElementById('experimentTitle').textContent = t.experimentTitle;
+            document.getElementById('progressTitle').textContent = t.progressTitle;
+            document.getElementById('step1').textContent = t.step1;
+            document.getElementById('step2').textContent = t.step2;
+            document.getElementById('step3').textContent = t.step3;
+            document.getElementById('step4').textContent = t.step4;
+            document.getElementById('observationsTitle').textContent = t.observationsTitle;
+            document.getElementById('conclusionTitle').textContent = t.conclusionTitle;
+            document.getElementById('conclusion1').textContent = t.conclusion1;
+            document.getElementById('conclusion2').textContent = t.conclusion2;
+            document.getElementById('conclusion3').textContent = t.conclusion3;
+            document.getElementById('conclusion4').textContent = t.conclusion4;
+            document.getElementById('conclusion5').textContent = t.conclusion5;
+            document.getElementById('erosionLabel').textContent = t.erosionLabel;
+            document.getElementById('langToggle').textContent = t.langToggle;
+            
+            const soundKey = experimentState.soundEnabled ? 'soundBtn' : 'soundBtnOff';
+            document.getElementById('soundBtn').textContent = t[soundKey];
+            
+            updateTimer();
+            
+            const initialObs = document.getElementById('initialObservation');
+            if (initialObs) {
+                initialObs.textContent = t.initialObservation;
+            }
+        }
+
+        // تهيئة التطبيق
+        function init() {
+            initAudio();
+            setupDragAndDrop();
+            updateLanguage();
+            updateTimer();
+            updateErosionLevel();
+        }
+
+        // بدء التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
