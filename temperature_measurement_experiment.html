@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة قياس درجة الحرارة - Temperature Measurement Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffe5cc, #ffb3ba);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff4757, #ffa502);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20a138);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .tools-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .tool-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #ff4757;
+        }
+
+        .tool-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .beaker-setup {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .beaker {
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent 20%, #87ceeb 20%);
+            border: 3px solid #333;
+            border-radius: 0 0 60px 60px;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .beaker.heating {
+            animation: heat-effect 1s infinite;
+        }
+
+        @keyframes heat-effect {
+            0%, 100% { box-shadow: 0 0 0 rgba(255, 69, 0, 0); }
+            50% { box-shadow: 0 0 30px rgba(255, 69, 0, 0.8); }
+        }
+
+        .water-level {
+            position: absolute;
+            bottom: 3px;
+            left: 3px;
+            right: 3px;
+            height: 80%;
+            background: linear-gradient(to bottom, #87ceeb, #4682b4);
+            border-radius: 0 0 56px 56px;
+            transition: all 0.5s ease;
+        }
+
+        .steam-particles {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+        }
+
+        .steam-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: steam-rise 2s infinite;
+        }
+
+        @keyframes steam-rise {
+            0% {
+                bottom: 0;
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            100% {
+                bottom: 60px;
+                opacity: 0;
+                transform: translateX(20px) scale(1.5);
+            }
+        }
+
+        .thermometer {
+            width: 20px;
+            height: 120px;
+            background: #f0f0f0;
+            border: 2px solid #333;
+            border-radius: 10px;
+            position: relative;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .thermometer-bulb {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: #ff4757;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        .mercury-column {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            background: #ff4757;
+            border-radius: 4px;
+            transition: height 0.5s ease;
+            height: 20px;
+        }
+
+        .temperature-scale {
+            position: absolute;
+            right: -30px;
+            top: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.8em;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .heat-source {
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff4500, #ff6347);
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+            margin: 20px auto;
+        }
+
+        .heat-source.active {
+            animation: heat-pulse 1s infinite;
+        }
+
+        @keyframes heat-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 69, 0, 0.8); }
+        }
+
+        .flame {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 35px;
+            background: radial-gradient(circle, yellow 20%, orange 40%, red 70%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+        }
+
+        .data-table {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background: #ff4757;
+            color: white;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .progress-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4757, #ffa502);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .observations {
+            background: #fff5e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ff4757;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .safety-icon {
+            color: #dc3545;
+            margin-right: 10px;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ff4757;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #ff4757;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .current-temperature {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff4757;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 71, 87, 0.1);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .beaker-setup {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🌡️ تجربة قياس درجة الحرارة</h1>
+            <p id="subtitle">Temperature Measurement Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">وضع الترمومتر</div>
+            <div class="step" id="step2">قياس درجة الحرارة الأولية</div>
+            <div class="step" id="step3">تطبيق الحرارة</div>
+            <div class="step" id="step4">تسجيل القراءات</div>
+        </div>
+
+        <div class="main-content">
+            <div class="tools-panel">
+                <h3 id="toolsTitle">الأدوات المطلوبة</h3>
+                
+                <div class="tool-item" draggable="true" data-tool="thermometer" id="thermometerTool">
+                    <div style="font-size: 2em;">🌡️</div>
+                    <div id="thermometerName">ترمومتر</div>
+                    <small>Thermometer</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="water" id="waterTool">
+                    <div style="font-size: 2em;">💧</div>
+                    <div id="waterName">ماء</div>
+                    <small>Water</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="heat" id="heatTool">
+                    <div style="font-size: 2em;">🔥</div>
+                    <div id="heatName">مصدر حرارة</div>
+                    <small>Heat Source</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="stopwatch" id="stopwatchTool">
+                    <div style="font-size: 2em;">⏱️</div>
+                    <div id="stopwatchName">ساعة توقيت</div>
+                    <small>Stopwatch</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="current-temperature" id="currentTemp">20°C</div>
+                
+                <div class="beaker-setup">
+                    <div>
+                        <h4 id="beakerTitle">كوب الماء</h4>
+                        <div class="drop-zone" data-accept="water,thermometer" id="beakerZone">
+                            <span id="beakerInstruction">اسحب الماء والترمومتر هنا</span>
+                        </div>
+                        <div class="beaker" id="beaker" style="display: none;">
+                            <div class="water-level" id="waterLevel"></div>
+                            <div class="steam-particles" id="steamParticles"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 id="thermometerTitle">الترمومتر</h4>
+                        <div class="thermometer" id="thermometerElement" style="display: none;">
+                            <div class="mercury-column" id="mercuryColumn"></div>
+                            <div class="thermometer-bulb"></div>
+                            <div class="temperature-scale">
+                                <span>100°C</span>
+                                <span>80°C</span>
+                                <span>60°C</span>
+                                <span>40°C</span>
+                                <span>20°C</span>
+                                <span>0°C</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="drop-zone" data-accept="heat,stopwatch" id="controlZone">
+                    <span id="controlInstruction">اسحب مصدر الحرارة وساعة التوقيت</span>
+                </div>
+
+                <div class="heat-source" id="heatSource" style="display: none;">
+                    <div class="flame" id="flame"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-table" id="dataTable" style="display: none;">
+            <h4 id="dataTitle">بيانات درجة الحرارة</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th id="timeHeader">الزمن (دقيقة)</th>
+                        <th id="tempHeader">درجة الحرارة (°C)</th>
+                    </tr>
+                </thead>
+                <tbody id="dataBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="progress-container">
+            <div class="timer" id="timer">00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">استعد لبدء التجربة</div>
+        </div>
+
+        <div class="warning">
+            <span class="safety-icon">⚠️</span>
+            <strong id="warningTitle">تحذير أمان:</strong>
+            <span id="warningText">هذه التجربة تتطلب إشراف المعلم. احذر من مصدر الحرارة والماء الساخن.</span>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4 id="conclusionTitle">الاستنتاج:</h4>
+            <p id="conclusionText">الحرارة تزيد طاقة الجزيئات مما يؤدي إلى ارتفاع درجة الحرارة تدريجياً مع الزمن.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let timer = 0;
+        let timerInterval;
+        let dataInterval;
+        let hasWater = false;
+        let hasThermometer = false;
+        let hasHeat = false;
+        let hasStopwatch = false;
+        let heatingStarted = false;
+        let currentTemperature = 20;
+        let dataPoints = [];
+
+        // Audio Context
+        let audioContext;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+                soundEnabled = false;
+            }
+        }
+
+        function playSound(frequency, duration) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Error playing sound:', e);
+            }
+        }
+
+        const translations = {
+            ar: {
+                title: "🌡️ تجربة قياس درجة الحرارة",
+                subtitle: "Temperature Measurement Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                toolsTitle: "الأدوات المطلوبة",
+                thermometerName: "ترمومتر",
+                waterName: "ماء",
+                heatName: "مصدر حرارة",
+                stopwatchName: "ساعة توقيت",
+                beakerTitle: "كوب الماء",
+                thermometerTitle: "الترمومتر",
+                beakerInstruction: "اسحب الماء والترمومتر هنا",
+                controlInstruction: "اسحب مصدر الحرارة وساعة التوقيت",
+                dataTitle: "بيانات درجة الحرارة",
+                timeHeader: "الزمن (دقيقة)",
+                tempHeader: "درجة الحرارة (°C)",
+                warningTitle: "تحذير أمان:",
+                warningText: "هذه التجربة تتطلب إشراف المعلم. احذر من مصدر الحرارة والماء الساخن.",
+                observationsTitle: "الملاحظات:",
+                conclusionTitle: "الاستنتاج:",
+                conclusionText: "الحرارة تزيد طاقة الجزيئات مما يؤدي إلى ارتفاع درجة الحرارة تدريجياً مع الزمن.",
+                obs1: "انتظار بدء التجربة...",
+                step1: "وضع الترمومتر",
+                step2: "قياس درجة الحرارة الأولية",
+                step3: "تطبيق الحرارة",
+                step4: "تسجيل القراءات",
+                progressReady: "استعد لبدء التجربة",
+                progressSetup: "تم إعداد الأدوات",
+                progressMeasuring: "قياس درجة الحرارة الأولية",
+                progressHeating: "تطبيق الحرارة وتسجيل البيانات",
+                progressComplete: "التجربة مكتملة - تم تسجيل جميع البيانات"
+            },
+            en: {
+                title: "🌡️ Temperature Measurement Experiment",
+                subtitle: "تجربة قياس درجة الحرارة",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                toolsTitle: "Required Tools",
+                thermometerName: "Thermometer",
+                waterName: "Water",
+                heatName: "Heat Source",
+                stopwatchName: "Stopwatch",
+                beakerTitle: "Water Cup",
+                thermometerTitle: "Thermometer",
+                beakerInstruction: "Drag water and thermometer here",
+                controlInstruction: "Drag heat source and stopwatch",
+                dataTitle: "Temperature Data",
+                timeHeader: "Time (minutes)",
+                tempHeader: "Temperature (°C)",
+                warningTitle: "Safety Warning:",
+                warningText: "This experiment requires teacher supervision. Beware of heat source and hot water.",
+                observationsTitle: "Observations:",
+                conclusionTitle: "Conclusion:",
+                conclusionText: "Heat increases molecular energy, causing gradual temperature rise over time.",
+                obs1: "Waiting to start experiment...",
+                step1: "Place Thermometer",
+                step2: "Initial Temperature Reading",
+                step3: "Apply Heat",
+                step4: "Record Readings",
+                progressReady: "Ready to start experiment",
+                progressSetup: "Tools set up",
+                progressMeasuring: "Taking initial temperature reading",
+                progressHeating: "Applying heat and recording data",
+                progressComplete: "Experiment complete - all data recorded"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled && !audioContext) {
+                initAudio();
+            }
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            
+            experimentStarted = true;
+            initAudio();
+            playSound(440, 0.2);
+            
+            timer = 0;
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            updateProgress();
+            updateStep(1);
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            timer = 0;
+            hasWater = false;
+            hasThermometer = false;
+            hasHeat = false;
+            hasStopwatch = false;
+            heatingStarted = false;
+            currentTemperature = 20;
+            dataPoints = [];
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            if (dataInterval) {
+                clearInterval(dataInterval);
+            }
+            
+            // Reset UI
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = translations[currentLanguage].progressReady;
+            document.getElementById('currentTemp').textContent = '20°C';
+            document.getElementById('beaker').style.display = 'none';
+            document.getElementById('thermometerElement').style.display = 'none';
+            document.getElementById('heatSource').style.display = 'none';
+            document.getElementById('dataTable').style.display = 'none';
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('steamParticles').innerHTML = '';
+            document.getElementById('dataBody').innerHTML = '';
+            
+            updateMercuryLevel(20);
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+            
+            playSound(220, 0.2);
+        }
+
+        function updateTimer() {
+            timer++;
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            let progress = 0;
+            let text = translations[currentLanguage].progressReady;
+            
+            if (hasWater && hasThermometer) {
+                progress = 25;
+                text = translations[currentLanguage].progressSetup;
+            }
+            if (hasHeat && hasStopwatch && !heatingStarted) {
+                progress = 50;
+                text = translations[currentLanguage].progressMeasuring;
+            }
+            if (heatingStarted) {
+                progress = 75;
+                text = translations[currentLanguage].progressHeating;
+            }
+            if (dataPoints.length >= 10) {
+                progress = 100;
+                text = translations[currentLanguage].progressComplete;
+            }
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function updateMercuryLevel(temperature) {
+            const mercuryColumn = document.getElementById('mercuryColumn');
+            const height = Math.min((temperature - 10) * 2, 100); // Scale temperature to mercury height
+            mercuryColumn.style.height = Math.max(height, 10) + 'px';
+        }
+
+        function createSteamParticles() {
+            const steamContainer = document.getElementById('steamParticles');
+            
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'steam-particle';
+                    particle.style.left = Math.random() * 50 + 'px';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    steamContainer.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 3000);
+                }, i * 300);
+            }
+        }
+
+        function startHeating() {
+            if (heatingStarted) return;
+            
+            heatingStarted = true;
+            document.getElementById('heatSource').classList.add('active');
+            document.getElementById('beaker').classList.add('heating');
+            
+            updateProgress();
+            updateStep(4);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                'بدء تسخين الماء وتسجيل البيانات' : 
+                'Started heating water and recording data');
+            
+            // Start data collection
+            document.getElementById('dataTable').style.display = 'block';
+            dataInterval = setInterval(recordTemperature, 60000); // Record every minute
+            
+            // Start temperature simulation
+            const tempInterval = setInterval(() => {
+                if (!heatingStarted) {
+                    clearInterval(tempInterval);
+                    return;
+                }
+                
+                currentTemperature += Math.random() * 3 + 2; // Increase 2-5 degrees
+                currentTemperature = Math.min(currentTemperature, 95); // Max 95°C
+                
+                document.getElementById('currentTemp').textContent = Math.round(currentTemperature) + '°C';
+                updateMercuryLevel(currentTemperature);
+                
+                if (currentTemperature > 80) {
+                    createSteamParticles();
+                }
+                
+                if (currentTemperature >= 95) {
+                    clearInterval(tempInterval);
+                    document.getElementById('conclusion').style.display = 'block';
+                }
+            }, 3000);
+        }
+
+        function recordTemperature() {
+            if (!heatingStarted || dataPoints.length >= 10) {
+                if (dataInterval) clearInterval(dataInterval);
+                return;
+            }
+            
+            const minutes = dataPoints.length;
+            const temperature = Math.round(currentTemperature);
+            
+            dataPoints.push({ time: minutes, temp: temperature });
+            
+            const dataBody = document.getElementById('dataBody');
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${minutes}</td><td>${temperature}</td>`;
+            dataBody.appendChild(row);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                `الدقيقة ${minutes}: ${temperature}°C` : 
+                `Minute ${minutes}: ${temperature}°C`);
+            
+            updateProgress();
+            playSound(523, 0.2);
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateLanguage();
+        });
+
+        function initDragAndDrop() {
+            const toolItems = document.querySelectorAll('.tool-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            toolItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            playSound(330, 0.1);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.drop-zone');
+            if (!dropZone || !draggedItem) return;
+
+            dropZone.classList.remove('drag-over');
+            
+            const toolType = draggedItem.dataset.tool;
+            const acceptedTools = dropZone.dataset.accept.split(',');
+            
+            if (!acceptedTools.includes(toolType)) {
+                playSound(150, 0.3);
+                return;
+            }
+
+            playSound(523, 0.2);
+            
+            if (dropZone.id === 'beakerZone') {
+                handleBeakerDrops(toolType);
+            } else if (dropZone.id === 'controlZone') {
+                handleControlDrops(toolType);
+            }
+        }
+
+        function handleBeakerDrops(toolType) {
+            if (toolType === 'water' && !hasWater) {
+                hasWater = true;
+                document.getElementById('beaker').style.display = 'block';
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع الماء في الكوب' : 
+                    'Water placed in beaker');
+                
+                updateProgress();
+                
+                if (hasWater && hasThermometer) {
+                    updateStep(2);
+                }
+                
+            } else if (toolType === 'thermometer' && !hasThermometer) {
+                hasThermometer = true;
+                document.getElementById('thermometerElement').style.display = 'block';
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع الترمومتر في الماء' : 
+                    'Thermometer placed in water');
+                
+                updateProgress();
+                
+                if (hasWater && hasThermometer) {
+                    updateStep(2);
+                    setTimeout(() => {
+                        addObservation(currentLanguage === 'ar' ? 
+                            'درجة الحرارة الأولية: 20°C' : 
+                            'Initial temperature: 20°C');
+                    }, 1000);
+                }
+            }
+        }
+
+        function handleControlDrops(toolType) {
+            if (toolType === 'heat' && !hasHeat && hasWater && hasThermometer) {
+                hasHeat = true;
+                document.getElementById('heatSource').style.display = 'block';
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع مصدر الحرارة' : 
+                    'Heat source placed');
+                
+                updateProgress();
+                
+                if (hasHeat && hasStopwatch) {
+                    updateStep(3);
+                    setTimeout(startHeating, 2000);
+                }
+                
+            } else if (toolType === 'stopwatch' && !hasStopwatch) {
+                hasStopwatch = true;
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم تشغيل ساعة التوقيت' : 
+                    'Stopwatch started');
+                
+                updateProgress();
+                
+                if (hasHeat && hasStopwatch) {
+                    updateStep(3);
+                    setTimeout(startHeating, 2000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
