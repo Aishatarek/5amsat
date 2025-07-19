@@ -367,7 +367,7 @@
             gap: 40px;
             margin-bottom: 40px;
             min-height: 600px;
-            align-items: center;
+            align-items: start;
         }
         
         .tools-section {
@@ -377,6 +377,7 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
             border: 3px solid var(--sugar-color);
             text-align: center;
+            height: fit-content;
         }
         
         .tools-header {
@@ -390,53 +391,107 @@
             gap: 15px;
         }
         
-        .tool-item {
-            background: rgba(255, 255, 255, 0.8);
+        /* Draggable Items */
+        .draggable-item {
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
-            cursor: pointer;
+            cursor: grab;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            border: 3px solid transparent;
             position: relative;
             overflow: hidden;
+            user-select: none;
         }
         
-        .tool-item:hover {
+        .draggable-item:hover {
             transform: translateY(-5px) scale(1.05);
             border-color: var(--accent);
-            box-shadow: 0 10px 25px rgba(155, 89, 182, 0.3);
+            box-shadow: 0 15px 35px rgba(155, 89, 182, 0.4);
         }
         
-        .tool-item::before {
+        .draggable-item.dragging {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            opacity: 0.8;
+            cursor: grabbing;
+            box-shadow: 0 20px 50px rgba(155, 89, 182, 0.6);
+        }
+        
+        .draggable-item.used {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.9);
+            filter: grayscale(50%);
+        }
+        
+        .draggable-item::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.3), transparent);
             transition: left 1s;
         }
         
-        .tool-item:hover::before {
+        .draggable-item:hover::before {
             left: 100%;
         }
         
-        .tool-icon {
+        .item-icon {
             font-size: 2.5rem;
             margin-bottom: 10px;
             color: var(--secondary);
+            transition: all 0.3s ease;
         }
         
-        .tool-name {
+        .draggable-item:hover .item-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .item-name {
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 5px;
+            font-size: 1.1rem;
         }
         
-        .tool-description {
+        .item-description {
             font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        /* Sugar Cube Specific */
+        .sugar-cube {
+            background: var(--sugar-gradient);
+            border: 3px solid #dee2e6;
+        }
+        
+        .sugar-cube:hover {
+            border-color: #f39c12;
+            box-shadow: 0 15px 35px rgba(243, 156, 18, 0.4);
+        }
+        
+        .sugar-cube .item-icon {
+            color: #f39c12;
+        }
+        
+        /* Spoon Specific */
+        .spoon-item {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            border: 3px solid #adb5bd;
+        }
+        
+        .spoon-item:hover {
+            border-color: #6c757d;
+            box-shadow: 0 15px 35px rgba(108, 117, 125, 0.4);
+        }
+        
+        .spoon-item .item-icon {
             color: #6c757d;
         }
         
@@ -451,6 +506,31 @@
             box-shadow: 0 15px 40px rgba(116, 192, 252, 0.2);
             border: 3px solid var(--water-color);
             position: relative;
+            min-height: 500px;
+        }
+        
+        /* Drop Zone */
+        .drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+            pointer-events: all;
+        }
+        
+        .drop-zone.invalid-drop {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
         }
         
         .glass-container {
@@ -458,6 +538,7 @@
             width: 200px;
             height: 300px;
             margin-bottom: 30px;
+            z-index: 10;
         }
         
         .glass {
@@ -564,6 +645,11 @@
             transition: transform 1s ease-in-out;
             z-index: 10;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+        }
+        
+        .spoon.visible {
+            opacity: 1;
         }
         
         .spoon::before {
@@ -589,39 +675,26 @@
             75% { transform: rotate(10deg); }
         }
         
-        .action-buttons {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .action-btn {
-            background: var(--water-gradient);
+        /* Drag Feedback */
+        .drag-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
-            border: none;
+            padding: 20px 30px;
             border-radius: 15px;
-            padding: 15px 25px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 8px 20px rgba(116, 192, 252, 0.4);
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
         
-        .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(116, 192, 252, 0.6);
-        }
-        
-        .action-btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .drag-feedback.show {
+            opacity: 1;
         }
         
         .process-info {
@@ -630,6 +703,7 @@
             padding: 30px;
             box-shadow: 0 15px 40px rgba(230, 126, 34, 0.2);
             border: 3px solid var(--secondary);
+            height: fit-content;
         }
         
         .process-header {
@@ -882,9 +956,9 @@
                 justify-content: center;
             }
             
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
+            .draggable-item {
+                margin-bottom: 15px;
+                padding: 15px;
             }
         }
     </style>
@@ -899,6 +973,9 @@
     <button class="sound-toggle" id="soundToggle">
         <i class="fas fa-volume-up" id="soundIcon"></i>
     </button>
+
+    <!-- Drag Feedback -->
+    <div class="drag-feedback" id="dragFeedback">اسحب العنصر إلى الكوب</div>
 
     <div class="container">
         <header>
@@ -936,9 +1013,9 @@
             <div class="instructions">
                 <h3 id="instructionsTitle"><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
                 <ol id="instructionsList">
-                    <li id="step1">ضع السكر في الماء</li>
-                    <li id="step2">قلّب المحلول بالملعقة</li>
-                    <li id="step3">راقب عملية الذوبان</li>
+                    <li id="step1">اسحب السكر إلى الكوب لإضافته للماء</li>
+                    <li id="step2">اسحب الملعقة إلى الكوب للتحريك</li>
+                    <li id="step3">راقب عملية الذوبان التدريجي</li>
                     <li id="step4">لاحظ أن السكر لم يختف بل ذاب فقط</li>
                 </ol>
             </div>
@@ -974,27 +1051,29 @@
                         <span id="toolsTitle">الأدوات المطلوبة</span>
                     </div>
                     
-                    <div class="tool-item" id="waterTool">
-                        <div class="tool-icon"><i class="fas fa-tint"></i></div>
-                        <div class="tool-name" id="waterName">كوب ماء</div>
-                        <div class="tool-description" id="waterDesc">200 مل من الماء النقي</div>
+                    <div class="draggable-item sugar-cube" draggable="true" data-type="sugar" id="sugarTool">
+                        <div class="item-icon"><i class="fas fa-cube"></i></div>
+                        <div class="item-name" id="sugarName">سكر أبيض</div>
+                        <div class="item-description" id="sugarDesc">اسحبني إلى الكوب لإضافة السكر!</div>
                     </div>
                     
-                    <div class="tool-item" id="sugarTool">
-                        <div class="tool-icon"><i class="fas fa-cube"></i></div>
-                        <div class="tool-name" id="sugarName">سكر أبيض</div>
-                        <div class="tool-description" id="sugarDesc">5 جرام من السكر المحبب</div>
+                    <div class="draggable-item spoon-item" draggable="true" data-type="spoon" id="spoonTool">
+                        <div class="item-icon"><i class="fas fa-utensil-spoon"></i></div>
+                        <div class="item-name" id="spoonName">ملعقة</div>
+                        <div class="item-description" id="spoonDesc">اسحبني إلى الكوب للتحريك!</div>
                     </div>
                     
-                    <div class="tool-item" id="spoonTool">
-                        <div class="tool-icon"><i class="fas fa-utensil-spoon"></i></div>
-                        <div class="tool-name" id="spoonName">ملعقة</div>
-                        <div class="tool-description" id="spoonDesc">للتحريك والمزج</div>
+                    <div class="draggable-item" id="waterTool">
+                        <div class="item-icon"><i class="fas fa-tint"></i></div>
+                        <div class="item-name" id="waterName">كوب ماء</div>
+                        <div class="item-description" id="waterDesc">200 مل من الماء النقي متوفر بالفعل</div>
                     </div>
                 </div>
                 
                 <!-- Experiment Container -->
-                <div class="experiment-container">
+                <div class="experiment-container" id="experimentContainer">
+                    <div class="drop-zone" id="dropZone"></div>
+                    
                     <div class="glass-container">
                         <div class="glass">
                             <div class="water" id="waterLevel"></div>
@@ -1003,15 +1082,8 @@
                         </div>
                     </div>
                     
-                    <div class="action-buttons">
-                        <button class="action-btn" id="addSugarBtn" disabled>
-                            <i class="fas fa-plus"></i>
-                            <span id="addSugarText">أضف السكر</span>
-                        </button>
-                        <button class="action-btn" id="stirBtn" disabled>
-                            <i class="fas fa-sync"></i>
-                            <span id="stirText">قلّب المحلول</span>
-                        </button>
+                    <div class="experiment-status" id="experimentStatusText">
+                        <p id="currentStepText">ابدأ التجربة أولاً</p>
                     </div>
                 </div>
                 
@@ -1035,7 +1107,7 @@
                             <i class="fas fa-plus-circle"></i>
                             <span id="processStep2">إضافة السكر</span>
                         </div>
-                        <div class="step-description" id="processDesc2">وضع بلورات السكر في الماء</div>
+                        <div class="step-description" id="processDesc2">اسحب السكر إلى الكوب</div>
                     </div>
                     
                     <div class="process-step" id="step-3">
@@ -1043,7 +1115,7 @@
                             <i class="fas fa-sync-alt"></i>
                             <span id="processStep3">التحريك</span>
                         </div>
-                        <div class="step-description" id="processDesc3">تحريك المحلول لتسريع الذوبان</div>
+                        <div class="step-description" id="processDesc3">اسحب الملعقة للتحريك</div>
                     </div>
                     
                     <div class="process-step" id="step-4">
@@ -1057,7 +1129,7 @@
             </div>
             
             <div class="experiment-feedback" id="experimentFeedback">
-                <p id="feedbackText"><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" لمشاهدة عملية الذوبان</p>
+                <p id="feedbackText"><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر إلى الكوب</p>
             </div>
             
             <div class="result-area">
@@ -1082,9 +1154,9 @@
                     startBtn: 'بدء التجربة',
                     resetBtn: 'إعادة التجربة',
                     instructionsTitle: 'تعليمات التجربة',
-                    step1: 'ضع السكر في الماء',
-                    step2: 'قلّب المحلول بالملعقة',
-                    step3: 'راقب عملية الذوبان',
+                    step1: 'اسحب السكر إلى الكوب لإضافته للماء',
+                    step2: 'اسحب الملعقة إلى الكوب للتحريك',
+                    step3: 'راقب عملية الذوبان التدريجي',
                     step4: 'لاحظ أن السكر لم يختف بل ذاب فقط',
                     sugarLabel: 'كمية السكر',
                     waterLabel: 'كمية الماء',
@@ -1092,32 +1164,30 @@
                     timeLabel: 'وقت الذوبان',
                     toolsTitle: 'الأدوات المطلوبة',
                     waterName: 'كوب ماء',
-                    waterDesc: '200 مل من الماء النقي',
+                    waterDesc: '200 مل من الماء النقي متوفر بالفعل',
                     sugarName: 'سكر أبيض',
-                    sugarDesc: '5 جرام من السكر المحبب',
+                    sugarDesc: 'اسحبني إلى الكوب لإضافة السكر!',
                     spoonName: 'ملعقة',
-                    spoonDesc: 'للتحريك والمزج',
-                    addSugarText: 'أضف السكر',
-                    stirText: 'قلّب المحلول',
+                    spoonDesc: 'اسحبني إلى الكوب للتحريك!',
                     processTitle: 'مراحل العملية',
                     processStep1: 'بداية التجربة',
                     processDesc1: 'الماء النقي في الكوب',
                     processStep2: 'إضافة السكر',
-                    processDesc2: 'وضع بلورات السكر في الماء',
+                    processDesc2: 'اسحب السكر إلى الكوب',
                     processStep3: 'التحريك',
-                    processDesc3: 'تحريك المحلول لتسريع الذوبان',
+                    processDesc3: 'اسحب الملعقة للتحريك',
                     processStep4: 'اكتمال الذوبان',
                     processDesc4: 'السكر ذاب تماماً في الماء',
-                    feedbackText: '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" لمشاهدة عملية الذوبان',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر إلى الكوب',
                     resultsTitle: 'نتائج تجربة التغير الفيزيائي',
                     conclusionText: '<i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي',
                     ready: 'جاهز',
                     startExp: 'ابدأ التجربة',
-                    addingSugar: 'إضافة السكر',
-                    addedSugar: 'تم إضافة السكر',
-                    stirring: 'التحريك',
-                    dissolved: 'اكتمل الذوبان',
-                    langBtn: 'English'
+                    currentStepText: 'ابدأ التجربة أولاً',
+                    dragSugar: 'اسحب السكر إلى الكوب',
+                    dragSpoon: 'اسحب الملعقة إلى الكوب',
+                    langBtn: 'English',
+                    dragFeedback: 'اسحب العنصر إلى الكوب'
                 },
                 en: {
                     headerTitle: 'Physical Change Lab - Sugar Dissolution',
@@ -1128,9 +1198,9 @@
                     startBtn: 'Start Experiment',
                     resetBtn: 'Reset Experiment',
                     instructionsTitle: 'Experiment Instructions',
-                    step1: 'Add sugar to the water',
-                    step2: 'Stir the solution with the spoon',
-                    step3: 'Observe the dissolution process',
+                    step1: 'Drag sugar to the glass to add it to water',
+                    step2: 'Drag the spoon to the glass for stirring',
+                    step3: 'Observe the gradual dissolution process',
                     step4: 'Notice that sugar didn\'t disappear, it just dissolved',
                     sugarLabel: 'Sugar Amount',
                     waterLabel: 'Water Amount',
@@ -1138,32 +1208,30 @@
                     timeLabel: 'Dissolution Time',
                     toolsTitle: 'Required Tools',
                     waterName: 'Glass of Water',
-                    waterDesc: '200 ml of pure water',
+                    waterDesc: '200 ml of pure water already available',
                     sugarName: 'White Sugar',
-                    sugarDesc: '5 grams of granulated sugar',
+                    sugarDesc: 'Drag me to the glass to add sugar!',
                     spoonName: 'Spoon',
-                    spoonDesc: 'For stirring and mixing',
-                    addSugarText: 'Add Sugar',
-                    stirText: 'Stir Solution',
+                    spoonDesc: 'Drag me to the glass for stirring!',
                     processTitle: 'Process Stages',
                     processStep1: 'Experiment Start',
                     processDesc1: 'Pure water in the glass',
                     processStep2: 'Adding Sugar',
-                    processDesc2: 'Placing sugar crystals in water',
+                    processDesc2: 'Drag sugar to the glass',
                     processStep3: 'Stirring',
-                    processDesc3: 'Stirring solution to accelerate dissolution',
+                    processDesc3: 'Drag spoon for stirring',
                     processStep4: 'Complete Dissolution',
                     processDesc4: 'Sugar completely dissolved in water',
-                    feedbackText: '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" to watch the dissolution process',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag elements to the glass',
                     resultsTitle: 'Physical Change Experiment Results',
                     conclusionText: '<i class="fas fa-atom"></i> Start the experiment to discover the difference between physical and chemical changes',
                     ready: 'Ready',
                     startExp: 'Start Experiment',
-                    addingSugar: 'Adding Sugar',
-                    addedSugar: 'Sugar Added',
-                    stirring: 'Stirring',
-                    dissolved: 'Completely Dissolved',
-                    langBtn: 'العربية'
+                    currentStepText: 'Start the experiment first',
+                    dragSugar: 'Drag sugar to the glass',
+                    dragSpoon: 'Drag spoon to the glass',
+                    langBtn: 'العربية',
+                    dragFeedback: 'Drag element to the glass'
                 }
             };
             
@@ -1209,13 +1277,18 @@
             const soundIcon = document.getElementById('soundIcon');
             const startBtn = document.getElementById('startExperiment');
             const resetBtn = document.getElementById('resetExperiment');
-            const addSugarBtn = document.getElementById('addSugarBtn');
-            const stirBtn = document.getElementById('stirBtn');
+            const dragFeedback = document.getElementById('dragFeedback');
             
             // Visual elements
             const sugarParticles = document.getElementById('sugarParticles');
             const spoon = document.getElementById('spoon');
             const waterLevel = document.getElementById('waterLevel');
+            const experimentContainer = document.getElementById('experimentContainer');
+            const dropZone = document.getElementById('dropZone');
+            
+            // Draggable elements
+            const sugarTool = document.getElementById('sugarTool');
+            const spoonTool = document.getElementById('spoonTool');
             
             // Status elements
             const experimentStatus = document.getElementById('experimentStatus');
@@ -1223,6 +1296,7 @@
             const dissolutionTime = document.getElementById('dissolutionTime');
             const experimentFeedback = document.getElementById('experimentFeedback');
             const conclusionDiv = document.getElementById('experimentConclusion');
+            const currentStepText = document.getElementById('currentStepText');
             
             // State variables
             let soundEnabled = true;
@@ -1231,6 +1305,7 @@
             let isStirring = false;
             let dissolutionStartTime = 0;
             let dissolutionTimer = null;
+            let draggedElement = null;
             
             // Audio context for sounds
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1261,6 +1336,8 @@
             // Sound effects
             const sounds = {
                 start: () => playSound(500, 0.5, 'sine'),
+                drag: () => playSound(350, 0.3, 'triangle'),
+                drop: () => playSound(450, 0.5, 'square'),
                 addSugar: () => playSound(400, 0.8, 'triangle'),
                 stir: () => playSound(300, 1.2, 'square'),
                 dissolve: () => playSound(600, 1.5, 'sine'),
@@ -1268,7 +1345,8 @@
                     playSound(523, 0.3);
                     setTimeout(() => playSound(659, 0.3), 200);
                     setTimeout(() => playSound(784, 0.4), 400);
-                }
+                },
+                error: () => playSound(200, 0.5, 'sawtooth')
             };
             
             // Sound toggle
@@ -1277,6 +1355,90 @@
                 soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
                 playSound(soundEnabled ? 600 : 400, 0.2);
             });
+            
+            // Drag and Drop functionality
+            function handleDragStart(e) {
+                if (!experimentStarted) {
+                    e.preventDefault();
+                    const message = currentLang === 'ar' ? 'يجب بدء التجربة أولاً!' : 'Must start experiment first!';
+                    showDragFeedback(message);
+                    sounds.error();
+                    return;
+                }
+                
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+                sounds.drag();
+                
+                const type = e.target.dataset.type;
+                let message = '';
+                
+                if (type === 'sugar' && !sugarAdded) {
+                    message = currentLang === 'ar' ? 'اسحب السكر إلى الكوب' : 'Drag sugar to the glass';
+                } else if (type === 'spoon' && sugarAdded && !isStirring) {
+                    message = currentLang === 'ar' ? 'اسحب الملعقة إلى الكوب' : 'Drag spoon to the glass';
+                } else {
+                    message = currentLang === 'ar' ? 'هذا العنصر غير متاح الآن' : 'This element is not available now';
+                }
+                
+                showDragFeedback(message);
+            }
+            
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                draggedElement = null;
+                hideDragFeedback();
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }
+            
+            function handleDragLeave(e) {
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                if (!draggedElement) return;
+                
+                const type = draggedElement.dataset.type;
+                
+                if (type === 'sugar' && !sugarAdded) {
+                    addSugar();
+                } else if (type === 'spoon' && sugarAdded && !isStirring) {
+                    startStirring();
+                } else {
+                    dropZone.classList.add('invalid-drop');
+                    sounds.error();
+                    setTimeout(() => {
+                        dropZone.classList.remove('invalid-drop');
+                    }, 1000);
+                }
+            }
+            
+            function showDragFeedback(message) {
+                dragFeedback.textContent = message;
+                dragFeedback.classList.add('show');
+            }
+            
+            function hideDragFeedback() {
+                dragFeedback.classList.remove('show');
+            }
+            
+            // Add event listeners to draggable elements
+            sugarTool.addEventListener('dragstart', handleDragStart);
+            sugarTool.addEventListener('dragend', handleDragEnd);
+            spoonTool.addEventListener('dragstart', handleDragStart);
+            spoonTool.addEventListener('dragend', handleDragEnd);
+            
+            // Add event listeners to drop zone
+            experimentContainer.addEventListener('dragover', handleDragOver);
+            experimentContainer.addEventListener('dragleave', handleDragLeave);
+            experimentContainer.addEventListener('drop', handleDrop);
             
             // Create sugar particles
             function createSugarParticles() {
@@ -1298,6 +1460,68 @@
                     
                     sugarParticles.appendChild(particle);
                 }
+            }
+            
+            // Add sugar function
+            function addSugar() {
+                sugarAdded = true;
+                sugarTool.classList.add('used');
+                sugarTool.draggable = false;
+                
+                createSugarParticles();
+                sounds.addSugar();
+                
+                const statusText = currentLang === 'ar' ? 'تم إضافة السكر' : 'Sugar Added';
+                const descText = currentLang === 'ar' ? 'السكر في الماء' : 'Sugar in water';
+                const stepText = currentLang === 'ar' ? 'اسحب الملعقة للتحريك' : 'Drag spoon for stirring';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-plus-circle"></i> تم إضافة السكر! الآن اسحب الملعقة إلى الكوب للتحريك' :
+                    '<i class="fas fa-plus-circle"></i> Sugar added! Now drag the spoon to the glass for stirring';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'warning');
+                updateProcessStep(2);
+            }
+            
+            // Start stirring function
+            function startStirring() {
+                isStirring = true;
+                spoonTool.classList.add('used');
+                spoonTool.draggable = false;
+                spoon.classList.add('visible', 'stirring');
+                
+                dissolutionStartTime = Date.now();
+                dissolutionTimer = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - dissolutionStartTime) / 1000);
+                    dissolutionTime.textContent = `${elapsed}s`;
+                }, 100);
+                
+                const statusText = currentLang === 'ar' ? 'يذوب السكر' : 'Sugar Dissolving';
+                const descText = currentLang === 'ar' ? 'التحريك جاري' : 'Stirring in progress';
+                const stepText = currentLang === 'ar' ? 'راقب عملية الذوبان' : 'Watch the dissolution process';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-sync-alt"></i> التحريك بدأ! شاهد كيف يذوب السكر في الماء تدريجياً' :
+                    '<i class="fas fa-sync-alt"></i> Stirring started! Watch how sugar gradually dissolves in water';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'info');
+                updateProcessStep(3);
+                sounds.stir();
+                
+                // Start dissolution animation
+                setTimeout(() => {
+                    animateDissolve();
+                    sounds.dissolve();
+                }, 1000);
+                
+                // Complete dissolution
+                setTimeout(() => {
+                    completeDisolution();
+                }, 5000);
             }
             
             // Animate dissolution
@@ -1346,13 +1570,6 @@
             
             // Update experiment feedback
             function updateFeedback(message, type = 'info') {
-                const colors = {
-                    info: '#3498db',
-                    success: '#27ae60',
-                    warning: '#f39c12',
-                    complete: '#9b59b6'
-                };
-                
                 document.getElementById('feedbackText').innerHTML = message;
                 
                 // Visual feedback
@@ -1368,80 +1585,20 @@
                 
                 experimentStarted = true;
                 startBtn.disabled = true;
-                addSugarBtn.disabled = false;
                 
                 const statusText = currentLang === 'ar' ? 'بدء التجربة' : 'Starting Experiment';
-                const descText = currentLang === 'ar' ? 'جاهز لإضافة السكر' : 'Ready to add sugar';
+                const descText = currentLang === 'ar' ? 'جاهز للتفاعل' : 'Ready for interaction';
+                const stepText = currentLang === 'ar' ? 'اسحب السكر إلى الكوب' : 'Drag sugar to the glass';
                 const feedbackText = currentLang === 'ar' ? 
-                    '<i class="fas fa-play-circle"></i> بدأت التجربة! اضغط "أضف السكر" لبدء عملية الذوبان' :
-                    '<i class="fas fa-play-circle"></i> Experiment started! Click "Add Sugar" to begin dissolution';
+                    '<i class="fas fa-play-circle"></i> بدأت التجربة! اسحب السكر إلى الكوب لبدء عملية الذوبان' :
+                    '<i class="fas fa-play-circle"></i> Experiment started! Drag sugar to the glass to begin dissolution';
                 
                 experimentStatus.textContent = statusText;
                 statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
                 updateFeedback(feedbackText, 'success');
                 updateProcessStep(1);
                 sounds.start();
-            });
-            
-            // Add sugar
-            addSugarBtn.addEventListener('click', () => {
-                if (!experimentStarted || sugarAdded) return;
-                
-                sugarAdded = true;
-                addSugarBtn.disabled = true;
-                stirBtn.disabled = false;
-                
-                createSugarParticles();
-                
-                const statusText = currentLang === 'ar' ? 'تم إضافة السكر' : 'Sugar Added';
-                const descText = currentLang === 'ar' ? 'السكر في الماء' : 'Sugar in water';
-                const feedbackText = currentLang === 'ar' ? 
-                    '<i class="fas fa-plus-circle"></i> تم إضافة السكر! الآن اضغط "قلّب المحلول" لتسريع الذوبان' :
-                    '<i class="fas fa-plus-circle"></i> Sugar added! Now click "Stir Solution" to accelerate dissolution';
-                
-                experimentStatus.textContent = statusText;
-                statusDescription.textContent = descText;
-                updateFeedback(feedbackText, 'warning');
-                updateProcessStep(2);
-                sounds.addSugar();
-            });
-            
-            // Stir solution
-            stirBtn.addEventListener('click', () => {
-                if (!sugarAdded || isStirring) return;
-                
-                isStirring = true;
-                stirBtn.disabled = true;
-                spoon.classList.add('stirring');
-                
-                dissolutionStartTime = Date.now();
-                dissolutionTimer = setInterval(() => {
-                    const elapsed = Math.floor((Date.now() - dissolutionStartTime) / 1000);
-                    dissolutionTime.textContent = `${elapsed}s`;
-                }, 100);
-                
-                const statusText = currentLang === 'ar' ? 'يذوب السكر' : 'Sugar Dissolving';
-                const descText = currentLang === 'ar' ? 'التحريك جاري' : 'Stirring in progress';
-                const feedbackText = currentLang === 'ar' ? 
-                    '<i class="fas fa-sync-alt"></i> التحريك بدأ! شاهد كيف يذوب السكر في الماء تدريجياً' :
-                    '<i class="fas fa-sync-alt"></i> Stirring started! Watch how sugar gradually dissolves in water';
-                
-                experimentStatus.textContent = statusText;
-                statusDescription.textContent = descText;
-                updateFeedback(feedbackText, 'info');
-                updateProcessStep(3);
-                sounds.stir();
-                
-                // Start dissolution animation
-                setTimeout(() => {
-                    animateDissolve();
-                    sounds.dissolve();
-                }, 1000);
-                
-                // Complete dissolution
-                setTimeout(() => {
-                    completeDisolution();
-                }, 5000);
             });
             
             // Complete dissolution
@@ -1451,12 +1608,14 @@
                 
                 const statusText = currentLang === 'ar' ? 'اكتمل الذوبان' : 'Dissolution Complete';
                 const descText = currentLang === 'ar' ? 'تغير فيزيائي' : 'Physical change';
+                const stepText = currentLang === 'ar' ? 'التجربة اكتملت!' : 'Experiment completed!';
                 const feedbackText = currentLang === 'ar' ? 
                     '<i class="fas fa-check-circle"></i> ممتاز! السكر ذاب تماماً - هذا تغير فيزيائي!' :
                     '<i class="fas fa-check-circle"></i> Excellent! Sugar completely dissolved - this is a physical change!';
                 
                 experimentStatus.textContent = statusText;
                 statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
                 updateFeedback(feedbackText, 'complete');
                 updateProcessStep(4, 'completed');
                 sounds.complete();
@@ -1473,6 +1632,7 @@
                     <p>✅ <strong>المشاهدة:</strong> السكر ذاب تماماً في الماء</p>
                     <p>📊 <strong>الوقت المستغرق:</strong> ${document.getElementById('dissolutionTime').textContent}</p>
                     <p>🌡️ <strong>درجة الحرارة:</strong> 25°C (درجة حرارة الغرفة)</p>
+                    <p>🎯 <strong>طريقة التفاعل:</strong> السحب والإفلات (Drag & Drop)</p>
                     
                     <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 الشرح العلمي:</strong></p>
                     <p>💧 <strong>التغير الفيزيائي:</strong> تغير في الشكل أو الحالة دون تكوين مادة جديدة</p>
@@ -1503,11 +1663,13 @@
                     <p>💡 هذا تغير فيزيائي لأنه لم ينتج مواد جديدة</p>
                     <p>💡 يمكن استرداد السكر بتبخير الماء</p>
                     <p>💡 التركيب الكيميائي للسكر لم يتغير</p>
+                    <p>💡 التفاعل بالسحب والإفلات جعل التجربة أكثر واقعية!</p>
                 ` : `
                     <p><strong style="color: #3498db;">🧪 Physical Change Experiment Results:</strong></p>
                     <p>✅ <strong>Observation:</strong> Sugar completely dissolved in water</p>
                     <p>📊 <strong>Time Taken:</strong> ${document.getElementById('dissolutionTime').textContent}</p>
                     <p>🌡️ <strong>Temperature:</strong> 25°C (Room temperature)</p>
+                    <p>🎯 <strong>Interaction Method:</strong> Drag & Drop</p>
                     
                     <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 Scientific Explanation:</strong></p>
                     <p>💧 <strong>Physical Change:</strong> Change in form or state without forming new substances</p>
@@ -1538,6 +1700,7 @@
                     <p>💡 This is a physical change because no new substances formed</p>
                     <p>💡 Sugar can be recovered by evaporating water</p>
                     <p>💡 Chemical composition of sugar remained unchanged</p>
+                    <p>💡 Drag & Drop interaction made the experiment more realistic!</p>
                 `;
                 
                 conclusionDiv.innerHTML = conclusion;
@@ -1549,6 +1712,7 @@
                 experimentStarted = false;
                 sugarAdded = false;
                 isStirring = false;
+                draggedElement = null;
                 
                 if (dissolutionTimer) {
                     clearInterval(dissolutionTimer);
@@ -1556,27 +1720,33 @@
                 
                 // Reset UI
                 startBtn.disabled = false;
-                addSugarBtn.disabled = true;
-                stirBtn.disabled = true;
+                sugarTool.classList.remove('used');
+                sugarTool.draggable = true;
+                spoonTool.classList.remove('used');
+                spoonTool.draggable = true;
                 
                 // Reset visual elements
                 sugarParticles.innerHTML = '';
-                spoon.classList.remove('stirring');
+                spoon.classList.remove('visible', 'stirring');
                 waterLevel.style.background = '';
+                dropZone.classList.remove('drag-over', 'invalid-drop');
                 
                 // Reset status
                 const readyText = currentLang === 'ar' ? 'جاهز' : 'Ready';
                 const startText = currentLang === 'ar' ? 'ابدأ التجربة' : 'Start Experiment';
+                const stepText = currentLang === 'ar' ? 'ابدأ التجربة أولاً' : 'Start the experiment first';
                 const resetFeedback = currentLang === 'ar' ? 
-                    '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" لمشاهدة عملية الذوبان' :
-                    '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" to watch the dissolution process';
+                    '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر إلى الكوب' :
+                    '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag elements to the glass';
                 
                 experimentStatus.textContent = readyText;
                 statusDescription.textContent = startText;
+                currentStepText.textContent = stepText;
                 dissolutionTime.textContent = '0s';
                 
                 updateFeedback(resetFeedback, 'info');
                 updateProcessStep(1);
+                hideDragFeedback();
                 
                 const resetConclusion = currentLang === 'ar' ?
                     '<i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي' :
