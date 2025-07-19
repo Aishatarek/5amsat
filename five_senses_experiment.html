@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الحواس الخمس - مختبر تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --taste-color: #ff6b6b;
+            --touch-color: #4ecdc4;
+            --hearing-color: #45b7d1;
+            --sight-color: #96ceb4;
+            --smell-color: #feca57;
+            --success: #26de81;
+            --warning: #fc5c65;
+            --dark: #2d3436;
+            --light: #ddd6fe;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --gradient-primary: linear-gradient(135deg, #667eea, #764ba2);
+            --gradient-accent: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            color: #2d3436;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع موجات الحواس */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="sense-wave" cx="50%" cy="50%"><stop offset="0%" stop-color="white" stop-opacity="0.2"/><stop offset="100%" stop-color="purple" stop-opacity="0.1"/></radialGradient></defs><circle cx="20" cy="10" r="5" fill="url(%23sense-wave)"><animate attributeName="r" values="3;8;3" dur="4s" repeatCount="indefinite"/></circle><circle cx="50" cy="8" r="4" fill="url(%23sense-wave)"><animate attributeName="r" values="2;6;2" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="12" r="6" fill="url(%23sense-wave)"><animate attributeName="r" values="4;9;4" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: senses-wave 20s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes senses-wave {
+            0% { transform: translateX(-100px) translateY(-50px); }
+            50% { transform: translateX(50px) translateY(30px); }
+            100% { transform: translateX(200px) translateY(-50px); }
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 25px 60px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-accent);
+            opacity: 0.1;
+            animation: header-shine 8s infinite;
+        }
+        
+        @keyframes header-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: senses-pulse 3s infinite;
+        }
+        
+        @keyframes senses-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(5deg); filter: brightness(1.3); }
+            50% { transform: scale(1.15) rotate(-5deg); filter: brightness(1.5); }
+            75% { transform: scale(1.05) rotate(3deg); filter: brightness(1.2); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 280px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .status-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 30px 70px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1));
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 20px 35px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, rgba(38, 222, 129, 0.1), rgba(34, 197, 94, 0.1));
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            border-right: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(38, 222, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="3" fill="lightgreen" opacity="0.1"><animate attributeName="r" values="2;7;2" dur="6s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-glow 20s infinite linear;
+        }
+        
+        @keyframes instruction-glow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: var(--success);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            padding-left: 70px;
+            position: relative;
+            color: #059669;
+            font-weight: 700;
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 45px;
+            height: 45px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(38, 222, 129, 0.4);
+        }
+        
+        .senses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .sense-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid transparent;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .sense-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 1s;
+        }
+        
+        .sense-card:hover::before {
+            left: 100%;
+        }
+        
+        .sense-card.taste {
+            border-color: var(--taste-color);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3);
+        }
+        
+        .sense-card.touch {
+            border-color: var(--touch-color);
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.3);
+        }
+        
+        .sense-card.hearing {
+            border-color: var(--hearing-color);
+            box-shadow: 0 15px 40px rgba(69, 183, 209, 0.3);
+        }
+        
+        .sense-card.sight {
+            border-color: var(--sight-color);
+            box-shadow: 0 15px 40px rgba(150, 206, 180, 0.3);
+        }
+        
+        .sense-card.smell {
+            border-color: var(--smell-color);
+            box-shadow: 0 15px 40px rgba(254, 202, 87, 0.3);
+        }
+        
+        .sense-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .taste .sense-header {
+            background: rgba(255, 107, 107, 0.15);
+            color: var(--taste-color);
+        }
+        
+        .touch .sense-header {
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--touch-color);
+        }
+        
+        .hearing .sense-header {
+            background: rgba(69, 183, 209, 0.15);
+            color: var(--hearing-color);
+        }
+        
+        .sight .sense-header {
+            background: rgba(150, 206, 180, 0.15);
+            color: var(--sight-color);
+        }
+        
+        .smell .sense-header {
+            background: rgba(254, 202, 87, 0.15);
+            color: var(--smell-color);
+        }
+        
+        .sense-icon {
+            font-size: 2.5rem;
+            animation: sense-bounce 3s infinite;
+        }
+        
+        @keyframes sense-bounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(3deg); }
+            50% { transform: scale(1.15) rotate(-3deg); }
+            75% { transform: scale(1.05) rotate(2deg); }
+        }
+        
+        .sense-activity {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px dashed #e2e8f0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .sense-activity:hover {
+            background: rgba(240, 147, 251, 0.1);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .activity-items {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .activity-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .activity-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .activity-item.selected {
+            border-color: var(--success);
+            background: rgba(38, 222, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .taste .activity-item:hover {
+            border-color: var(--taste-color);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        .touch .activity-item:hover {
+            border-color: var(--touch-color);
+            background: rgba(78, 205, 196, 0.1);
+        }
+        
+        .hearing .activity-item:hover {
+            border-color: var(--hearing-color);
+            background: rgba(69, 183, 209, 0.1);
+        }
+        
+        .sight .activity-item:hover {
+            border-color: var(--sight-color);
+            background: rgba(150, 206, 180, 0.1);
+        }
+        
+        .smell .activity-item:hover {
+            border-color: var(--smell-color);
+            background: rgba(254, 202, 87, 0.1);
+        }
+        
+        .test-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .test-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .sense-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .sense-result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .sense-result.correct {
+            background: rgba(38, 222, 129, 0.2);
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+        
+        .sense-result.incorrect {
+            background: rgba(252, 92, 101, 0.2);
+            color: var(--warning);
+            border: 2px solid var(--warning);
+        }
+        
+        .progress-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1));
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+            border: 2px solid var(--primary);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .progress-header h3 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .score-display {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .senses-progress {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+        
+        .sense-progress {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .sense-progress.completed {
+            background: rgba(38, 222, 129, 0.1);
+            border-color: var(--success);
+            transform: scale(1.05);
+        }
+        
+        .progress-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        
+        .sense-progress.completed .progress-icon {
+            opacity: 1;
+            animation: completed-bounce 1s ease;
+        }
+        
+        @keyframes completed-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .experiment-feedback {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.15), rgba(245, 87, 108, 0.15));
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(240, 147, 251, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-shine 10s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            color: var(--secondary);
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(38, 222, 129, 0.1), rgba(34, 197, 94, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(38, 222, 129, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--success);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(38, 222, 129, 0.05), rgba(34, 197, 94, 0.05));
+            padding: 35px;
+            border-radius: 20px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 10px 25px rgba(38, 222, 129, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 18px;
+            color: #065f46;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.2rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .senses-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .senses-progress {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .activity-items {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .activity-item {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        
+        /* تأثيرات خاصة للحواس */
+        .taste-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .taste-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.8) 0%, rgba(255, 107, 107, 0.2) 100%);
+            border-radius: 50%;
+            animation: taste-flow 4s infinite;
+        }
+        
+        @keyframes taste-flow {
+            0% { 
+                transform: translateY(100%) scale(0.5); 
+                opacity: 0; 
+            }
+            50% { 
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: translateY(-100%) scale(1.2); 
+                opacity: 0; 
+            }
+        }
+        
+        .sound-waves {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .sound-wave {
+            position: absolute;
+            border: 2px solid rgba(69, 183, 209, 0.6);
+            border-radius: 50%;
+            animation: sound-ripple 3s infinite;
+        }
+        
+        @keyframes sound-ripple {
+            0% { 
+                transform: scale(0); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(3); 
+                opacity: 0; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- أزرار التحكم -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-eye"></i>
+                <div class="logo-text">
+                    <h1>مختبر الحواس الخمس</h1>
+                    <p>اكتشف عالم الحواس ووظائفها المذهلة في التعرف على البيئة</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3>تقدم التجربة</h3>
+                <div class="status-value" id="experimentStatus">0/5</div>
+                <div class="status-description" id="experimentDesc">ابدأ استكشاف الحواس</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2><i class="fas fa-hand-paper"></i> تجربة الحواس الخمس</h2>
+                    <p>استكشف وظائف الحواس الخمس من خلال تجارب تفاعلية ممتعة</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startAllTests">
+                        <i class="fas fa-play"></i> بدء جميع الاختبارات
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> إعادة التجربة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol>
+                    <li>جرب كل حاسة من الحواس الخمس من خلال الأنشطة التفاعلية</li>
+                    <li>اختبر قدرتك على التمييز باستخدام كل حاسة</li>
+                    <li>لاحظ كيف تساعدك كل حاسة في التعرف على البيئة المحيطة</li>
+                    <li>اكتشف أهمية كل حاسة ودورها في الحياة اليومية</li>
+                </ol>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-header">
+                    <h3><i class="fas fa-chart-line"></i> تقدم الحواس</h3>
+                    <div class="score-display" id="scoreDisplay">النتيجة: 0/25</div>
+                </div>
+                <div class="senses-progress">
+                    <div class="sense-progress" id="tasteProgress">
+                        <div class="progress-icon" style="color: var(--taste-color);"><i class="fas fa-utensils"></i></div>
+                        <div>حاسة التذوق</div>
+                    </div>
+                    <div class="sense-progress" id="touchProgress">
+                        <div class="progress-icon" style="color: var(--touch-color);"><i class="fas fa-hand-paper"></i></div>
+                        <div>حاسة اللمس</div>
+                    </div>
+                    <div class="sense-progress" id="hearingProgress">
+                        <div class="progress-icon" style="color: var(--hearing-color);"><i class="fas fa-volume-up"></i></div>
+                        <div>حاسة السمع</div>
+                    </div>
+                    <div class="sense-progress" id="sightProgress">
+                        <div class="progress-icon" style="color: var(--sight-color);"><i class="fas fa-eye"></i></div>
+                        <div>حاسة البصر</div>
+                    </div>
+                    <div class="sense-progress" id="smellProgress">
+                        <div class="progress-icon" style="color: var(--smell-color);"><i class="fas fa-nose"></i></div>
+                        <div>حاسة الشم</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="senses-grid">
+                <!-- حاسة التذوق -->
+                <div class="sense-card taste">
+                    <div class="sense-header">
+                        <i class="fas fa-utensils sense-icon"></i>
+                        <span>حاسة التذوق</span>
+                    </div>
+                    
+                    <div class="sense-activity">
+                        <div class="taste-particles" id="tasteParticles"></div>
+                        <h4>تذوق الأطعمة المختلفة</h4>
+                        <div class="activity-items">
+                            <div class="activity-item" data-taste="sweet">🍯 عسل حلو</div>
+                            <div class="activity-item" data-taste="salty">🧂 ملح مالح</div>
+                            <div class="activity-item" data-taste="sour">🍋 ليمون حامض</div>
+                            <div class="activity-item" data-taste="bitter">☕ قهوة مرة</div>
+                            <div class="activity-item" data-taste="spicy">🌶️ فلفل حار</div>
+                        </div>
+                        <button class="test-btn" id="tasteTest" data-sense="taste">اختبر التذوق</button>
+                        <div class="sense-result" id="tasteResult"></div>
+                    </div>
+                </div>
+                
+                <!-- حاسة اللمس -->
+                <div class="sense-card touch">
+                    <div class="sense-header">
+                        <i class="fas fa-hand-paper sense-icon"></i>
+                        <span>حاسة اللمس</span>
+                    </div>
+                    
+                    <div class="sense-activity">
+                        <h4>المس المواد المختلفة</h4>
+                        <div class="activity-items">
+                            <div class="activity-item" data-texture="smooth">🪞 ناعم كالحرير</div>
+                            <div class="activity-item" data-texture="rough">🧱 خشن كالحجر</div>
+                            <div class="activity-item" data-texture="soft">🧸 طري كالقطن</div>
+                            <div class="activity-item" data-texture="hard">💎 صلب كالماس</div>
+                            <div class="activity-item" data-texture="sticky">🍯 لزج كالعسل</div>
+                        </div>
+                        <button class="test-btn" id="touchTest" data-sense="touch">اختبر اللمس</button>
+                        <div class="sense-result" id="touchResult"></div>
+                    </div>
+                </div>
+                
+                <!-- حاسة السمع -->
+                <div class="sense-card hearing">
+                    <div class="sense-header">
+                        <i class="fas fa-volume-up sense-icon"></i>
+                        <span>حاسة السمع</span>
+                    </div>
+                    
+                    <div class="sense-activity">
+                        <div class="sound-waves" id="soundWaves"></div>
+                        <h4>اسمع الأصوات المختلفة</h4>
+                        <div class="activity-items">
+                            <div class="activity-item" data-sound="bird">🐦 تغريد العصافير</div>
+                            <div class="activity-item" data-sound="rain">🌧️ صوت المطر</div>
+                            <div class="activity-item" data-sound="music">🎵 موسيقى هادئة</div>
+                            <div class="activity-item" data-sound="thunder">⚡ صوت الرعد</div>
+                            <div class="activity-item" data-sound="wave">🌊 أمواج البحر</div>
+                        </div>
+                        <button class="test-btn" id="hearingTest" data-sense="hearing">اختبر السمع</button>
+                        <div class="sense-result" id="hearingResult"></div>
+                    </div>
+                </div>
+                
+                <!-- حاسة البصر -->
+                <div class="sense-card sight">
+                    <div class="sense-header">
+                        <i class="fas fa-eye sense-icon"></i>
+                        <span>حاسة البصر</span>
+                    </div>
+                    
+                    <div class="sense-activity">
+                        <h4>انظر إلى الألوان والأشكال</h4>
+                        <div class="activity-items">
+                            <div class="activity-item" data-color="red">🔴 أحمر لامع</div>
+                            <div class="activity-item" data-color="blue">🔵 أزرق صافي</div>
+                            <div class="activity-item" data-color="green">🟢 أخضر طبيعي</div>
+                            <div class="activity-item" data-color="yellow">🟡 أصفر مشرق</div>
+                            <div class="activity-item" data-color="purple">🟣 بنفسجي جميل</div>
+                        </div>
+                        <button class="test-btn" id="sightTest" data-sense="sight">اختبر البصر</button>
+                        <div class="sense-result" id="sightResult"></div>
+                    </div>
+                </div>
+                
+                <!-- حاسة الشم -->
+                <div class="sense-card smell">
+                    <div class="sense-header">
+                        <i class="fas fa-nose sense-icon"></i>
+                        <span>حاسة الشم</span>
+                    </div>
+                    
+                    <div class="sense-activity">
+                        <h4>اشم الروائح المختلفة</h4>
+                        <div class="activity-items">
+                            <div class="activity-item" data-smell="flower">🌸 رائحة الورود</div>
+                            <div class="activity-item" data-smell="food">🍞 رائحة الخبز</div>
+                            <div class="activity-item" data-smell="perfume">💐 عطر فاخر</div>
+                            <div class="activity-item" data-smell="coffee">☕ قهوة طازجة</div>
+                            <div class="activity-item" data-smell="mint">🌿 نعناع منعش</div>
+                        </div>
+                        <button class="test-btn" id="smellTest" data-sense="smell">اختبر الشم</button>
+                        <div class="sense-result" id="smellResult"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p><i class="fas fa-hand-point-right"></i> ابدأ باستكشاف كل حاسة من الحواس الخمس</p>
+            </div>
+            
+            <div class="result-area">
+                <h3><i class="fas fa-chart-bar"></i> نتائج تجربة الحواس الخمس</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p><i class="fas fa-eye"></i> ابدأ التجربة لاكتشاف عجائب الحواس الخمس ووظائفها المذهلة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التجربة الرئيسية
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const startAllBtn = document.getElementById('startAllTests');
+            const resetBtn = document.getElementById('resetExperiment');
+            
+            // عناصر المعلومات
+            const experimentStatus = document.getElementById('experimentStatus');
+            const experimentDesc = document.getElementById('experimentDesc');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            
+            // متغيرات الحالة
+            let soundEnabled = true;
+            let completedSenses = new Set();
+            let totalScore = 0;
+            let currentQuestions = {};
+            
+            // بيانات التجارب
+            const senseData = {
+                taste: {
+                    name: 'التذوق',
+                    items: ['sweet', 'salty', 'sour', 'bitter', 'spicy'],
+                    labels: ['عسل حلو', 'ملح مالح', 'ليمون حامض', 'قهوة مرة', 'فلفل حار']
+                },
+                touch: {
+                    name: 'اللمس',
+                    items: ['smooth', 'rough', 'soft', 'hard', 'sticky'],
+                    labels: ['ناعم كالحرير', 'خشن كالحجر', 'طري كالقطن', 'صلب كالماس', 'لزج كالعسل']
+                },
+                hearing: {
+                    name: 'السمع',
+                    items: ['bird', 'rain', 'music', 'thunder', 'wave'],
+                    labels: ['تغريد العصافير', 'صوت المطر', 'موسيقى هادئة', 'صوت الرعد', 'أمواج البحر']
+                },
+                sight: {
+                    name: 'البصر',
+                    items: ['red', 'blue', 'green', 'yellow', 'purple'],
+                    labels: ['أحمر لامع', 'أزرق صافي', 'أخضر طبيعي', 'أصفر مشرق', 'بنفسجي جميل']
+                },
+                smell: {
+                    name: 'الشم',
+                    items: ['flower', 'food', 'perfume', 'coffee', 'mint'],
+                    labels: ['رائحة الورود', 'رائحة الخبز', 'عطر فاخر', 'قهوة طازجة', 'نعناع منعش']
+                }
+            };
+            
+            // إنشاء الأصوات
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // أصوات مختلفة للحواس
+            const sounds = {
+                select: () => playSound(600, 0.2, 'sine'),
+                correct: () => playSound(800, 0.5, 'triangle'),
+                incorrect: () => playSound(300, 0.8, 'sawtooth'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 200);
+                    setTimeout(() => playSound(784, 0.4), 400);
+                },
+                taste: () => playSound(450, 0.6, 'triangle'),
+                touch: () => playSound(350, 0.8, 'square'),
+                hearing: () => playSound(550, 1.2, 'sine'),
+                sight: () => playSound(750, 0.4, 'triangle'),
+                smell: () => playSound(400, 0.9, 'sawtooth')
+            };
+            
+            // تبديل الصوت
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // إضافة مستمعي الأحداث للعناصر التفاعلية
+            document.querySelectorAll('.activity-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    // إزالة التحديد من العناصر الأخرى في نفس المجموعة
+                    const parent = item.closest('.sense-activity');
+                    parent.querySelectorAll('.activity-item').forEach(i => i.classList.remove('selected'));
+                    
+                    // تحديد العنصر الحالي
+                    item.classList.add('selected');
+                    sounds.select();
+                    
+                    // إضافة تأثيرات بصرية
+                    createSenseEffect(item);
+                });
+            });
+            
+            // إضافة مستمعي أحداث أزرار الاختبار
+            document.querySelectorAll('.test-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const sense = e.target.dataset.sense;
+                    startSenseTest(sense);
+                });
+            });
+            
+            // إنشاء تأثيرات بصرية للحواس
+            function createSenseEffect(item) {
+                const parent = item.closest('.sense-card');
+                const senseType = parent.classList[1]; // taste, touch, etc.
+                
+                if (senseType === 'taste') {
+                    createTasteParticles(parent);
+                    sounds.taste();
+                } else if (senseType === 'hearing') {
+                    createSoundWaves(parent);
+                    sounds.hearing();
+                } else if (senseType === 'touch') {
+                    sounds.touch();
+                } else if (senseType === 'sight') {
+                    sounds.sight();
+                } else if (senseType === 'smell') {
+                    sounds.smell();
+                }
+            }
+            
+            // إنشاء جزيئات التذوق
+            function createTasteParticles(parent) {
+                const container = parent.querySelector('.taste-particles');
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'taste-particle';
+                        
+                        const size = Math.random() * 8 + 4;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 80 + 10}%`;
+                        particle.style.bottom = '0px';
+                        
+                        container.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 4000);
+                    }, i * 200);
+                }
+            }
+            
+            // إنشاء موجات الصوت
+            function createSoundWaves(parent) {
+                const container = parent.querySelector('.sound-waves');
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 4; i++) {
+                    setTimeout(() => {
+                        const wave = document.createElement('div');
+                        wave.className = 'sound-wave';
+                        
+                        wave.style.width = '40px';
+                        wave.style.height = '40px';
+                        wave.style.left = '50%';
+                        wave.style.top = '50%';
+                        wave.style.transform = 'translate(-50%, -50%)';
+                        
+                        container.appendChild(wave);
+                        
+                        setTimeout(() => {
+                            if (wave.parentNode) {
+                                wave.remove();
+                            }
+                        }, 3000);
+                    }, i * 300);
+                }
+            }
+            
+            // بدء اختبار حاسة
+            function startSenseTest(sense) {
+                const data = senseData[sense];
+                const correctAnswer = data.items[Math.floor(Math.random() * data.items.length)];
+                const correctLabel = data.labels[data.items.indexOf(correctAnswer)];
+                
+                currentQuestions[sense] = correctAnswer;
+                
+                // تحديث رسالة التغذية الراجعة
+                updateFeedback(`اختبار حاسة ${data.name}: ما هو "${correctLabel}"؟`, 'info');
+                
+                // إضافة مستمع للإجابة
+                setTimeout(() => {
+                    checkSenseAnswer(sense, correctAnswer);
+                }, 1000);
+            }
+            
+            // فحص إجابة الحاسة
+            function checkSenseAnswer(sense, correctAnswer) {
+                const senseCard = document.querySelector(`.sense-card.${sense}`);
+                const selectedItem = senseCard.querySelector('.activity-item.selected');
+                const resultDiv = document.getElementById(`${sense}Result`);
+                
+                if (!selectedItem) {
+                    updateFeedback(`يرجى اختيار إجابة لحاسة ${senseData[sense].name}!`, 'warning');
+                    return;
+                }
+                
+                const selectedAnswer = selectedItem.dataset[Object.keys(selectedItem.dataset)[0]];
+                const isCorrect = selectedAnswer === correctAnswer;
+                
+                if (isCorrect) {
+                    resultDiv.className = 'sense-result correct show';
+                    resultDiv.textContent = '✅ إجابة صحيحة! أحسنت';
+                    sounds.correct();
+                    totalScore += 5;
+                    completedSenses.add(sense);
+                } else {
+                    resultDiv.className = 'sense-result incorrect show';
+                    resultDiv.textContent = '❌ إجابة خاطئة، حاول مرة أخرى';
+                    sounds.incorrect();
+                    totalScore += 1; // نقطة للمحاولة
+                }
+                
+                // تحديث التقدم
+                updateProgress();
+                
+                // تحديد إكمال الحاسة
+                const progressDiv = document.getElementById(`${sense}Progress`);
+                if (isCorrect) {
+                    progressDiv.classList.add('completed');
+                }
+                
+                // فحص إكمال جميع الحواس
+                if (completedSenses.size === 5) {
+                    setTimeout(showFinalResults, 2000);
+                }
+            }
+            
+            // تحديث التقدم
+            function updateProgress() {
+                experimentStatus.textContent = `${completedSenses.size}/5`;
+                experimentDesc.textContent = completedSenses.size === 5 ? 
+                    'تم إكمال جميع الحواس!' : 
+                    `تم إكمال ${completedSenses.size} من 5 حواس`;
+                
+                scoreDisplay.textContent = `النتيجة: ${totalScore}/25`;
+            }
+            
+            // تحديث رسائل التغذية الراجعة
+            function updateFeedback(message, type = 'info') {
+                const icons = {
+                    info: 'fas fa-info-circle',
+                    success: 'fas fa-check-circle',
+                    complete: 'fas fa-star',
+                    warning: 'fas fa-exclamation-triangle'
+                };
+                
+                const colors = {
+                    info: '#667eea',
+                    success: '#26de81',
+                    complete: '#f093fb',
+                    warning: '#fc5c65'
+                };
+                
+                experimentFeedback.innerHTML = `
+                    <p><i class="${icons[type]}" style="color: ${colors[type]};"></i> ${message}</p>
+                `;
+                
+                // تأثير وميض
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // بدء جميع الاختبارات
+            startAllBtn.addEventListener('click', () => {
+                updateFeedback('بدء اختبارات الحواس! اختر إجابة لكل حاسة ثم اضغط زر الاختبار', 'success');
+                
+                // تفعيل جميع أزرار الاختبار
+                document.querySelectorAll('.test-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            });
+            
+            // عرض النتائج النهائية
+            function showFinalResults() {
+                updateFeedback('🎉 تم إكمال تجربة الحواس الخمس بنجاح!', 'complete');
+                sounds.complete();
+                
+                const percentage = Math.round((totalScore / 25) * 100);
+                let performance = '';
+                
+                if (percentage >= 90) performance = 'ممتاز جداً! 🌟';
+                else if (percentage >= 80) performance = 'جيد جداً! 👏';
+                else if (percentage >= 70) performance = 'جيد! 👍';
+                else performance = 'يحتاج تحسين 💪';
+                
+                conclusionDiv.innerHTML = `
+                    <p><strong style="color: #667eea;">🎯 نتائج تجربة الحواس الخمس:</strong></p>
+                    <p>📊 <strong>النتيجة النهائية:</strong> ${totalScore}/25 نقطة (${percentage}%)</p>
+                    <p>🏆 <strong>التقييم:</strong> ${performance}</p>
+                    <p>✅ <strong>الحواس المكتملة:</strong> ${completedSenses.size}/5</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #26de81;">🧠 الشرح العلمي للحواس:</strong></p>
+                    <p>👅 <strong>حاسة التذوق:</strong> تساعدنا في التمييز بين الأطعمة (حلو، مالح، حامض، مر، حار)</p>
+                    <p>✋ <strong>حاسة اللمس:</strong> تكشف خصائص المواد (ناعم، خشن، طري، صلب، لزج)</p>
+                    <p>👂 <strong>حاسة السمع:</strong> تميز الأصوات المختلفة وتحدد مصادرها</p>
+                    <p>👁️ <strong>حاسة البصر:</strong> تميز الألوان والأشكال والأحجام والمسافات</p>
+                    <p>👃 <strong>حاسة الشم:</strong> تميز الروائح المختلفة وتحذرنا من الأخطار</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f093fb;">🌟 وظائف الحواس المهمة:</strong></p>
+                    <p>🛡️ <strong>الحماية:</strong> تحذرنا من الأخطار (طعام فاسد، صوت عالي، حرارة عالية)</p>
+                    <p>🍽️ <strong>التغذية:</strong> تساعدنا في اختيار الطعام المناسب والآمن</p>
+                    <p>🗣️ <strong>التواصل:</strong> نسمع الكلام ونرى تعابير الوجه</p>
+                    <p>🎨 <strong>الاستمتاع:</strong> نستمتع بالموسيقى والألوان والروائح الجميلة</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #45b7d1;">🧪 الاستنتاج العلمي:</strong></p>
+                    <p>💡 كل حاسة لها دور مهم ومتكامل في التعرف على البيئة</p>
+                    <p>💡 الحواس تعمل معاً لإعطائنا صورة كاملة عن العالم حولنا</p>
+                    <p>💡 فقدان إحدى الحواس يجعل الحواس الأخرى أقوى للتعويض</p>
+                    <p>💡 الدماغ يدمج معلومات جميع الحواس لاتخاذ قرارات سليمة</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #feca57;">🌍 التطبيقات العملية:</strong></p>
+                    <p>🏥 <strong>الطب:</strong> فحص الحواس للتشخيص والعلاج</p>
+                    <p>🎓 <strong>التعليم:</strong> استخدام الحواس المتعددة في التعلم</p>
+                    <p>🎨 <strong>الفن:</strong> إبداع أعمال تخاطب الحواس المختلفة</p>
+                    <p>🔬 <strong>التكنولوجيا:</strong> تطوير أجهزة محاكاة الحواس</p>
+                `;
+            }
+            
+            // إعادة تعيين التجربة
+            resetBtn.addEventListener('click', () => {
+                // إعادة تعيين جميع المتغيرات
+                completedSenses.clear();
+                totalScore = 0;
+                currentQuestions = {};
+                
+                // إعادة تعيين العناصر المرئية
+                document.querySelectorAll('.activity-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                document.querySelectorAll('.sense-result').forEach(result => {
+                    result.className = 'sense-result';
+                    result.textContent = '';
+                });
+                
+                document.querySelectorAll('.sense-progress').forEach(progress => {
+                    progress.classList.remove('completed');
+                });
+                
+                document.querySelectorAll('.test-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+                
+                // إعادة تعيين الجزيئات والتأثيرات
+                document.getElementById('tasteParticles').innerHTML = '';
+                document.getElementById('soundWaves').innerHTML = '';
+                
+                // إعادة تعيين المعلومات
+                updateProgress();
+                updateFeedback('ابدأ باستكشاف كل حاسة من الحواس الخمس', 'info');
+                conclusionDiv.innerHTML = `
+                    <p><i class="fas fa-eye"></i> ابدأ التجربة لاكتشاف عجائب الحواس الخمس ووظائفها المذهلة</p>
+                `;
+                
+                sounds.select();
+            });
+            
+            // بدء التوجيه التفاعلي
+            setTimeout(() => {
+                updateFeedback('مرحباً بك في مختبر الحواس! استكشف كل حاسة واختبر قدراتك', 'info');
+                updateProgress();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
