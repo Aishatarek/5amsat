@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة التغير الكيميائي - حرق الورق | Chemical Change - Paper Burning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #e74c3c;
+            --secondary: #f39c12;
+            --accent: #8e44ad;
+            --fire-color: #ff6b35;
+            --smoke-color: #95a5a6;
+            --paper-color: #f8f9fa;
+            --ash-color: #34495e;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --fire-gradient: linear-gradient(135deg, #ff6b35, #f7931e, #ffb142);
+            --smoke-gradient: linear-gradient(135deg, #bdc3c7, #95a5a6, #7f8c8d);
+            --paper-gradient: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff6b35, #f7931e, #8e44ad);
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع جزيئات النار */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="fire-particle" cx="50%" cy="50%"><stop offset="0%" stop-color="orange" stop-opacity="0.6"/><stop offset="100%" stop-color="red" stop-opacity="0.2"/></radialGradient></defs><circle cx="20" cy="15" r="2" fill="url(%23fire-particle)"><animate attributeName="r" values="1;4;1" dur="3s" repeatCount="indefinite"/><animate attributeName="cy" values="15;5;15" dur="4s" repeatCount="indefinite"/></circle><circle cx="60" cy="12" r="3" fill="url(%23fire-particle)"><animate attributeName="r" values="2;5;2" dur="4s" repeatCount="indefinite"/><animate attributeName="cy" values="12;3;12" dur="3s" repeatCount="indefinite"/></circle><circle cx="85" cy="16" r="2" fill="url(%23fire-particle)"><animate attributeName="r" values="1;3;1" dur="5s" repeatCount="indefinite"/><animate attributeName="cy" values="16;6;16" dur="4s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: fire-flow 25s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes fire-flow {
+            0% { transform: translateX(-200px) translateY(20px); }
+            50% { transform: translateX(100px) translateY(-10px); }
+            100% { transform: translateX(400px) translateY(20px); }
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            background: var(--fire-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .language-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.6);
+        }
+        
+        /* Warning Banner */
+        .safety-warning {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+            border: 3px solid #f39c12;
+            animation: warning-pulse 2s infinite;
+        }
+        
+        @keyframes warning-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .safety-warning h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .safety-warning p {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 25px 60px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--fire-gradient);
+            opacity: 0.1;
+            animation: header-fire 8s infinite;
+        }
+        
+        @keyframes header-fire {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4.5rem;
+            background: var(--fire-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fire-dance 4s infinite;
+        }
+        
+        @keyframes fire-dance {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(5deg); filter: brightness(1.3); }
+            50% { transform: scale(1.2) rotate(-5deg); filter: brightness(1.5); }
+            75% { transform: scale(1.05) rotate(3deg); filter: brightness(1.2); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--fire-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: var(--fire-gradient);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(255, 107, 53, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 280px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .status-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 30px 70px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(142, 68, 173, 0.1));
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 107, 53, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--fire-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(255, 107, 53, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            border-right: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="3" fill="lightgreen" opacity="0.1"><animate attributeName="r" values="2;7;2" dur="6s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-float 20s infinite linear;
+        }
+        
+        @keyframes instruction-float {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: var(--success);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #1e7e34;
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            min-height: 600px;
+            align-items: start;
+        }
+        
+        .tools-section {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9), rgba(233, 236, 239, 0.9));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--paper-color);
+            text-align: center;
+            height: fit-content;
+        }
+        
+        .tools-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* Draggable Items */
+        .draggable-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .draggable-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(142, 68, 173, 0.4);
+        }
+        
+        .draggable-item.dragging {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            opacity: 0.8;
+            cursor: grabbing;
+            box-shadow: 0 20px 50px rgba(142, 68, 173, 0.6);
+        }
+        
+        .draggable-item.used {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.9);
+            filter: grayscale(50%);
+        }
+        
+        .draggable-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(142, 68, 173, 0.3), transparent);
+            transition: left 1s;
+        }
+        
+        .draggable-item:hover::before {
+            left: 100%;
+        }
+        
+        .item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .draggable-item:hover .item-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .item-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .item-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        /* Paper Specific */
+        .paper-item {
+            background: var(--paper-gradient);
+            border: 3px solid #dee2e6;
+        }
+        
+        .paper-item:hover {
+            border-color: #f39c12;
+            box-shadow: 0 15px 35px rgba(243, 156, 18, 0.4);
+        }
+        
+        .paper-item .item-icon {
+            color: #f39c12;
+        }
+        
+        /* Match/Lighter Specific */
+        .fire-item {
+            background: var(--fire-gradient);
+            border: 3px solid #e74c3c;
+            color: white;
+        }
+        
+        .fire-item .item-name,
+        .fire-item .item-description {
+            color: white;
+        }
+        
+        .fire-item:hover {
+            border-color: #c0392b;
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.6);
+        }
+        
+        .fire-item .item-icon {
+            color: #fff;
+            animation: fire-flicker 2s infinite;
+        }
+        
+        @keyframes fire-flicker {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+        }
+        
+        .experiment-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.2);
+            border: 3px solid var(--fire-color);
+            position: relative;
+            min-height: 500px;
+        }
+        
+        /* Drop Zone */
+        .drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+            pointer-events: all;
+        }
+        
+        .drop-zone.invalid-drop {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .burning-area {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 30px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .paper {
+            width: 200px;
+            height: 250px;
+            background: var(--paper-gradient);
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            position: relative;
+            transition: all 2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+        }
+        
+        .paper.visible {
+            opacity: 1;
+        }
+        
+        .paper::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+        }
+        
+        .paper.burning {
+            animation: paper-burn 3s ease-in-out forwards;
+        }
+        
+        @keyframes paper-burn {
+            0% { 
+                background: var(--paper-gradient);
+                transform: scale(1);
+            }
+            25% { 
+                background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+                transform: scale(0.95);
+            }
+            50% { 
+                background: linear-gradient(135deg, #e17055, #d63031);
+                transform: scale(0.9);
+            }
+            75% { 
+                background: linear-gradient(135deg, #636e72, #2d3436);
+                transform: scale(0.7);
+            }
+            100% { 
+                background: linear-gradient(135deg, #2d3436, #000);
+                transform: scale(0.3);
+                opacity: 0.3;
+            }
+        }
+        
+        .flame {
+            position: absolute;
+            width: 30px;
+            height: 60px;
+            background: radial-gradient(circle, #ff6b35 0%, #f7931e 50%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            animation: flame-dance 0.5s infinite alternate;
+        }
+        
+        .flame.active {
+            opacity: 1;
+        }
+        
+        @keyframes flame-dance {
+            0% { 
+                transform: translateX(-50%) scale(1) rotate(-2deg);
+                background: radial-gradient(circle, #ff6b35 0%, #f7931e 50%, transparent 100%);
+            }
+            100% { 
+                transform: translateX(-50%) scale(1.1) rotate(2deg);
+                background: radial-gradient(circle, #f7931e 0%, #ff6b35 50%, transparent 100%);
+            }
+        }
+        
+        .smoke {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .smoke-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(149, 165, 166, 0.6) 0%, rgba(127, 140, 141, 0.3) 50%, transparent 100%);
+            border-radius: 50%;
+            animation: smoke-rise 4s linear infinite;
+        }
+        
+        @keyframes smoke-rise {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-200px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        .ash-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .ash-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(52, 73, 94, 0.8) 0%, rgba(44, 62, 80, 0.4) 100%);
+            border-radius: 2px;
+            animation: ash-fall 3s ease-out forwards;
+        }
+        
+        @keyframes ash-fall {
+            0% {
+                transform: translateY(-20px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(50px) scale(0.3);
+                opacity: 0.3;
+            }
+        }
+        
+        .match {
+            position: absolute;
+            width: 4px;
+            height: 80px;
+            background: linear-gradient(180deg, #8b4513, #a0522d);
+            border-radius: 2px;
+            top: 50px;
+            right: -30px;
+            opacity: 0;
+            transform-origin: bottom center;
+        }
+        
+        .match.visible {
+            opacity: 1;
+            animation: match-strike 1s ease-in-out;
+        }
+        
+        .match::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 8px;
+            height: 12px;
+            background: radial-gradient(circle, #e74c3c, #c0392b);
+            border-radius: 50%;
+        }
+        
+        @keyframes match-strike {
+            0% { transform: rotate(-30deg); }
+            50% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        /* Drag Feedback */
+        .drag-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drag-feedback.show {
+            opacity: 1;
+        }
+        
+        .process-info {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(243, 156, 18, 0.1));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.2);
+            border: 3px solid var(--secondary);
+            height: fit-content;
+        }
+        
+        .process-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .process-step {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            transition: all 0.5s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .process-step.active {
+            opacity: 1;
+            border-left-color: var(--secondary);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .process-step.completed {
+            opacity: 1;
+            border-left-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .measurement-panel {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 2px solid var(--success);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .measurement-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+        
+        .measurement-icon {
+            font-size: 2rem;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .measurement-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .measurement-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .experiment-feedback {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(142, 68, 173, 0.15));
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(255, 107, 53, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-fire 10s infinite;
+        }
+        
+        @keyframes feedback-fire {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--success);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(46, 204, 113, 0.05));
+            padding: 35px;
+            border-radius: 20px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 18px;
+            color: #1e7e34;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--fire-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* English Language Styles */
+        .lang-en {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .lang-en .instructions {
+            border-right: none;
+            border-left: 8px solid var(--success);
+        }
+        
+        .lang-en .experiment-header,
+        .lang-en .experiment-feedback,
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-right: none;
+            border-left: 8px solid var(--primary);
+        }
+        
+        .lang-en .experiment-feedback,
+        .lang-en .result-area {
+            border-left: 8px solid var(--accent);
+        }
+        
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-left: 8px solid var(--success);
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .measurement-panel {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .burning-area {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .paper {
+                width: 150px;
+                height: 200px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .draggable-item {
+                margin-bottom: 15px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <button class="language-toggle" id="languageToggle">
+        <i class="fas fa-language"></i> English
+    </button>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <!-- Drag Feedback -->
+    <div class="drag-feedback" id="dragFeedback">اسحب العنصر إلى منطقة الحرق</div>
+
+    <div class="container">
+        <!-- Safety Warning -->
+        <div class="safety-warning">
+            <h3 id="safetyTitle"><i class="fas fa-exclamation-triangle"></i> تحذير أمان مهم</h3>
+            <p id="safetyText">هذه تجربة محاكاة فقط! لا تحرق الورق بدون إشراف المعلم</p>
+        </div>
+
+        <header>
+            <div class="logo">
+                <i class="fas fa-fire"></i>
+                <div class="logo-text">
+                    <h1 id="headerTitle">مختبر التغير الكيميائي - حرق الورق</h1>
+                    <p id="headerSubtitle">تمييز بين التغير الفيزيائي والكيميائي</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3 id="statusTitle">حالة التجربة</h3>
+                <div class="status-value" id="experimentStatus">جاهز</div>
+                <div class="status-description" id="statusDescription">ابدأ التجربة</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2 id="experimentTitle"><i class="fas fa-burn"></i> تجربة التغير الكيميائي - حرق الورق</h2>
+                    <p id="experimentSubtitle">تمييز بين التغير الفيزيائي والكيميائي</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startExperiment">
+                        <i class="fas fa-play"></i> <span id="startBtn">بدء التجربة</span>
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> <span id="resetBtn">إعادة التجربة</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3 id="instructionsTitle"><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol id="instructionsList">
+                    <li id="step1">اسحب الورقة إلى منطقة الحرق</li>
+                    <li id="step2">اسحب الكبريت إلى الورقة لإشعالها</li>
+                    <li id="step3">راقب تغير اللون والدخان المتصاعد</li>
+                    <li id="step4">لاحظ تكون الرماد (مادة جديدة)</li>
+                </ol>
+            </div>
+            
+            <div class="measurement-panel">
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="measurement-value" id="paperWeight">1g</div>
+                    <div class="measurement-label" id="paperLabel">وزن الورقة</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-thermometer-three-quarters"></i></div>
+                    <div class="measurement-value" id="burnTemp">400°C</div>
+                    <div class="measurement-label" id="tempLabel">درجة حرارة الاحتراق</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-clock"></i></div>
+                    <div class="measurement-value" id="burnTime">0s</div>
+                    <div class="measurement-label" id="timeLabel">وقت الاحتراق</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-weight"></i></div>
+                    <div class="measurement-value" id="ashWeight">0.1g</div>
+                    <div class="measurement-label" id="ashLabel">وزن الرماد</div>
+                </div>
+            </div>
+            
+            <div class="experiment-area">
+                <!-- Tools Section -->
+                <div class="tools-section">
+                    <div class="tools-header">
+                        <i class="fas fa-tools"></i>
+                        <span id="toolsTitle">الأدوات المطلوبة</span>
+                    </div>
+                    
+                    <div class="draggable-item paper-item" draggable="true" data-type="paper" id="paperTool">
+                        <div class="item-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="item-name" id="paperName">ورقة</div>
+                        <div class="item-description" id="paperDesc">اسحبني إلى منطقة الحرق!</div>
+                    </div>
+                    
+                    <div class="draggable-item fire-item" draggable="true" data-type="match" id="matchTool">
+                        <div class="item-icon"><i class="fas fa-fire"></i></div>
+                        <div class="item-name" id="matchName">كبريت</div>
+                        <div class="item-description" id="matchDesc">اسحبني لإشعال الورقة!</div>
+                    </div>
+                    
+                    <div class="draggable-item" id="safetyTool">
+                        <div class="item-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="item-name" id="safetyName">إشراف المعلم</div>
+                        <div class="item-description" id="safetyDesc">مطلوب للسلامة في التجربة الحقيقية</div>
+                    </div>
+                </div>
+                
+                <!-- Experiment Container -->
+                <div class="experiment-container" id="experimentContainer">
+                    <div class="drop-zone" id="dropZone"></div>
+                    
+                    <div class="burning-area">
+                        <div class="paper" id="paper">
+                            <div class="flame" id="flame"></div>
+                            <div class="smoke" id="smoke"></div>
+                            <div class="ash-particles" id="ashParticles"></div>
+                        </div>
+                        <div class="match" id="match"></div>
+                    </div>
+                    
+                    <div class="experiment-status" id="experimentStatusText">
+                        <p id="currentStepText">ابدأ التجربة أولاً</p>
+                    </div>
+                </div>
+                
+                <!-- Process Information -->
+                <div class="process-info">
+                    <div class="process-header">
+                        <i class="fas fa-cogs"></i>
+                        <span id="processTitle">مراحل العملية</span>
+                    </div>
+                    
+                    <div class="process-step" id="step-1">
+                        <div class="step-title">
+                            <i class="fas fa-play-circle"></i>
+                            <span id="processStep1">بداية التجربة</span>
+                        </div>
+                        <div class="step-description" id="processDesc1">التحضير للحرق الآمن</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-2">
+                        <div class="step-title">
+                            <i class="fas fa-file-alt"></i>
+                            <span id="processStep2">وضع الورقة</span>
+                        </div>
+                        <div class="step-description" id="processDesc2">اسحب الورقة إلى منطقة الحرق</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-3">
+                        <div class="step-title">
+                            <i class="fas fa-fire"></i>
+                            <span id="processStep3">الإشعال</span>
+                        </div>
+                        <div class="step-description" id="processDesc3">اسحب الكبريت لإشعال الورقة</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-4">
+                        <div class="step-title">
+                            <i class="fas fa-cloud"></i>
+                            <span id="processStep4">تكون الرماد</span>
+                        </div>
+                        <div class="step-description" id="processDesc4">مشاهدة التغير الكيميائي</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p id="feedbackText"><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر لمنطقة الحرق</p>
+            </div>
+            
+            <div class="result-area">
+                <h3 id="resultsTitle"><i class="fas fa-chart-line"></i> نتائج تجربة التغير الكيميائي</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p id="conclusionText"><i class="fas fa-fire"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Translation data
+            const translations = {
+                ar: {
+                    headerTitle: 'مختبر التغير الكيميائي - حرق الورق',
+                    headerSubtitle: 'تمييز بين التغير الفيزيائي والكيميائي',
+                    safetyTitle: 'تحذير أمان مهم',
+                    safetyText: 'هذه تجربة محاكاة فقط! لا تحرق الورق بدون إشراف المعلم',
+                    statusTitle: 'حالة التجربة',
+                    experimentTitle: 'تجربة التغير الكيميائي - حرق الورق',
+                    experimentSubtitle: 'تمييز بين التغير الفيزيائي والكيميائي',
+                    startBtn: 'بدء التجربة',
+                    resetBtn: 'إعادة التجربة',
+                    instructionsTitle: 'تعليمات التجربة',
+                    step1: 'اسحب الورقة إلى منطقة الحرق',
+                    step2: 'اسحب الكبريت إلى الورقة لإشعالها',
+                    step3: 'راقب تغير اللون والدخان المتصاعد',
+                    step4: 'لاحظ تكون الرماد (مادة جديدة)',
+                    paperLabel: 'وزن الورقة',
+                    tempLabel: 'درجة حرارة الاحتراق',
+                    timeLabel: 'وقت الاحتراق',
+                    ashLabel: 'وزن الرماد',
+                    toolsTitle: 'الأدوات المطلوبة',
+                    paperName: 'ورقة',
+                    paperDesc: 'اسحبني إلى منطقة الحرق!',
+                    matchName: 'كبريت',
+                    matchDesc: 'اسحبني لإشعال الورقة!',
+                    safetyName: 'إشراف المعلم',
+                    safetyDesc: 'مطلوب للسلامة في التجربة الحقيقية',
+                    processTitle: 'مراحل العملية',
+                    processStep1: 'بداية التجربة',
+                    processDesc1: 'التحضير للحرق الآمن',
+                    processStep2: 'وضع الورقة',
+                    processDesc2: 'اسحب الورقة إلى منطقة الحرق',
+                    processStep3: 'الإشعال',
+                    processDesc3: 'اسحب الكبريت لإشعال الورقة',
+                    processStep4: 'تكون الرماد',
+                    processDesc4: 'مشاهدة التغير الكيميائي',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر لمنطقة الحرق',
+                    resultsTitle: 'نتائج تجربة التغير الكيميائي',
+                    conclusionText: '<i class="fas fa-fire"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي',
+                    ready: 'جاهز',
+                    startExp: 'ابدأ التجربة',
+                    currentStepText: 'ابدأ التجربة أولاً',
+                    dragPaper: 'اسحب الورقة إلى منطقة الحرق',
+                    dragMatch: 'اسحب الكبريت لإشعال الورقة',
+                    langBtn: 'English',
+                    dragFeedback: 'اسحب العنصر إلى منطقة الحرق'
+                },
+                en: {
+                    headerTitle: 'Chemical Change Lab - Paper Burning',
+                    headerSubtitle: 'Distinguish between physical and chemical changes',
+                    safetyTitle: 'Important Safety Warning',
+                    safetyText: 'This is a simulation only! Do not burn paper without teacher supervision',
+                    statusTitle: 'Experiment Status',
+                    experimentTitle: 'Chemical Change Experiment - Paper Burning',
+                    experimentSubtitle: 'Distinguish between physical and chemical changes',
+                    startBtn: 'Start Experiment',
+                    resetBtn: 'Reset Experiment',
+                    instructionsTitle: 'Experiment Instructions',
+                    step1: 'Drag the paper to the burning area',
+                    step2: 'Drag the match to the paper to ignite it',
+                    step3: 'Observe color change and rising smoke',
+                    step4: 'Notice ash formation (new substance)',
+                    paperLabel: 'Paper Weight',
+                    tempLabel: 'Burning Temperature',
+                    timeLabel: 'Burning Time',
+                    ashLabel: 'Ash Weight',
+                    toolsTitle: 'Required Tools',
+                    paperName: 'Paper',
+                    paperDesc: 'Drag me to the burning area!',
+                    matchName: 'Match',
+                    matchDesc: 'Drag me to ignite the paper!',
+                    safetyName: 'Teacher Supervision',
+                    safetyDesc: 'Required for safety in real experiment',
+                    processTitle: 'Process Stages',
+                    processStep1: 'Experiment Start',
+                    processDesc1: 'Preparing for safe burning',
+                    processStep2: 'Paper Placement',
+                    processDesc2: 'Drag paper to burning area',
+                    processStep3: 'Ignition',
+                    processDesc3: 'Drag match to ignite paper',
+                    processStep4: 'Ash Formation',
+                    processDesc4: 'Observing chemical change',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag elements to burning area',
+                    resultsTitle: 'Chemical Change Experiment Results',
+                    conclusionText: '<i class="fas fa-fire"></i> Start the experiment to discover the difference between physical and chemical changes',
+                    ready: 'Ready',
+                    startExp: 'Start Experiment',
+                    currentStepText: 'Start the experiment first',
+                    dragPaper: 'Drag paper to burning area',
+                    dragMatch: 'Drag match to ignite paper',
+                    langBtn: 'العربية',
+                    dragFeedback: 'Drag element to burning area'
+                }
+            };
+            
+            // Language management
+            let currentLang = 'ar';
+            const languageToggle = document.getElementById('languageToggle');
+            const body = document.body;
+            
+            function updateLanguage(lang) {
+                currentLang = lang;
+                const texts = translations[lang];
+                
+                // Update all text elements
+                Object.keys(texts).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (key.includes('Text') || key.includes('feedbackText') || key.includes('conclusionText')) {
+                            element.innerHTML = texts[key];
+                        } else {
+                            element.textContent = texts[key];
+                        }
+                    }
+                });
+                
+                // Update body class for RTL/LTR
+                if (lang === 'en') {
+                    body.classList.add('lang-en');
+                    body.dir = 'ltr';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                } else {
+                    body.classList.remove('lang-en');
+                    body.dir = 'rtl';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                }
+            }
+            
+            languageToggle.addEventListener('click', () => {
+                updateLanguage(currentLang === 'ar' ? 'en' : 'ar');
+            });
+            
+            // Experiment elements
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const startBtn = document.getElementById('startExperiment');
+            const resetBtn = document.getElementById('resetExperiment');
+            const dragFeedback = document.getElementById('dragFeedback');
+            
+            // Visual elements
+            const paper = document.getElementById('paper');
+            const flame = document.getElementById('flame');
+            const smoke = document.getElementById('smoke');
+            const ashParticles = document.getElementById('ashParticles');
+            const match = document.getElementById('match');
+            const experimentContainer = document.getElementById('experimentContainer');
+            const dropZone = document.getElementById('dropZone');
+            
+            // Draggable elements
+            const paperTool = document.getElementById('paperTool');
+            const matchTool = document.getElementById('matchTool');
+            
+            // Status elements
+            const experimentStatus = document.getElementById('experimentStatus');
+            const statusDescription = document.getElementById('statusDescription');
+            const burnTime = document.getElementById('burnTime');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const currentStepText = document.getElementById('currentStepText');
+            
+            // State variables
+            let soundEnabled = true;
+            let experimentStarted = false;
+            let paperPlaced = false;
+            let isBurning = false;
+            let burnStartTime = 0;
+            let burnTimer = null;
+            let draggedElement = null;
+            
+            // Audio context for sounds
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // Sound effects
+            const sounds = {
+                start: () => playSound(500, 0.5, 'sine'),
+                drag: () => playSound(350, 0.3, 'triangle'),
+                drop: () => playSound(450, 0.5, 'square'),
+                placePaper: () => playSound(400, 0.6, 'triangle'),
+                ignite: () => playSound(600, 1.0, 'sawtooth'),
+                burn: () => playSound(300, 2.0, 'square'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 200);
+                    setTimeout(() => playSound(784, 0.4), 400);
+                },
+                error: () => playSound(200, 0.5, 'sawtooth')
+            };
+            
+            // Sound toggle
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // Drag and Drop functionality
+            function handleDragStart(e) {
+                if (!experimentStarted) {
+                    e.preventDefault();
+                    const message = currentLang === 'ar' ? 'يجب بدء التجربة أولاً!' : 'Must start experiment first!';
+                    showDragFeedback(message);
+                    sounds.error();
+                    return;
+                }
+                
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+                sounds.drag();
+                
+                const type = e.target.dataset.type;
+                let message = '';
+                
+                if (type === 'paper' && !paperPlaced) {
+                    message = currentLang === 'ar' ? 'اسحب الورقة إلى منطقة الحرق' : 'Drag paper to burning area';
+                } else if (type === 'match' && paperPlaced && !isBurning) {
+                    message = currentLang === 'ar' ? 'اسحب الكبريت لإشعال الورقة' : 'Drag match to ignite paper';
+                } else {
+                    message = currentLang === 'ar' ? 'هذا العنصر غير متاح الآن' : 'This element is not available now';
+                }
+                
+                showDragFeedback(message);
+            }
+            
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                draggedElement = null;
+                hideDragFeedback();
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }
+            
+            function handleDragLeave(e) {
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                if (!draggedElement) return;
+                
+                const type = draggedElement.dataset.type;
+                
+                if (type === 'paper' && !paperPlaced) {
+                    placePaper();
+                } else if (type === 'match' && paperPlaced && !isBurning) {
+                    ignitePaper();
+                } else {
+                    dropZone.classList.add('invalid-drop');
+                    sounds.error();
+                    setTimeout(() => {
+                        dropZone.classList.remove('invalid-drop');
+                    }, 1000);
+                }
+            }
+            
+            function showDragFeedback(message) {
+                dragFeedback.textContent = message;
+                dragFeedback.classList.add('show');
+            }
+            
+            function hideDragFeedback() {
+                dragFeedback.classList.remove('show');
+            }
+            
+            // Add event listeners to draggable elements
+            paperTool.addEventListener('dragstart', handleDragStart);
+            paperTool.addEventListener('dragend', handleDragEnd);
+            matchTool.addEventListener('dragstart', handleDragStart);
+            matchTool.addEventListener('dragend', handleDragEnd);
+            
+            // Add event listeners to drop zone
+            experimentContainer.addEventListener('dragover', handleDragOver);
+            experimentContainer.addEventListener('dragleave', handleDragLeave);
+            experimentContainer.addEventListener('drop', handleDrop);
+            
+            // Place paper function
+            function placePaper() {
+                paperPlaced = true;
+                paperTool.classList.add('used');
+                paperTool.draggable = false;
+                paper.classList.add('visible');
+                
+                sounds.placePaper();
+                
+                const statusText = currentLang === 'ar' ? 'تم وضع الورقة' : 'Paper Placed';
+                const descText = currentLang === 'ar' ? 'جاهز للإشعال' : 'Ready for ignition';
+                const stepText = currentLang === 'ar' ? 'اسحب الكبريت لإشعال الورقة' : 'Drag match to ignite paper';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-file-alt"></i> تم وضع الورقة! الآن اسحب الكبريت لإشعالها' :
+                    '<i class="fas fa-file-alt"></i> Paper placed! Now drag the match to ignite it';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'warning');
+                updateProcessStep(2);
+            }
+            
+            // Ignite paper function
+            function ignitePaper() {
+                isBurning = true;
+                matchTool.classList.add('used');
+                matchTool.draggable = false;
+                match.classList.add('visible');
+                flame.classList.add('active');
+                
+                burnStartTime = Date.now();
+                burnTimer = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - burnStartTime) / 1000);
+                    burnTime.textContent = `${elapsed}s`;
+                }, 100);
+                
+                const statusText = currentLang === 'ar' ? 'الورقة تحترق' : 'Paper Burning';
+                const descText = currentLang === 'ar' ? 'احتراق جاري' : 'Burning in progress';
+                const stepText = currentLang === 'ar' ? 'راقب عملية الاحتراق' : 'Watch the burning process';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-fire"></i> الإشعال بدأ! شاهد كيف تتحول الورقة إلى رماد' :
+                    '<i class="fas fa-fire"></i> Ignition started! Watch how paper transforms into ash';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'info');
+                updateProcessStep(3);
+                sounds.ignite();
+                
+                // Start burning animation
+                setTimeout(() => {
+                    startBurning();
+                }, 1000);
+                
+                // Complete burning
+                setTimeout(() => {
+                    completeBurning();
+                }, 4000);
+            }
+            
+            // Start burning animation
+            function startBurning() {
+                paper.classList.add('burning');
+                createSmoke();
+                sounds.burn();
+                
+                // Create ash particles
+                setTimeout(() => {
+                    createAshParticles();
+                }, 2000);
+            }
+            
+            // Create smoke particles
+            function createSmoke() {
+                const particleCount = 8;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'smoke-particle';
+                        
+                        const size = Math.random() * 15 + 10;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 100 + 100}px`;
+                        particle.style.bottom = '50px';
+                        
+                        smoke.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 4000);
+                    }, i * 500);
+                }
+            }
+            
+            // Create ash particles
+            function createAshParticles() {
+                const particleCount = 12;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'ash-particle';
+                        
+                        const size = Math.random() * 4 + 2;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 150 + 25}px`;
+                        particle.style.top = '200px';
+                        
+                        ashParticles.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 3000);
+                    }, i * 200);
+                }
+            }
+            
+            // Update process steps
+            function updateProcessStep(stepNumber, status = 'active') {
+                // Reset all steps
+                for (let i = 1; i <= 4; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    step.classList.remove('active', 'completed');
+                }
+                
+                // Update current step
+                for (let i = 1; i <= stepNumber; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    if (i < stepNumber) {
+                        step.classList.add('completed');
+                    } else if (i === stepNumber) {
+                        step.classList.add(status);
+                    }
+                }
+            }
+            
+            // Update experiment feedback
+            function updateFeedback(message, type = 'info') {
+                document.getElementById('feedbackText').innerHTML = message;
+                
+                // Visual feedback
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // Complete burning
+            function completeBurning() {
+                clearInterval(burnTimer);
+                flame.classList.remove('active');
+                
+                const statusText = currentLang === 'ar' ? 'اكتمل الاحتراق' : 'Burning Complete';
+                const descText = currentLang === 'ar' ? 'تغير كيميائي' : 'Chemical change';
+                const stepText = currentLang === 'ar' ? 'التجربة اكتملت!' : 'Experiment completed!';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-check-circle"></i> ممتاز! تكون الرماد - هذا تغير كيميائي!' :
+                    '<i class="fas fa-check-circle"></i> Excellent! Ash formed - this is a chemical change!';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'complete');
+                updateProcessStep(4, 'completed');
+                sounds.complete();
+                
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // Show final results
+            function showFinalResults() {
+                const conclusion = currentLang === 'ar' ? `
+                    <p><strong style="color: #e74c3c;">🔥 نتائج تجربة التغير الكيميائي:</strong></p>
+                    <p>✅ <strong>المشاهدة:</strong> تحولت الورقة إلى رماد ودخان</p>
+                    <p>📊 <strong>الوقت المستغرق:</strong> ${document.getElementById('burnTime').textContent}</p>
+                    <p>🌡️ <strong>درجة حرارة الاحتراق:</strong> 400°C</p>
+                    <p>🎯 <strong>طريقة التفاعل:</strong> السحب والإفلات (Drag & Drop)</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 الشرح العلمي:</strong></p>
+                    <p>🔥 <strong>التغير الكيميائي:</strong> تكوين مواد جديدة مع تغير في التركيب الكيميائي</p>
+                    <p>⚗️ <strong>عملية الاحتراق:</strong> تفاعل الورق مع الأكسجين في الهواء</p>
+                    <p>🌫️ <strong>المنتجات:</strong> رماد + ثاني أكسيد الكربون + بخار الماء</p>
+                    <p>🧬 <strong>تغير التركيب:</strong> السليولوز تحول إلى مواد جديدة تماماً</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e67e22;">📌 لماذا هذا تغير كيميائي؟</strong></p>
+                    <p>✅ <strong>تكونت مواد جديدة:</strong> الرماد مادة مختلفة تماماً عن الورق</p>
+                    <p>🚫 <strong>غير قابل للعكس:</strong> لا يمكن استرداد الورق من الرماد</p>
+                    <p>🌡️ <strong>تغير التركيب:</strong> التركيب الكيميائي تغير كلياً</p>
+                    <p>⚡ <strong>خصائص جديدة:</strong> الرماد له خصائص مختلفة عن الورق</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #8e44ad;">🔬 الفرق بين التغير الفيزيائي والكيميائي:</strong></p>
+                    <p>🔵 <strong>التغير الفيزيائي:</strong> تغير في الشكل فقط (ذوبان السكر)</p>
+                    <p>🔴 <strong>التغير الكيميائي:</strong> تكوين مواد جديدة (حرق الورق)</p>
+                    <p>↩️ <strong>الفيزيائي قابل للعكس</strong> - الكيميائي غير قابل للعكس</p>
+                    <p>🧪 <strong>الفيزيائي يحافظ على التركيب</strong> - الكيميائي يغير التركيب</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">🌍 أمثلة من الحياة اليومية:</strong></p>
+                    <p>🔥 <strong>تغيرات كيميائية:</strong> طبخ الطعام، احتراق الخشب، هضم الطعام، صدأ الحديد</p>
+                    <p>❄️ <strong>تغيرات فيزيائية:</strong> ذوبان الثلج، غليان الماء، كسر الزجاج، ذوبان السكر</p>
+                    <p>🍳 <strong>الطبخ:</strong> تحول البيض النيء إلى مطبوخ (تغير كيميائي)</p>
+                    <p>🔥 <strong>الاحتراق:</strong> حرق الوقود في السيارات</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e74c3c;">⚠️ السلامة والأمان:</strong></p>
+                    <p>🛡️ <strong>إشراف البالغين:</strong> ضروري عند التعامل مع النار</p>
+                    <p>🧯 <strong>معدات السلامة:</strong> طفاية حريق ومياه للطوارئ</p>
+                    <p>🌬️ <strong>التهوية الجيدة:</strong> لتجنب استنشاق الدخان</p>
+                    <p>📍 <strong>مكان آمن:</strong> بعيداً عن المواد القابلة للاشتعال</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 الاستنتاج النهائي:</strong></p>
+                    <p>💡 تكونت مادة جديدة (رماد) → تغير كيميائي</p>
+                    <p>💡 هذا تغير كيميائي لأنه أنتج مواد جديدة</p>
+                    <p>💡 لا يمكن عكس العملية واسترداد الورق</p>
+                    <p>💡 التركيب الكيميائي تغير تماماً</p>
+                    <p>💡 التفاعل بالسحب والإفلات جعل التجربة آمنة وتعليمية!</p>
+                ` : `
+                    <p><strong style="color: #e74c3c;">🔥 Chemical Change Experiment Results:</strong></p>
+                    <p>✅ <strong>Observation:</strong> Paper transformed into ash and smoke</p>
+                    <p>📊 <strong>Time Taken:</strong> ${document.getElementById('burnTime').textContent}</p>
+                    <p>🌡️ <strong>Burning Temperature:</strong> 400°C</p>
+                    <p>🎯 <strong>Interaction Method:</strong> Drag & Drop</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 Scientific Explanation:</strong></p>
+                    <p>🔥 <strong>Chemical Change:</strong> Formation of new substances with change in chemical composition</p>
+                    <p>⚗️ <strong>Combustion Process:</strong> Paper reacts with oxygen in the air</p>
+                    <p>🌫️ <strong>Products:</strong> Ash + Carbon dioxide + Water vapor</p>
+                    <p>🧬 <strong>Composition Change:</strong> Cellulose transformed into completely new substances</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e67e22;">📌 Why is this a Chemical Change?</strong></p>
+                    <p>✅ <strong>New Substances Formed:</strong> Ash is completely different from paper</p>
+                    <p>🚫 <strong>Irreversible:</strong> Cannot recover paper from ash</p>
+                    <p>🌡️ <strong>Composition Changed:</strong> Chemical structure completely altered</p>
+                    <p>⚡ <strong>New Properties:</strong> Ash has different properties than paper</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #8e44ad;">🔬 Physical vs Chemical Changes:</strong></p>
+                    <p>🔵 <strong>Physical Change:</strong> Change in form only (sugar dissolving)</p>
+                    <p>🔴 <strong>Chemical Change:</strong> Formation of new substances (paper burning)</p>
+                    <p>↩️ <strong>Physical is reversible</strong> - Chemical is irreversible</p>
+                    <p>🧪 <strong>Physical preserves composition</strong> - Chemical changes composition</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">🌍 Daily Life Examples:</strong></p>
+                    <p>🔥 <strong>Chemical Changes:</strong> Cooking food, wood burning, food digestion, iron rusting</p>
+                    <p>❄️ <strong>Physical Changes:</strong> Ice melting, water boiling, glass breaking, sugar dissolving</p>
+                    <p>🍳 <strong>Cooking:</strong> Raw egg transforms to cooked (chemical change)</p>
+                    <p>🔥 <strong>Combustion:</strong> Fuel burning in cars</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e74c3c;">⚠️ Safety and Security:</strong></p>
+                    <p>🛡️ <strong>Adult Supervision:</strong> Essential when dealing with fire</p>
+                    <p>🧯 <strong>Safety Equipment:</strong> Fire extinguisher and emergency water</p>
+                    <p>🌬️ <strong>Good Ventilation:</strong> To avoid smoke inhalation</p>
+                    <p>📍 <strong>Safe Location:</strong> Away from flammable materials</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 Final Conclusion:</strong></p>
+                    <p>💡 New substance formed (ash) → chemical change</p>
+                    <p>💡 This is a chemical change because it produced new substances</p>
+                    <p>💡 Process cannot be reversed to recover paper</p>
+                    <p>💡 Chemical composition completely changed</p>
+                    <p>💡 Drag & Drop interaction made the experiment safe and educational!</p>
+                `;
+                
+                conclusionDiv.innerHTML = conclusion;
+            }
+            
+            // Start experiment
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                
+                const statusText = currentLang === 'ar' ? 'بدء التجربة' : 'Starting Experiment';
+                const descText = currentLang === 'ar' ? 'جاهز للتفاعل' : 'Ready for interaction';
+                const stepText = currentLang === 'ar' ? 'اسحب الورقة إلى منطقة الحرق' : 'Drag paper to burning area';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-play-circle"></i> بدأت التجربة! اسحب الورقة إلى منطقة الحرق' :
+                    '<i class="fas fa-play-circle"></i> Experiment started! Drag paper to burning area';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'success');
+                updateProcessStep(1);
+                sounds.start();
+            });
+            
+            // Reset experiment
+            resetBtn.addEventListener('click', () => {
+                // Reset state
+                experimentStarted = false;
+                paperPlaced = false;
+                isBurning = false;
+                draggedElement = null;
+                
+                if (burnTimer) {
+                    clearInterval(burnTimer);
+                }
+                
+                // Reset UI
+                startBtn.disabled = false;
+                paperTool.classList.remove('used');
+                paperTool.draggable = true;
+                matchTool.classList.remove('used');
+                matchTool.draggable = true;
+                
+                // Reset visual elements
+                paper.classList.remove('visible', 'burning');
+                flame.classList.remove('active');
+                match.classList.remove('visible');
+                smoke.innerHTML = '';
+                ashParticles.innerHTML = '';
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                // Reset status
+                const readyText = currentLang === 'ar' ? 'جاهز' : 'Ready';
+                const startText = currentLang === 'ar' ? 'ابدأ التجربة' : 'Start Experiment';
+                const stepText = currentLang === 'ar' ? 'ابدأ التجربة أولاً' : 'Start the experiment first';
+                const resetFeedback = currentLang === 'ar' ? 
+                    '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر لمنطقة الحرق' :
+                    '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag elements to burning area';
+                
+                experimentStatus.textContent = readyText;
+                statusDescription.textContent = startText;
+                currentStepText.textContent = stepText;
+                burnTime.textContent = '0s';
+                
+                updateFeedback(resetFeedback, 'info');
+                updateProcessStep(1);
+                hideDragFeedback();
+                
+                const resetConclusion = currentLang === 'ar' ?
+                    '<i class="fas fa-fire"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي' :
+                    '<i class="fas fa-fire"></i> Start the experiment to discover the difference between physical and chemical changes';
+                
+                conclusionDiv.innerHTML = `<p>${resetConclusion}</p>`;
+                
+                sounds.start();
+            });
+            
+            // Initial setup
+            updateProcessStep(1);
+            updateLanguage('ar');
+        });
+    </script>
+</body>
+</html>
