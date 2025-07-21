@@ -257,23 +257,61 @@
 
         .tool-item {
             background: white;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 15px;
             text-align: center;
             cursor: grab;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 2px solid transparent;
+            position: relative;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .tool-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-item:hover::before {
+            opacity: 1;
         }
 
         .tool-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
         }
 
         .tool-item.dragging {
-            opacity: 0.5;
-            transform: rotate(5deg);
+            opacity: 0.8;
+            transform: rotate(8deg) scale(1.1);
+            z-index: 1000;
+            cursor: grabbing;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-item.can-interact {
+            border-color: #4ECDC4;
+            background: linear-gradient(135deg, #f0fffe, #ffffff);
+            animation: canInteract 1s ease-in-out infinite;
+        }
+
+        @keyframes canInteract {
+            0%, 100% { 
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            50% { 
+                box-shadow: 0 8px 30px rgba(78, 205, 196, 0.3);
+            }
         }
 
         .tool-icon {
@@ -288,27 +326,115 @@
         }
 
         .workspace {
-            min-height: 300px;
-            background: white;
-            border-radius: 10px;
-            border: 3px dashed #ddd;
+            min-height: 400px;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(78, 205, 196, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
+                linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 20px;
+            border: 3px dashed rgba(153, 153, 153, 0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .workspace::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="%23e0e0e0" stroke-width="1" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .workspace.drag-over {
             border-color: #4ECDC4;
-            background: #f0fffe;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(78, 205, 196, 0.15) 0%, transparent 70%),
+                linear-gradient(135deg, #f0fffe 0%, #ffffff 100%);
+            transform: scale(1.02);
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.05),
+                0 0 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .workspace.drag-over::before {
+            opacity: 1;
+        }
+
+        .workspace-empty-message {
+            text-align: center;
+            color: #999;
+            font-size: 1.1em;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .workspace.has-items .workspace-empty-message {
+            opacity: 0;
         }
 
         .workspace-item {
             position: absolute;
             cursor: move;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            user-select: none;
+        }
+
+        .workspace-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .workspace-item.reacting {
+            animation: chemicalReaction 2s ease-in-out;
+        }
+
+        .workspace-item.heating {
+            animation: heating 2s ease-in-out infinite;
+        }
+
+        .workspace-item.dissolving {
+            animation: dissolving 3s ease-in-out forwards;
+        }
+
+        @keyframes chemicalReaction {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(2deg); }
+            50% { transform: scale(1.2) rotate(-2deg); }
+            75% { transform: scale(1.1) rotate(1deg); }
+        }
+
+        @keyframes heating {
+            0%, 100% { 
+                filter: brightness(1) saturate(1);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+            50% { 
+                filter: brightness(1.2) saturate(1.3);
+                box-shadow: 0 8px 25px rgba(255, 100, 0, 0.3);
+            }
+        }
+
+        @keyframes dissolving {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+            100% { opacity: 0.3; transform: scale(0.8); }
         }
 
         .results-section {
@@ -400,10 +526,375 @@
             animation: melt 3s ease-out;
         }
 
-        @keyframes melt {
-            0% { transform: scaleY(1); }
-            100% { transform: scaleY(0.3) scaleX(1.5); }
+        /* Advanced Visual Effects */
+        .particle-effect {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1001;
         }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(78,205,196,0.4));
+            pointer-events: none;
+            animation: bubbleFloat 3s ease-out forwards;
+        }
+
+        @keyframes bubbleFloat {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-80px) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-160px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .smoke-particle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, rgba(150,150,150,0.7), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: smokeRise 4s ease-out forwards;
+        }
+
+        @keyframes smokeRise {
+            0% {
+                transform: translateY(0) scale(0.3) rotate(0deg);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-200px) scale(2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .spark {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, #ffd700, #ff6b35);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkFly 1.5s ease-out forwards;
+        }
+
+        @keyframes sparkFly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--spark-x, 50px), var(--spark-y, -50px)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .fizzing-effect {
+            animation: fizz 1.5s ease-in-out infinite;
+        }
+
+        @keyframes fizz {
+            0%, 100% { 
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.03);
+                filter: brightness(1.1);
+            }
+        }
+
+        .color-change-red {
+            animation: colorChangeRed 3s ease-in-out forwards;
+        }
+
+        @keyframes colorChangeRed {
+            0% { filter: hue-rotate(0deg) saturate(1); }
+            100% { filter: hue-rotate(-60deg) saturate(1.8); }
+        }
+
+        .color-change-green {
+            animation: colorChangeGreen 3s ease-in-out forwards;
+        }
+
+        @keyframes colorChangeGreen {
+            0% { filter: hue-rotate(0deg) saturate(1); }
+            100% { filter: hue-rotate(120deg) saturate(1.8); }
+        }
+
+        .color-change-blue {
+            animation: colorChangeBlue 3s ease-in-out forwards;
+        }
+
+        @keyframes colorChangeBlue {
+            0% { filter: hue-rotate(0deg) saturate(1); }
+            100% { filter: hue-rotate(240deg) saturate(1.8); }
+        }
+
+        /* Magnetic field visualization */
+        .magnetic-field {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 2px solid rgba(255,20,147,0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: magneticPulse 2s ease-in-out infinite;
+            z-index: 500;
+        }
+
+        @keyframes magneticPulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.4;
+                border-color: rgba(255,20,147,0.4);
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 0.8;
+                border-color: rgba(255,20,147,0.8);
+            }
+        }
+
+        /* Electrical current visualization */
+        .electrical-current {
+            position: absolute;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #ffd700 25%, 
+                #ff6b35 50%, 
+                #ffd700 75%, 
+                transparent 100%);
+            border-radius: 2px;
+            animation: electricFlow 1s linear infinite;
+            z-index: 500;
+        }
+
+        @keyframes electricFlow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        /* Heat visualization */
+        .heat-waves {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, transparent 0%, rgba(255,100,0,0.1) 50%, transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: heatWave 2s ease-in-out infinite;
+            z-index: 500;
+        }
+
+        @keyframes heatWave {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        /* Sound wave effect */
+        .sound-wave {
+            position: absolute;
+            width: 4px;
+            height: 20px;
+            background: rgba(0,150,255,0.6);
+            border-radius: 2px;
+            animation: soundWave 0.5s ease-in-out infinite;
+            transform-origin: bottom;
+        }
+
+        @keyframes soundWave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(2); }
+        }
+
+        /* Liquid pouring effect */
+        .liquid-stream {
+            position: absolute;
+            width: 8px;
+            background: linear-gradient(180deg, transparent 0%, rgba(78,205,196,0.8) 20%, rgba(78,205,196,0.9) 100%);
+            border-radius: 4px;
+            animation: liquidPour 2s ease-in-out;
+            transform-origin: top;
+        }
+
+        @keyframes liquidPour {
+            0% { height: 0; opacity: 0; }
+            20% { height: 50px; opacity: 1; }
+            80% { height: 100px; opacity: 1; }
+            100% { height: 0; opacity: 0; }
+        }
+
+        /* Crystallization effect */
+        .crystal-growth {
+            animation: crystalGrow 4s ease-out forwards;
+        }
+
+        @keyframes crystalGrow {
+            0% { 
+                transform: scale(0.5);
+                opacity: 0.5;
+                filter: blur(2px);
+            }
+            100% { 
+                transform: scale(1);
+                opacity: 1;
+                filter: blur(0px);
+            }
+                 }
+
+                  @keyframes melt {
+             0% { transform: scaleY(1); }
+             100% { transform: scaleY(0.3) scaleX(1.5); }
+         }
+
+         /* Additional animations for enhanced effects */
+         @keyframes ripple {
+             0% {
+                 transform: scale(0);
+                 opacity: 1;
+             }
+             100% {
+                 transform: scale(10);
+                 opacity: 0;
+             }
+         }
+
+         @keyframes shockwave {
+             0% {
+                 transform: scale(1);
+                 opacity: 1;
+             }
+             100% {
+                 transform: scale(15);
+                 opacity: 0;
+             }
+         }
+
+         @keyframes explosion {
+             0% {
+                 transform: scale(0);
+                 opacity: 1;
+             }
+             50% {
+                 transform: scale(1.5);
+                 opacity: 0.8;
+             }
+             100% {
+                 transform: scale(3);
+                 opacity: 0;
+             }
+         }
+
+         @keyframes shake {
+             0%, 100% { transform: translateX(0); }
+             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+             20%, 40%, 60%, 80% { transform: translateX(5px); }
+         }
+
+         @keyframes float {
+             0%, 100% { transform: translateY(0px); }
+             50% { transform: translateY(-15px); }
+         }
+
+         @keyframes pulse {
+             0%, 100% { transform: scale(1); }
+             50% { transform: scale(1.1); }
+         }
+
+         /* Proximity detection for better UX */
+         .workspace-item.near-interaction {
+             border: 2px solid rgba(78, 205, 196, 0.6);
+             box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+         }
+
+         /* Enhanced drag state */
+         .workspace-item.being-dragged {
+             z-index: 1001;
+             transform: scale(1.1) rotate(3deg);
+             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+         }
+
+         /* Enhanced drop zone feedback */
+         .workspace.active-drop-zone {
+             background: 
+                 radial-gradient(circle at 50% 50%, rgba(78, 205, 196, 0.2) 0%, transparent 70%),
+                 linear-gradient(135deg, #f0fffe 0%, #ffffff 100%);
+             border-color: #4ECDC4;
+             border-style: solid;
+             transform: scale(1.01);
+         }
+
+         /* Touch device support */
+         @media (hover: none) and (pointer: coarse) {
+             .tool-item:hover {
+                 transform: none;
+             }
+             
+             .tool-item:active {
+                 transform: scale(0.95);
+             }
+             
+             .workspace-item {
+                 padding: 15px;
+             }
+         }
+
+         /* Enhanced focus states for accessibility */
+         .tool-item:focus,
+         .workspace-item:focus {
+             outline: 3px solid #4ECDC4;
+             outline-offset: 2px;
+         }
+
+         /* Loading state for experiments */
+         .experiment-loading {
+             position: relative;
+             overflow: hidden;
+         }
+
+         .experiment-loading::after {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: -100%;
+             width: 100%;
+             height: 100%;
+             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+             animation: loading-shimmer 1.5s infinite;
+         }
+
+         @keyframes loading-shimmer {
+             0% { left: -100%; }
+             100% { left: 100%; }
+         }
+
+         @keyframes puddle-grow {
+             0% {
+                 width: 0;
+                 opacity: 0;
+             }
+             100% {
+                 width: 60px;
+                 opacity: 0.6;
+             }
+         }
 
         .step-indicator {
             display: flex;
@@ -1976,13 +2467,61 @@
             draggedItem = e.target.closest('.tool-item');
             draggedItem.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
+            
+            // Add drag feedback
+            document.body.style.cursor = 'grabbing';
+            
+            // Create drag preview ghost
+            const ghost = draggedItem.cloneNode(true);
+            ghost.style.transform = 'rotate(5deg) scale(0.8)';
+            ghost.style.opacity = '0.8';
+            e.dataTransfer.setDragImage(ghost, 50, 50);
+            
+            // Highlight compatible tools
+            highlightCompatibleTools();
         }
 
         function handleDragEnd(e) {
             if (draggedItem) {
                 draggedItem.classList.remove('dragging');
+                document.body.style.cursor = 'default';
+                
+                // Remove highlighting
+                removeToolHighlighting();
+                
                 draggedItem = null;
             }
+        }
+
+        function highlightCompatibleTools() {
+            if (!draggedItem || !currentExperiment) return;
+            
+            const experiment = experiments[currentExperiment];
+            const draggedToolId = draggedItem.dataset.toolId;
+            
+            // Find which reactions involve this tool
+            if (experiment.reactions) {
+                for (const reactionKey of Object.keys(experiment.reactions)) {
+                    const requiredTools = reactionKey.split('+');
+                    if (requiredTools.includes(draggedToolId)) {
+                        // Highlight other tools in this reaction
+                        requiredTools.forEach(toolId => {
+                            if (toolId !== draggedToolId) {
+                                const toolElement = document.querySelector(`[data-tool-id="${toolId}"]`);
+                                if (toolElement && !toolElement.closest('.workspace')) {
+                                    toolElement.classList.add('can-interact');
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        function removeToolHighlighting() {
+            document.querySelectorAll('.can-interact').forEach(tool => {
+                tool.classList.remove('can-interact');
+            });
         }
 
         // Setup workspace drop functionality
@@ -1991,49 +2530,198 @@
             
             workspace.addEventListener('dragover', function(e) {
                 e.preventDefault();
-                workspace.classList.add('drag-over');
+                e.dataTransfer.dropEffect = 'move';
+                workspace.classList.add('drag-over', 'active-drop-zone');
             });
 
             workspace.addEventListener('dragleave', function(e) {
-                workspace.classList.remove('drag-over');
+                // Only remove classes if we're actually leaving the workspace
+                if (!workspace.contains(e.relatedTarget)) {
+                    workspace.classList.remove('drag-over', 'active-drop-zone');
+                }
             });
 
             workspace.addEventListener('drop', function(e) {
                 e.preventDefault();
-                workspace.classList.remove('drag-over');
+                workspace.classList.remove('drag-over', 'active-drop-zone');
                 
                 if (draggedItem) {
                     const toolId = draggedItem.dataset.toolId;
-                    addToWorkspace(toolId);
+                    const rect = workspace.getBoundingClientRect();
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    
+                    // Add with precise positioning
+                    addToWorkspace(toolId, x, y);
+                    
+                    // Add drop sound effect
+                    addSoundEffect('pop');
+                }
+            });
+
+            // Add touch support for mobile devices
+            workspace.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+
+            // Enhanced keyboard support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const focusedTool = document.activeElement;
+                    if (focusedTool && focusedTool.classList.contains('tool-item')) {
+                        e.preventDefault();
+                        const toolId = focusedTool.dataset.toolId;
+                        addToWorkspace(toolId);
+                    }
                 }
             });
         });
 
-        function addToWorkspace(toolId) {
+        function addToWorkspace(toolId, x = null, y = null) {
             const workspace = document.getElementById('workspace');
             const message = document.getElementById('workspaceMessage');
             
             if (message) {
                 message.style.display = 'none';
+                workspace.classList.add('has-items');
             }
 
             const tool = experiments[currentExperiment].tools.find(t => t.id === toolId);
             if (!tool) return;
 
+            // Check if tool already exists in workspace
+            const existingTool = workspace.querySelector(`[data-tool-id="${toolId}"]`);
+            if (existingTool) {
+                // Animate existing tool to show it's already there
+                existingTool.style.animation = 'pulse 0.5s ease-in-out';
+                setTimeout(() => existingTool.style.animation = '', 500);
+                return;
+            }
+
             const workspaceItem = document.createElement('div');
             workspaceItem.className = 'workspace-item';
             workspaceItem.dataset.toolId = toolId;
-            workspaceItem.style.left = Math.random() * 200 + 'px';
-            workspaceItem.style.top = Math.random() * 150 + 'px';
+            workspaceItem.style.position = 'absolute';
+            
+            // Smart positioning
+            const rect = workspace.getBoundingClientRect();
+            if (x !== null && y !== null) {
+                workspaceItem.style.left = Math.max(10, Math.min(x - rect.left - 40, rect.width - 90)) + 'px';
+                workspaceItem.style.top = Math.max(10, Math.min(y - rect.top - 40, rect.height - 90)) + 'px';
+            } else {
+                workspaceItem.style.left = Math.random() * (rect.width - 100) + 10 + 'px';
+                workspaceItem.style.top = Math.random() * (rect.height - 100) + 10 + 'px';
+            }
             
             workspaceItem.innerHTML = `
-                <div class="tool-icon" style="color: ${tool.color}; font-size: 2em;">
+                <div class="tool-icon" style="color: ${tool.color}; font-size: 2.5em;">
                     <i class="${tool.icon}"></i>
+                </div>
+                <div class="tool-label" style="font-size: 0.8em; text-align: center; margin-top: 5px; color: #666;">
+                    ${tool.name[currentLanguage]}
                 </div>
             `;
 
+            // Add drag functionality to workspace items
+            makeWorkspaceItemDraggable(workspaceItem);
+            
+            // Drop animation
+            workspaceItem.style.transform = 'scale(0) rotate(180deg)';
+            workspaceItem.style.opacity = '0';
             workspace.appendChild(workspaceItem);
-            checkForReactions();
+            
+            // Animate in
+            requestAnimationFrame(() => {
+                workspaceItem.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                workspaceItem.style.transform = 'scale(1) rotate(0deg)';
+                workspaceItem.style.opacity = '1';
+            });
+
+            // Add a small delay before checking reactions to allow animation
+            setTimeout(() => {
+                checkForReactions();
+                createDropParticles(workspaceItem);
+            }, 300);
+        }
+
+        function makeWorkspaceItemDraggable(item) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            item.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = parseInt(item.style.left);
+                initialY = parseInt(item.style.top);
+                
+                item.style.cursor = 'grabbing';
+                item.style.zIndex = '1000';
+                item.style.transition = 'none';
+                
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            function onMouseMove(e) {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                item.style.left = (initialX + dx) + 'px';
+                item.style.top = (initialY + dy) + 'px';
+            }
+
+            function onMouseUp() {
+                isDragging = false;
+                item.style.cursor = 'move';
+                item.style.zIndex = 'auto';
+                item.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                
+                // Check for reactions after moving
+                setTimeout(checkForReactions, 100);
+            }
+        }
+
+        function createDropParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const colors = ['#4ECDC4', '#45B7B8', '#96CEB4', '#FFEAA7'];
+            
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle-effect';
+                particle.style.cssText = `
+                    position: fixed;
+                    width: 4px;
+                    height: 4px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    border-radius: 50%;
+                    left: ${rect.left + rect.width / 2}px;
+                    top: ${rect.top + rect.height / 2}px;
+                    z-index: 1001;
+                    pointer-events: none;
+                `;
+                
+                document.body.appendChild(particle);
+                
+                // Animate particle
+                const angle = (i / 8) * 2 * Math.PI;
+                const distance = 50 + Math.random() * 30;
+                const endX = rect.left + rect.width / 2 + Math.cos(angle) * distance;
+                const endY = rect.top + rect.height / 2 + Math.sin(angle) * distance;
+                
+                particle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${endX - rect.left - rect.width / 2}px, ${endY - rect.top - rect.height / 2}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => particle.remove();
+            }
         }
 
         function checkForReactions() {
@@ -2089,25 +2777,381 @@
             
             switch(effect) {
                 case 'fizzing':
-                    createBubbles();
+                    createAdvancedBubbles();
+                    addSoundEffect('fizz');
                     break;
                 case 'color-change-red':
-                    workspace.style.background = 'linear-gradient(45deg, #ff7675, #fd79a8)';
+                    animateColorChange('#ff7675', '#fd79a8');
                     break;
                 case 'color-change-green':
-                    workspace.style.background = 'linear-gradient(45deg, #00b894, #55a3ff)';
+                    animateColorChange('#00b894', '#55a3ff');
+                    break;
+                case 'color-change-blue':
+                    animateColorChange('#3498db', '#74b9ff');
+                    break;
+                case 'dissolving':
+                    createDissolvingEffect();
+                    break;
+                case 'floating':
+                    createFloatingEffect();
+                    break;
+                case 'settling':
+                    createSettlingEffect();
+                    break;
+                case 'magnetic-pull':
+                    createMagneticEffect();
+                    break;
+                case 'light-on':
+                    createElectricalEffect();
                     break;
                 case 'copper-coating':
-                    highlightCopper();
+                    createCopperCoatingEffect();
                     break;
                 case 'explosion':
-                    workspace.classList.add('explosion-effect');
-                    setTimeout(() => workspace.classList.remove('explosion-effect'), 1000);
+                    createExplosionEffect();
                     break;
                 case 'melting':
-                    workspace.classList.add('melting-effect');
+                    createMeltingEffect();
+                    break;
+                case 'heating':
+                    createHeatEffect();
+                    break;
+                case 'no-reaction':
+                    createNoReactionEffect();
                     break;
             }
+        }
+
+        function animateColorChange(color1, color2) {
+            const workspace = document.getElementById('workspace');
+            workspace.style.transition = 'background 2s ease-in-out';
+            workspace.style.background = `linear-gradient(45deg, ${color1}, ${color2})`;
+            
+            // Add ripple effect
+            createRippleEffect(workspace);
+        }
+
+        function createAdvancedBubbles() {
+            const workspace = document.getElementById('workspace');
+            const bubbleCount = 25;
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    
+                    const size = Math.random() * 15 + 8;
+                    bubble.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${Math.random() * 90 + 5}%;
+                        bottom: -20px;
+                        z-index: 600;
+                    `;
+                    
+                    workspace.appendChild(bubble);
+                    
+                    setTimeout(() => bubble.remove(), 3000);
+                }, i * 150);
+            }
+        }
+
+        function createRippleEffect(element) {
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.6);
+                transform: scale(0);
+                animation: ripple 1s linear;
+                left: 50%;
+                top: 50%;
+                width: 20px;
+                height: 20px;
+                margin-left: -10px;
+                margin-top: -10px;
+                pointer-events: none;
+                z-index: 600;
+            `;
+            
+            element.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1000);
+        }
+
+        function createMagneticEffect() {
+            const workspace = document.getElementById('workspace');
+            const magnet = workspace.querySelector('[data-tool-id*="magnet"]');
+            const metalObjects = workspace.querySelectorAll('[data-tool-id*="iron"], [data-tool-id*="metal"], [data-tool-id*="clip"], [data-tool-id*="coin"]');
+            
+            if (magnet && metalObjects.length > 0) {
+                // Create magnetic field visualization
+                const field = document.createElement('div');
+                field.className = 'magnetic-field';
+                field.style.left = magnet.style.left;
+                field.style.top = magnet.style.top;
+                workspace.appendChild(field);
+                
+                // Animate metal objects towards magnet
+                metalObjects.forEach((metal, index) => {
+                    setTimeout(() => {
+                        metal.style.transition = 'all 1s ease-in-out';
+                        const magnetRect = magnet.getBoundingClientRect();
+                        const metalRect = metal.getBoundingClientRect();
+                        
+                        // Move metal object closer to magnet (but not exactly on it)
+                        const dx = (magnetRect.left - metalRect.left) * 0.7;
+                        const dy = (magnetRect.top - metalRect.top) * 0.7;
+                        
+                        metal.style.transform = `translate(${dx}px, ${dy}px) scale(1.1)`;
+                        metal.classList.add('reacting');
+                    }, index * 300);
+                });
+                
+                setTimeout(() => field.remove(), 3000);
+            }
+        }
+
+        function createElectricalEffect() {
+            const workspace = document.getElementById('workspace');
+            const battery = workspace.querySelector('[data-tool-id*="battery"]');
+            const bulb = workspace.querySelector('[data-tool-id*="bulb"]');
+            
+            if (battery && bulb) {
+                // Create electrical connection
+                const connection = document.createElement('div');
+                connection.className = 'electrical-current';
+                
+                const batteryRect = battery.getBoundingClientRect();
+                const bulbRect = bulb.getBoundingClientRect();
+                const workspaceRect = workspace.getBoundingClientRect();
+                
+                const startX = batteryRect.left - workspaceRect.left + batteryRect.width / 2;
+                const startY = batteryRect.top - workspaceRect.top + batteryRect.height / 2;
+                const endX = bulbRect.left - workspaceRect.left + bulbRect.width / 2;
+                const endY = bulbRect.top - workspaceRect.top + bulbRect.height / 2;
+                
+                const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                connection.style.cssText = `
+                    left: ${startX}px;
+                    top: ${startY}px;
+                    width: ${distance}px;
+                    transform-origin: 0 50%;
+                    transform: rotate(${angle}deg);
+                `;
+                
+                workspace.appendChild(connection);
+                
+                // Make bulb glow
+                bulb.style.animation = 'none';
+                setTimeout(() => {
+                    bulb.style.animation = 'heating 1s ease-in-out infinite';
+                    bulb.style.filter = 'brightness(1.5) drop-shadow(0 0 20px #ffd700)';
+                }, 500);
+                
+                setTimeout(() => connection.remove(), 3000);
+            }
+        }
+
+        function createCopperCoatingEffect() {
+            const workspace = document.getElementById('workspace');
+            const ironNail = workspace.querySelector('[data-tool-id*="iron-nail"]');
+            
+            if (ironNail) {
+                ironNail.style.transition = 'all 3s ease-in-out';
+                ironNail.style.filter = 'hue-rotate(30deg) saturate(1.5) brightness(1.2)';
+                ironNail.style.background = 'linear-gradient(45deg, #e17055, #fdcb6e)';
+                ironNail.style.boxShadow = '0 0 20px rgba(225, 112, 85, 0.5)';
+                
+                // Add coating animation
+                ironNail.classList.add('crystal-growth');
+            }
+        }
+
+        function createExplosionEffect() {
+            const workspace = document.getElementById('workspace');
+            
+            // Create explosion visual
+            const explosion = document.createElement('div');
+            explosion.style.cssText = `
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 100px;
+                height: 100px;
+                margin: -50px 0 0 -50px;
+                background: radial-gradient(circle, #ff4757, #ff6348, #ffa502);
+                border-radius: 50%;
+                animation: explosion 1s ease-out forwards;
+                z-index: 800;
+            `;
+            
+            workspace.appendChild(explosion);
+            
+            // Create shockwave
+            const shockwave = document.createElement('div');
+            shockwave.style.cssText = `
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 20px;
+                height: 20px;
+                margin: -10px 0 0 -10px;
+                border: 3px solid rgba(255, 71, 87, 0.6);
+                border-radius: 50%;
+                animation: shockwave 1.5s ease-out forwards;
+                z-index: 799;
+            `;
+            
+            workspace.appendChild(shockwave);
+            
+            // Create sparks
+            for (let i = 0; i < 12; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                spark.style.cssText += `
+                    left: 50%;
+                    top: 50%;
+                    --spark-x: ${Math.cos(i * 30 * Math.PI / 180) * 80}px;
+                    --spark-y: ${Math.sin(i * 30 * Math.PI / 180) * 80}px;
+                `;
+                
+                workspace.appendChild(spark);
+                setTimeout(() => spark.remove(), 1500);
+            }
+            
+            setTimeout(() => {
+                explosion.remove();
+                shockwave.remove();
+            }, 1500);
+        }
+
+        function createHeatEffect() {
+            const workspace = document.getElementById('workspace');
+            const heatWaves = document.createElement('div');
+            heatWaves.className = 'heat-waves';
+            heatWaves.style.cssText += `
+                left: 50%;
+                top: 50%;
+                margin: -50px 0 0 -50px;
+            `;
+            
+            workspace.appendChild(heatWaves);
+            setTimeout(() => heatWaves.remove(), 5000);
+        }
+
+        function createDissolvingEffect() {
+            const workspace = document.getElementById('workspace');
+            workspace.querySelectorAll('.workspace-item').forEach(item => {
+                if (item.dataset.toolId.includes('sugar') || item.dataset.toolId.includes('salt')) {
+                    item.classList.add('dissolving');
+                }
+            });
+        }
+
+        function createFloatingEffect() {
+            const workspace = document.getElementById('workspace');
+            const floatingItems = workspace.querySelectorAll('[data-tool-id*="oil"]');
+            
+            floatingItems.forEach(item => {
+                item.style.animation = 'float 2s ease-in-out infinite';
+                item.style.transform = 'translateY(-20px)';
+            });
+        }
+
+        function createSettlingEffect() {
+            const workspace = document.getElementById('workspace');
+            const settlingItems = workspace.querySelectorAll('[data-tool-id*="sand"]');
+            
+            settlingItems.forEach(item => {
+                item.style.transition = 'all 2s ease-in-out';
+                item.style.transform = 'translateY(50px)';
+                item.style.opacity = '0.7';
+            });
+        }
+
+        function createNoReactionEffect() {
+            const workspace = document.getElementById('workspace');
+            workspace.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => workspace.style.animation = '', 500);
+        }
+
+        function createMeltingEffect() {
+            const workspace = document.getElementById('workspace');
+            const meltingItems = workspace.querySelectorAll('[data-tool-id*="wax"], [data-tool-id*="ice"]');
+            
+            meltingItems.forEach(item => {
+                item.style.transition = 'all 3s ease-in-out';
+                item.style.transform = 'scaleY(0.3) scaleX(1.5)';
+                item.style.opacity = '0.6';
+                
+                // Add melting visual effect
+                const puddle = document.createElement('div');
+                puddle.style.cssText = `
+                    position: absolute;
+                    bottom: -10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 60px;
+                    height: 8px;
+                    background: rgba(78, 205, 196, 0.6);
+                    border-radius: 50%;
+                    animation: puddle-grow 2s ease-out forwards;
+                `;
+                
+                item.appendChild(puddle);
+            });
+        }
+
+        function addSoundEffect(type) {
+            // Create audio context for sound effects
+            if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+                const audioContext = new (AudioContext || webkitAudioContext)();
+                
+                switch(type) {
+                    case 'fizz':
+                        createFizzSound(audioContext);
+                        break;
+                    case 'pop':
+                        createPopSound(audioContext);
+                        break;
+                }
+            }
+        }
+
+        function createFizzSound(audioContext) {
+            const duration = 2;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < buffer.length; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.1 * Math.exp(-i / sampleRate);
+            }
+            
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start();
+        }
+
+        function createPopSound(audioContext) {
+            const duration = 0.3;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, duration * sampleRate, sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                data[i] = Math.sin(2 * Math.PI * 200 * t) * Math.exp(-t * 8) * 0.3;
+            }
+            
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start();
         }
 
         function createBubbles() {
@@ -2192,12 +3236,22 @@
 
             const workspace = document.getElementById('workspace');
             workspace.innerHTML = `
-                <div id="workspaceMessage">
-                    <i class="fas fa-hand-pointer" style="font-size: 3em; color: #ddd; margin-bottom: 10px;"></i>
-                    <p style="color: #999;">
-                        <span class="english-text"${currentLanguage === 'arabic' ? ' class="hidden"' : ''}>Drag tools here to start your experiment</span>
-                        <span class="arabic-text"${currentLanguage === 'english' ? ' class="hidden"' : ''}>اسحب الأدوات هنا لبدء التجربة</span>
-                    </p>
+                <div id="workspaceMessage" class="workspace-empty-message">
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-flask" style="font-size: 4em; color: #ddd; margin-bottom: 20px; animation: pulse 2s infinite;"></i>
+                        <h3 style="color: #999; margin-bottom: 15px;">
+                            <span class="english-text"${currentLanguage === 'arabic' ? ' class="hidden"' : ''}>Virtual Lab Workspace</span>
+                            <span class="arabic-text"${currentLanguage === 'english' ? ' class="hidden"' : ''}>مساحة العمل الافتراضية</span>
+                        </h3>
+                        <p style="color: #bbb; font-size: 1.1em; margin-bottom: 10px;">
+                            <span class="english-text"${currentLanguage === 'arabic' ? ' class="hidden"' : ''}>🧪 Drag and drop tools to start experimenting</span>
+                            <span class="arabic-text"${currentLanguage === 'english' ? ' class="hidden"' : ''}>🧪 اسحب وأفلت الأدوات لبدء التجربة</span>
+                        </p>
+                        <p style="color: #bbb; font-size: 0.9em;">
+                            <span class="english-text"${currentLanguage === 'arabic' ? ' class="hidden"' : ''}>⚡ Watch for magical reactions!</span>
+                            <span class="arabic-text"${currentLanguage === 'english' ? ' class="hidden"' : ''}>⚡ راقب التفاعلات السحرية!</span>
+                        </p>
+                    </div>
                 </div>
             `;
             workspace.style.background = '';
