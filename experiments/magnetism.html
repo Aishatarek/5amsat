@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة المغناطيسية - Magnetism Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #4a90e2, #357abd); color: white; }
+        .btn-success { background: linear-gradient(135deg, #28a745, #20a138); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+        .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .materials-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .materials-panel h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .material-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #e74c3c;
+        }
+
+        .material-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .magnetic-info {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .magnet-field {
+            width: 100%;
+            height: 400px;
+            border: 3px solid #333;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            overflow: hidden;
+        }
+
+        .magnet {
+            position: absolute;
+            width: 120px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .bar-magnet {
+            background: linear-gradient(90deg, #e74c3c 0%, #e74c3c 50%, #3498db 50%, #3498db 100%);
+            border: 3px solid #2c3e50;
+        }
+
+        .bar-magnet::before {
+            content: 'N';
+            position: absolute;
+            left: 15px;
+            font-size: 16px;
+        }
+
+        .bar-magnet::after {
+            content: 'S';
+            position: absolute;
+            right: 15px;
+            font-size: 16px;
+        }
+
+        .horseshoe-magnet {
+            background: linear-gradient(180deg, #e74c3c 0%, #e74c3c 50%, #3498db 50%, #3498db 100%);
+            border: 3px solid #2c3e50;
+            border-radius: 60px 60px 10px 10px;
+            height: 80px;
+            width: 80px;
+        }
+
+        .magnetic-object {
+            position: absolute;
+            transition: all 0.5s ease;
+            cursor: grab;
+            border-radius: 5px;
+        }
+
+        .iron-nail {
+            width: 50px;
+            height: 8px;
+            background: linear-gradient(90deg, #7f8c8d, #95a5a6);
+            border: 2px solid #34495e;
+        }
+
+        .steel-paperclip {
+            width: 30px;
+            height: 20px;
+            background: linear-gradient(45deg, #bdc3c7, #ecf0f1);
+            border: 2px solid #7f8c8d;
+            border-radius: 8px;
+        }
+
+        .iron-filings {
+            width: 5px;
+            height: 5px;
+            background: #34495e;
+            border-radius: 50%;
+        }
+
+        .aluminum-can {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(45deg, #bdc3c7, #ecf0f1);
+            border: 2px solid #95a5a6;
+            border-radius: 5px;
+        }
+
+        .plastic-ruler {
+            width: 60px;
+            height: 10px;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+            border: 2px solid #d35400;
+        }
+
+        .field-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(231, 76, 60, 0.6);
+            border-radius: 1px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .field-line.visible {
+            opacity: 1;
+            animation: field-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes field-pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .attraction-animation {
+            animation: attract 1s ease-out forwards;
+        }
+
+        @keyframes attract {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .repulsion-animation {
+            animation: repel 0.5s ease-out forwards;
+        }
+
+        @keyframes repel {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(10px, 0); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .magnetic-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #e74c3c;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particle-flow 3s infinite;
+        }
+
+        @keyframes particle-flow {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .observations {
+            background: #fdeaea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active { background: #e74c3c; color: white; }
+        .step.completed { background: #28a745; color: white; }
+
+        .strength-meter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .strength-bar {
+            width: 100px;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🧲 تجربة المغناطيسية</h1>
+            <p id="subtitle">Magnetism Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">إعداد المغناطيس</div>
+            <div class="step" id="step2">اختبار المواد</div>
+            <div class="step" id="step3">ملاحظة القوى</div>
+            <div class="step" id="step4">رسم المجال</div>
+        </div>
+
+        <div class="main-content">
+            <div class="materials-panel">
+                <h3 id="materialsTitle">المواد المتاحة</h3>
+                
+                <div class="material-item" draggable="true" data-material="bar-magnet">
+                    <div style="font-size: 2em;">🧲</div>
+                    <div id="barMagnetName">مغناطيس قضيبي</div>
+                    <div class="magnetic-info">قوي - N و S</div>
+                    <small>Bar Magnet</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="iron-nail">
+                    <div style="font-size: 2em;">📎</div>
+                    <div id="ironNailName">مسمار حديد</div>
+                    <div class="magnetic-info">مغناطيسي</div>
+                    <small>Iron Nail</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="paperclip">
+                    <div style="font-size: 2em;">📎</div>
+                    <div id="paperclipName">مشبك ورق</div>
+                    <div class="magnetic-info">مغناطيسي</div>
+                    <small>Paper Clip</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="aluminum">
+                    <div style="font-size: 2em;">🥤</div>
+                    <div id="aluminumName">علبة ألمنيوم</div>
+                    <div class="magnetic-info">غير مغناطيسي</div>
+                    <small>Aluminum Can</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="plastic">
+                    <div style="font-size: 2em;">📏</div>
+                    <div id="plasticName">مسطرة بلاستيك</div>
+                    <div class="magnetic-info">غير مغناطيسي</div>
+                    <small>Plastic Ruler</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="iron-filings">
+                    <div style="font-size: 2em;">⚫</div>
+                    <div id="filingsName">برادة حديد</div>
+                    <div class="magnetic-info">تظهر المجال</div>
+                    <small>Iron Filings</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="drop-zone" data-accept="bar-magnet,iron-nail,paperclip,aluminum,plastic,iron-filings" id="fieldZone">
+                    <span id="fieldInstruction">اسحب المغناطيس والمواد إلى المنطقة لاختبار التفاعل المغناطيسي</span>
+                </div>
+
+                <div class="magnet-field" id="magnetField">
+                    <div class="strength-meter">
+                        <div>قوة المجال</div>
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let magnetInField = null;
+        let objectsInField = [];
+
+        const materials = {
+            'bar-magnet': { 
+                magnetic: true, 
+                strength: 100, 
+                type: 'magnet',
+                name: 'مغناطيس قضيبي'
+            },
+            'iron-nail': { 
+                magnetic: true, 
+                strength: 80, 
+                type: 'ferromagnetic',
+                name: 'مسمار حديد'
+            },
+            'paperclip': { 
+                magnetic: true, 
+                strength: 60, 
+                type: 'ferromagnetic',
+                name: 'مشبك ورق'
+            },
+            'aluminum': { 
+                magnetic: false, 
+                strength: 0, 
+                type: 'non-magnetic',
+                name: 'علبة ألمنيوم'
+            },
+            'plastic': { 
+                magnetic: false, 
+                strength: 0, 
+                type: 'non-magnetic',
+                name: 'مسطرة بلاستيك'
+            },
+            'iron-filings': { 
+                magnetic: true, 
+                strength: 90, 
+                type: 'field-visualizer',
+                name: 'برادة حديد'
+            }
+        };
+
+        const translations = {
+            ar: {
+                title: "🧲 تجربة المغناطيسية",
+                subtitle: "Magnetism Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                materialsTitle: "المواد المتاحة",
+                barMagnetName: "مغناطيس قضيبي",
+                ironNailName: "مسمار حديد",
+                paperclipName: "مشبك ورق",
+                aluminumName: "علبة ألمنيوم",
+                plasticName: "مسطرة بلاستيك",
+                filingsName: "برادة حديد",
+                fieldInstruction: "اسحب المغناطيس والمواد إلى المنطقة لاختبار التفاعل المغناطيسي",
+                observationsTitle: "الملاحظات:",
+                obs1: "انتظار بدء التجربة...",
+                step1: "إعداد المغناطيس",
+                step2: "اختبار المواد",
+                step3: "ملاحظة القوى",
+                step4: "رسم المجال"
+            },
+            en: {
+                title: "🧲 Magnetism Experiment",
+                subtitle: "تجربة المغناطيسية",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                materialsTitle: "Available Materials",
+                barMagnetName: "Bar Magnet",
+                ironNailName: "Iron Nail",
+                paperclipName: "Paper Clip",
+                aluminumName: "Aluminum Can",
+                plasticName: "Plastic Ruler",
+                filingsName: "Iron Filings",
+                fieldInstruction: "Drag magnet and materials to test magnetic interactions",
+                observationsTitle: "Observations:",
+                obs1: "Waiting to start experiment...",
+                step1: "Setup Magnet",
+                step2: "Test Materials",
+                step3: "Observe Forces",
+                step4: "Map Field"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            experimentStarted = true;
+            updateStep(1);
+            addObservation("بدأت التجربة - اسحب المغناطيس أولاً لإنشاء المجال المغناطيسي");
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            magnetInField = null;
+            objectsInField = [];
+            
+            // Clear field
+            const field = document.getElementById('magnetField');
+            field.innerHTML = `
+                <div class="strength-meter">
+                    <div>قوة المجال</div>
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function createObjectInField(material, x, y) {
+            const field = document.getElementById('magnetField');
+            const materialData = materials[material];
+            
+            const objectElement = document.createElement('div');
+            objectElement.className = `magnetic-object ${material}`;
+            objectElement.dataset.material = material;
+            
+            // Position in field
+            objectElement.style.left = x + 'px';
+            objectElement.style.top = y + 'px';
+            objectElement.style.position = 'absolute';
+            
+            field.appendChild(objectElement);
+            
+            if (material === 'bar-magnet') {
+                magnetInField = objectElement;
+                createMagneticField(x, y);
+                updateStrengthMeter(100);
+                addObservation("تم وضع المغناطيس - المجال المغناطيسي نشط الآن");
+                if (currentStep === 1) updateStep(2);
+            } else if (magnetInField && materialData.magnetic) {
+                // Animate attraction
+                setTimeout(() => {
+                    animateAttraction(objectElement, magnetInField);
+                    updateStrengthMeter(materialData.strength);
+                    addObservation(`${materialData.name} انجذب إلى المغناطيس - مادة مغناطيسية`);
+                }, 100);
+                if (currentStep === 2) updateStep(3);
+            } else if (magnetInField && !materialData.magnetic) {
+                updateStrengthMeter(0);
+                addObservation(`${materialData.name} لم ينجذب إلى المغناطيس - مادة غير مغناطيسية`);
+                if (currentStep === 2) updateStep(3);
+            }
+            
+            if (material === 'iron-filings' && magnetInField) {
+                createFieldVisualization();
+                if (currentStep === 3) updateStep(4);
+            }
+            
+            objectsInField.push(objectElement);
+            return objectElement;
+        }
+
+        function createMagneticField(centerX, centerY) {
+            const field = document.getElementById('magnetField');
+            
+            // Create field lines radiating from magnet
+            for (let i = 0; i < 12; i++) {
+                const angle = (i * 30) * Math.PI / 180;
+                const line = document.createElement('div');
+                line.className = 'field-line visible';
+                
+                const length = 80 + Math.random() * 40;
+                const x = centerX + Math.cos(angle) * 60;
+                const y = centerY + Math.sin(angle) * 20;
+                
+                line.style.left = x + 'px';
+                line.style.top = y + 'px';
+                line.style.width = length + 'px';
+                line.style.transform = `rotate(${angle}rad)`;
+                line.style.animationDelay = (i * 0.1) + 's';
+                
+                field.appendChild(line);
+            }
+        }
+
+        function createFieldVisualization() {
+            const field = document.getElementById('magnetField');
+            const magnetRect = magnetInField.getBoundingClientRect();
+            const fieldRect = field.getBoundingClientRect();
+            
+            // Create iron filings pattern
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const filing = document.createElement('div');
+                    filing.className = 'magnetic-particle';
+                    
+                    const x = Math.random() * (field.offsetWidth - 10);
+                    const y = Math.random() * (field.offsetHeight - 10);
+                    
+                    filing.style.left = x + 'px';
+                    filing.style.top = y + 'px';
+                    filing.style.position = 'absolute';
+                    filing.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    field.appendChild(filing);
+                }, i * 50);
+            }
+            
+            addObservation("برادة الحديد تظهر خطوط المجال المغناطيسي بوضوح");
+        }
+
+        function animateAttraction(object, magnet) {
+            const magnetRect = magnet.getBoundingClientRect();
+            const objectRect = object.getBoundingClientRect();
+            const fieldRect = document.getElementById('magnetField').getBoundingClientRect();
+            
+            const magnetCenterX = magnetRect.left - fieldRect.left + magnetRect.width / 2;
+            const magnetCenterY = magnetRect.top - fieldRect.top + magnetRect.height / 2;
+            
+            object.classList.add('attraction-animation');
+            
+            // Move towards magnet
+            setTimeout(() => {
+                const distance = 40; // Stop near magnet, not on it
+                const dx = magnetCenterX - (objectRect.left - fieldRect.left + objectRect.width / 2);
+                const dy = magnetCenterY - (objectRect.top - fieldRect.top + objectRect.height / 2);
+                const length = Math.sqrt(dx * dx + dy * dy);
+                
+                if (length > distance) {
+                    const newX = magnetCenterX - (dx / length) * distance;
+                    const newY = magnetCenterY - (dy / length) * distance;
+                    
+                    object.style.left = newX + 'px';
+                    object.style.top = newY + 'px';
+                }
+            }, 300);
+        }
+
+        function updateStrengthMeter(strength) {
+            const strengthFill = document.getElementById('strengthFill');
+            if (strengthFill) {
+                strengthFill.style.width = strength + '%';
+            }
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialItems = document.querySelectorAll('.material-item');
+            const field = document.getElementById('magnetField');
+
+            materialItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    if (!experimentStarted) {
+                        e.preventDefault();
+                        return;
+                    }
+                    e.target.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    e.target.classList.remove('dragging');
+                });
+            });
+
+            field.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+
+            field.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const draggedItem = document.querySelector('.dragging');
+                if (!draggedItem) return;
+
+                const material = draggedItem.dataset.material;
+                const rect = field.getBoundingClientRect();
+                const x = e.clientX - rect.left - 25;
+                const y = e.clientY - rect.top - 25;
+                
+                // Ensure coordinates are within bounds
+                const boundedX = Math.max(10, Math.min(x, field.offsetWidth - 50));
+                const boundedY = Math.max(10, Math.min(y, field.offsetHeight - 50));
+                
+                createObjectInField(material, boundedX, boundedY);
+            });
+            
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>

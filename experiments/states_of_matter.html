@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة حالات المادة - States of Matter Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0984e3, #6c5ce7);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #4a90e2, #357abd); color: white; }
+        .btn-success { background: linear-gradient(135deg, #28a745, #20a138); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+        .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .materials-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .materials-panel h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .material-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #0984e3;
+        }
+
+        .material-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .temperature-zone {
+            width: 100%;
+            height: 200px;
+            border: 3px solid #333;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .freezer-zone {
+            background: linear-gradient(to bottom, #74b9ff, #a29bfe);
+            border-color: #0984e3;
+        }
+
+        .room-temp-zone {
+            background: linear-gradient(to bottom, #81ecec, #55efc4);
+            border-color: #00b894;
+        }
+
+        .heating-zone {
+            background: linear-gradient(to bottom, #fd79a8, #fdcb6e);
+            border-color: #e17055;
+        }
+
+        .zone-label {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .temperature-display {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .matter-particle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transition: all 1s ease;
+        }
+
+        .solid-particle {
+            background: radial-gradient(circle, #0984e3, #74b9ff);
+            animation: vibrate 2s infinite;
+        }
+
+        .liquid-particle {
+            background: radial-gradient(circle, #00b894, #55efc4);
+            animation: flow 3s infinite ease-in-out;
+        }
+
+        .gas-particle {
+            background: radial-gradient(circle, #e17055, #fdcb6e);
+            animation: float-random 2s infinite ease-in-out;
+        }
+
+        @keyframes vibrate {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, -1px); }
+        }
+
+        @keyframes flow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes float-random {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(10px, -10px); }
+            50% { transform: translate(-5px, -15px); }
+            75% { transform: translate(15px, -5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .ice-cube {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #74b9ff, #a29bfe);
+            border: 3px solid #0984e3;
+            border-radius: 10px;
+            position: relative;
+            cursor: grab;
+            transition: all 0.5s ease;
+        }
+
+        .water-drop {
+            width: 40px;
+            height: 50px;
+            background: linear-gradient(45deg, #00b894, #55efc4);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            border: 2px solid #00cec9;
+            cursor: grab;
+            transition: all 0.5s ease;
+        }
+
+        .steam-cloud {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(45deg, #ddd, #f8f9fa);
+            border: 2px solid #bbb;
+            border-radius: 50px;
+            opacity: 0.8;
+            cursor: grab;
+            transition: all 0.5s ease;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #0984e3;
+            background: rgba(9, 132, 227, 0.1);
+        }
+
+        .observations {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #0984e3;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active { background: #0984e3; color: white; }
+        .step.completed { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🧊 تجربة حالات المادة</h1>
+            <p id="subtitle">States of Matter Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">إعداد المواد</div>
+            <div class="step" id="step2">اختبار التبريد</div>
+            <div class="step" id="step3">اختبار التسخين</div>
+            <div class="step" id="step4">ملاحظة التغيرات</div>
+        </div>
+
+        <div class="main-content">
+            <div class="materials-panel">
+                <h3 id="materialsTitle">المواد المتاحة</h3>
+                
+                <div class="material-item" draggable="true" data-material="ice">
+                    <div style="font-size: 2em;">🧊</div>
+                    <div id="iceName">مكعب ثلج</div>
+                    <small>Ice Cube</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="water">
+                    <div style="font-size: 2em;">💧</div>
+                    <div id="waterName">قطرة ماء</div>
+                    <small>Water Drop</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="steam">
+                    <div style="font-size: 2em;">☁️</div>
+                    <div id="steamName">بخار ماء</div>
+                    <small>Steam</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="drop-zone" data-accept="ice,water,steam" id="mainZone">
+                    <span id="mainInstruction">اسحب المواد إلى المناطق المختلفة لمشاهدة تغير حالاتها</span>
+                </div>
+
+                <div class="temperature-zone freezer-zone" id="freezerZone" data-temp="-10">
+                    <div class="zone-label" id="freezerLabel">منطقة التجميد</div>
+                    <div class="temperature-display">-10°C</div>
+                </div>
+
+                <div class="temperature-zone room-temp-zone" id="roomZone" data-temp="25">
+                    <div class="zone-label" id="roomLabel">درجة حرارة الغرفة</div>
+                    <div class="temperature-display">25°C</div>
+                </div>
+
+                <div class="temperature-zone heating-zone" id="heatingZone" data-temp="100">
+                    <div class="zone-label" id="heatingLabel">منطقة التسخين</div>
+                    <div class="temperature-display">100°C</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let audioContext;
+
+        const translations = {
+            ar: {
+                title: "🧊 تجربة حالات المادة",
+                subtitle: "States of Matter Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                materialsTitle: "المواد المتاحة",
+                iceName: "مكعب ثلج",
+                waterName: "قطرة ماء",
+                steamName: "بخار ماء",
+                mainInstruction: "اسحب المواد إلى المناطق المختلفة لمشاهدة تغير حالاتها",
+                freezerLabel: "منطقة التجميد",
+                roomLabel: "درجة حرارة الغرفة",
+                heatingLabel: "منطقة التسخين",
+                observationsTitle: "الملاحظات:",
+                obs1: "انتظار بدء التجربة...",
+                step1: "إعداد المواد",
+                step2: "اختبار التبريد",
+                step3: "اختبار التسخين",
+                step4: "ملاحظة التغيرات"
+            },
+            en: {
+                title: "🧊 States of Matter Experiment",
+                subtitle: "تجربة حالات المادة",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                materialsTitle: "Available Materials",
+                iceName: "Ice Cube",
+                waterName: "Water Drop",
+                steamName: "Steam",
+                mainInstruction: "Drag materials to different zones to observe state changes",
+                freezerLabel: "Freezing Zone",
+                roomLabel: "Room Temperature",
+                heatingLabel: "Heating Zone",
+                observationsTitle: "Observations:",
+                obs1: "Waiting to start experiment...",
+                step1: "Prepare Materials",
+                step2: "Test Cooling",
+                step3: "Test Heating",
+                step4: "Observe Changes"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            experimentStarted = true;
+            updateStep(1);
+            addObservation("بدأت التجربة - يمكنك الآن سحب المواد إلى المناطق المختلفة");
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            
+            // Clear all zones
+            document.querySelectorAll('.temperature-zone').forEach(zone => {
+                const materials = zone.querySelectorAll('.matter-in-zone');
+                materials.forEach(material => material.remove());
+            });
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function createMatterInZone(material, zone) {
+            const zoneElement = document.getElementById(zone + 'Zone');
+            const temp = parseInt(zoneElement.dataset.temp);
+            
+            // Remove existing material of same type in this zone
+            const existing = zoneElement.querySelector(`[data-original-material="${material}"]`);
+            if (existing) existing.remove();
+            
+            const materialElement = document.createElement('div');
+            materialElement.className = 'matter-in-zone';
+            materialElement.dataset.originalMaterial = material;
+            
+            // Position randomly in zone
+            const x = Math.random() * (zoneElement.offsetWidth - 80) + 20;
+            const y = Math.random() * (zoneElement.offsetHeight - 80) + 20;
+            materialElement.style.left = x + 'px';
+            materialElement.style.top = y + 'px';
+            materialElement.style.position = 'absolute';
+            
+            // Determine final state based on temperature
+            let finalState, finalClass, stateText;
+            
+            if (temp < 0) {
+                finalState = 'solid';
+                finalClass = 'ice-cube';
+                stateText = material === 'steam' ? 'تجمد البخار إلى ثلج' : 
+                          material === 'water' ? 'تجمد الماء إلى ثلج' : 'بقي الثلج صلباً';
+            } else if (temp < 100) {
+                finalState = 'liquid';
+                finalClass = 'water-drop';
+                stateText = material === 'ice' ? 'ذاب الثلج إلى ماء' : 
+                          material === 'steam' ? 'تكثف البخار إلى ماء' : 'بقي الماء سائلاً';
+            } else {
+                finalState = 'gas';
+                finalClass = 'steam-cloud';
+                stateText = material === 'ice' ? 'تحول الثلج إلى بخار مباشرة' : 
+                          material === 'water' ? 'تبخر الماء إلى بخار' : 'بقي البخار غازياً';
+            }
+            
+            materialElement.className += ' ' + finalClass;
+            zoneElement.appendChild(materialElement);
+            
+            // Add particles animation
+            setTimeout(() => {
+                createStateParticles(zoneElement, finalState);
+                addObservation(stateText + ` في ${zoneElement.querySelector('.zone-label').textContent}`);
+            }, 500);
+            
+            return materialElement;
+        }
+
+        function createStateParticles(zone, state) {
+            // Remove existing particles
+            zone.querySelectorAll('.matter-particle').forEach(p => p.remove());
+            
+            // Create new particles
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = `matter-particle ${state}-particle`;
+                    
+                    const x = Math.random() * (zone.offsetWidth - 20);
+                    const y = Math.random() * (zone.offsetHeight - 20);
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.position = 'absolute';
+                    
+                    zone.appendChild(particle);
+                }, i * 100);
+            }
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialItems = document.querySelectorAll('.material-item');
+            const zones = document.querySelectorAll('.temperature-zone');
+
+            materialItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    if (!experimentStarted) {
+                        e.preventDefault();
+                        return;
+                    }
+                    e.target.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    e.target.classList.remove('dragging');
+                });
+            });
+
+            zones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const draggedItem = document.querySelector('.dragging');
+                    if (!draggedItem) return;
+
+                    const material = draggedItem.dataset.material;
+                    const zoneId = e.currentTarget.id.replace('Zone', '');
+                    
+                    createMatterInZone(material, zoneId);
+                    
+                    // Update progress
+                    if (currentStep === 1) updateStep(2);
+                    else if (currentStep === 2) updateStep(3);
+                    else if (currentStep === 3) updateStep(4);
+                });
+            });
+            
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>
