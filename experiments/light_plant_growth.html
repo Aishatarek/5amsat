@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة تأثير الضوء على نمو النبات - Light Effect on Plant Growth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #4a90e2, #357abd); color: white; }
+        .btn-success { background: linear-gradient(135deg, #28a745, #20a138); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+        .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .conditions-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .conditions-panel h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .condition-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .condition-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #27ae60;
+        }
+
+        .condition-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .condition-info {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .plant-containers {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .plant-pot {
+            width: 200px;
+            height: 300px;
+            position: relative;
+            background: linear-gradient(to bottom, transparent 60%, #8b4513 100%);
+            border-radius: 0 0 100px 100px;
+            border: 4px solid #654321;
+            overflow: hidden;
+        }
+
+        .soil {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, #654321, #8b4513);
+            border-radius: 0 0 96px 96px;
+        }
+
+        .plant {
+            position: absolute;
+            bottom: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 2s ease;
+        }
+
+        .plant-stem {
+            width: 8px;
+            background: linear-gradient(to top, #228b22, #32cd32);
+            border-radius: 4px;
+            margin: 0 auto;
+            transition: height 3s ease;
+        }
+
+        .plant-leaf {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: radial-gradient(ellipse, #32cd32, #228b22);
+            border-radius: 50% 10px 50% 10px;
+            opacity: 0;
+            transition: all 2s ease;
+        }
+
+        .plant-leaf.left {
+            left: -25px;
+            transform: rotate(-45deg);
+        }
+
+        .plant-leaf.right {
+            right: -25px;
+            transform: rotate(45deg);
+        }
+
+        .plant-flower {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, #ff69b4, #ff1493);
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 2s ease;
+        }
+
+        .plant-flower::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            border-radius: 50%;
+        }
+
+        .environment-light {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            border-radius: 15px;
+            transition: all 1s ease;
+        }
+
+        .light-environment {
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 0, 0.3) 0%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                transparent 100%);
+        }
+
+        .dark-environment {
+            background: linear-gradient(to bottom, 
+                rgba(0, 0, 0, 0.7) 0%, 
+                rgba(0, 0, 0, 0.5) 50%, 
+                rgba(0, 0, 0, 0.3) 100%);
+        }
+
+        .sun-rays {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .sun-rays.active {
+            opacity: 1;
+            animation: sun-shine 3s infinite ease-in-out;
+        }
+
+        @keyframes sun-shine {
+            0%, 100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+            50% { transform: translateX(-50%) scale(1.1) rotate(180deg); }
+        }
+
+        .sun-rays::before {
+            content: '☀️';
+            font-size: 60px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 4px;
+            height: 200px;
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 0, 0.8) 0%, 
+                transparent 100%);
+            opacity: 0;
+            animation: light-ray 2s infinite ease-in-out;
+        }
+
+        @keyframes light-ray {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.8; }
+        }
+
+        .pot-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .growth-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            transition: all 0.5s ease;
+        }
+
+        .healthy { background: #28a745; }
+        .weak { background: #ffc107; color: #333; }
+        .wilting { background: #dc3545; }
+
+        .water-droplets {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(135, 206, 235, 0.8);
+            border-radius: 50%;
+            opacity: 0;
+            animation: water-drop 3s infinite;
+        }
+
+        @keyframes water-drop {
+            0% { opacity: 0; top: 10px; }
+            50% { opacity: 1; }
+            100% { opacity: 0; top: 200px; }
+        }
+
+        .photosynthesis-particles {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 255, 0, 0.7);
+            border-radius: 50%;
+            opacity: 0;
+            animation: photosynthesis 4s infinite;
+        }
+
+        @keyframes photosynthesis {
+            0% { opacity: 0; transform: translateY(0px) scale(0); }
+            50% { opacity: 1; transform: translateY(-50px) scale(1); }
+            100% { opacity: 0; transform: translateY(-100px) scale(0); }
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .observations {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #27ae60;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active { background: #27ae60; color: white; }
+        .step.completed { background: #28a745; color: white; }
+
+        .timer {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .plant-containers {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .plant-pot {
+                width: 150px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🌱 تجربة تأثير الضوء على نمو النبات</h1>
+            <p id="subtitle">Light Effect on Plant Growth Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">إعداد النباتات</div>
+            <div class="step" id="step2">تطبيق الظروف</div>
+            <div class="step" id="step3">مراقبة النمو</div>
+            <div class="step" id="step4">مقارنة النتائج</div>
+        </div>
+
+        <div class="main-content">
+            <div class="conditions-panel">
+                <h3 id="conditionsTitle">الظروف البيئية</h3>
+                
+                <div class="condition-item" draggable="true" data-condition="light">
+                    <div style="font-size: 2em;">☀️</div>
+                    <div id="lightName">ضوء الشمس</div>
+                    <div class="condition-info">ضروري للبناء الضوئي</div>
+                    <small>Sunlight</small>
+                </div>
+
+                <div class="condition-item" draggable="true" data-condition="darkness">
+                    <div style="font-size: 2em;">🌙</div>
+                    <div id="darknessName">ظلام</div>
+                    <div class="condition-info">عدم وجود ضوء</div>
+                    <small>Darkness</small>
+                </div>
+
+                <div class="condition-item" draggable="true" data-condition="water">
+                    <div style="font-size: 2em;">💧</div>
+                    <div id="waterName">ماء</div>
+                    <div class="condition-info">ضروري للنمو</div>
+                    <small>Water</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="timer" id="timer">يوم: 0</div>
+                
+                <div class="drop-zone" data-accept="light,darkness,water" id="plantsZone">
+                    <span id="plantsInstruction">اسحب الظروف المختلفة إلى النباتات لمراقبة تأثيرها على النمو</span>
+                </div>
+
+                <div class="plant-containers" id="plantsContainer">
+                    <div class="plant-pot" id="pot1" data-pot="1">
+                        <div class="pot-label">نبات 1</div>
+                        <div class="soil"></div>
+                        <div class="plant" id="plant1">
+                            <div class="plant-stem" style="height: 20px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="plant-pot" id="pot2" data-pot="2">
+                        <div class="pot-label">نبات 2</div>
+                        <div class="soil"></div>
+                        <div class="plant" id="plant2">
+                            <div class="plant-stem" style="height: 20px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let plantsConditions = {};
+        let experimentDay = 0;
+        let dayTimer = null;
+
+        const conditions = {
+            'light': { 
+                type: 'beneficial',
+                name: 'ضوء الشمس',
+                effect: 'نمو صحي وقوي',
+                growth: 'healthy'
+            },
+            'darkness': { 
+                type: 'harmful',
+                name: 'ظلام',
+                effect: 'نمو ضعيف أو ذبول',
+                growth: 'wilting'
+            },
+            'water': { 
+                type: 'beneficial',
+                name: 'ماء',
+                effect: 'يساعد على النمو',
+                growth: 'healthy'
+            }
+        };
+
+        const translations = {
+            ar: {
+                title: "🌱 تجربة تأثير الضوء على نمو النبات",
+                subtitle: "Light Effect on Plant Growth Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                conditionsTitle: "الظروف البيئية",
+                lightName: "ضوء الشمس",
+                darknessName: "ظلام",
+                waterName: "ماء",
+                plantsInstruction: "اسحب الظروف المختلفة إلى النباتات لمراقبة تأثيرها على النمو",
+                observationsTitle: "الملاحظات:",
+                obs1: "انتظار بدء التجربة...",
+                step1: "إعداد النباتات",
+                step2: "تطبيق الظروف",
+                step3: "مراقبة النمو",
+                step4: "مقارنة النتائج"
+            },
+            en: {
+                title: "🌱 Light Effect on Plant Growth Experiment",
+                subtitle: "تجربة تأثير الضوء على نمو النبات",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                conditionsTitle: "Environmental Conditions",
+                lightName: "Sunlight",
+                darknessName: "Darkness",
+                waterName: "Water",
+                plantsInstruction: "Drag different conditions to plants to observe their effect on growth",
+                observationsTitle: "Observations:",
+                obs1: "Waiting to start experiment...",
+                step1: "Setup Plants",
+                step2: "Apply Conditions",
+                step3: "Monitor Growth",
+                step4: "Compare Results"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            experimentStarted = true;
+            updateStep(1);
+            startDayTimer();
+            addObservation("بدأت التجربة - اسحب الظروف المختلفة إلى النباتات");
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            plantsConditions = {};
+            experimentDay = 0;
+            
+            if (dayTimer) {
+                clearInterval(dayTimer);
+                dayTimer = null;
+            }
+            
+            // Reset timer display
+            document.getElementById('timer').textContent = 'يوم: 0';
+            
+            // Reset all plants
+            document.querySelectorAll('.plant-pot').forEach(pot => {
+                const effects = pot.querySelectorAll('.environment-light, .sun-rays, .light-beam, .growth-indicator, .water-droplets, .photosynthesis-particles');
+                effects.forEach(effect => effect.remove());
+                
+                pot.querySelector('.pot-label').textContent = `نبات ${pot.dataset.pot}`;
+                
+                // Reset plant growth
+                const plant = pot.querySelector('.plant');
+                const stem = plant.querySelector('.plant-stem');
+                stem.style.height = '20px';
+                
+                // Remove leaves and flowers
+                const leaves = plant.querySelectorAll('.plant-leaf');
+                const flowers = plant.querySelectorAll('.plant-flower');
+                leaves.forEach(leaf => leaf.remove());
+                flowers.forEach(flower => flower.remove());
+            });
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function startDayTimer() {
+            dayTimer = setInterval(() => {
+                experimentDay++;
+                document.getElementById('timer').textContent = `يوم: ${experimentDay}`;
+                
+                // Update plant growth based on conditions
+                updatePlantGrowth();
+                
+                if (experimentDay >= 7) {
+                    addObservation("🎉 انتهت التجربة بعد أسبوع - قارن بين النباتات!");
+                    if (currentStep < 4) updateStep(4);
+                }
+            }, 2000); // Each day = 2 seconds
+        }
+
+        function applyConditionToPot(condition, potElement) {
+            const potId = potElement.id;
+            const conditionData = conditions[condition];
+            
+            // Store condition
+            if (!plantsConditions[potId]) {
+                plantsConditions[potId] = [];
+            }
+            plantsConditions[potId].push(condition);
+            
+            // Update pot label
+            const label = potElement.querySelector('.pot-label');
+            label.textContent = `${conditionData.name}`;
+            
+            // Add growth indicator
+            let indicator = potElement.querySelector('.growth-indicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.className = 'growth-indicator';
+                potElement.appendChild(indicator);
+            }
+            
+            // Determine overall growth status
+            const hasLight = plantsConditions[potId].includes('light');
+            const hasWater = plantsConditions[potId].includes('water');
+            const hasDarkness = plantsConditions[potId].includes('darkness');
+            
+            if (hasLight && hasWater && !hasDarkness) {
+                indicator.className = 'growth-indicator healthy';
+                indicator.textContent = 'صحي';
+            } else if (hasDarkness || (!hasLight && !hasWater)) {
+                indicator.className = 'growth-indicator wilting';
+                indicator.textContent = 'ذابل';
+            } else {
+                indicator.className = 'growth-indicator weak';
+                indicator.textContent = 'ضعيف';
+            }
+            
+            // Apply visual effects
+            applyVisualEffects(potElement, condition);
+            
+            addObservation(`تم تطبيق ${conditionData.name} على ${label.textContent} - ${conditionData.effect}`);
+            
+            // Update progress
+            const appliedConditions = Object.keys(plantsConditions).length;
+            if (appliedConditions === 1 && currentStep === 1) updateStep(2);
+            else if (appliedConditions === 2 && currentStep === 2) updateStep(3);
+        }
+
+        function applyVisualEffects(potElement, condition) {
+            if (condition === 'light') {
+                // Add light environment
+                const lightEnv = document.createElement('div');
+                lightEnv.className = 'environment-light light-environment';
+                potElement.appendChild(lightEnv);
+                
+                // Add sun rays
+                const sunRays = document.createElement('div');
+                sunRays.className = 'sun-rays active';
+                potElement.appendChild(sunRays);
+                
+                // Add light beams
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const beam = document.createElement('div');
+                        beam.className = 'light-beam';
+                        beam.style.left = Math.random() * (potElement.offsetWidth - 4) + 'px';
+                        beam.style.top = '40px';
+                        beam.style.animationDelay = Math.random() * 2 + 's';
+                        potElement.appendChild(beam);
+                    }, i * 300);
+                }
+                
+                // Add photosynthesis particles
+                createPhotosynthesisParticles(potElement);
+                
+            } else if (condition === 'darkness') {
+                // Add dark environment
+                const darkEnv = document.createElement('div');
+                darkEnv.className = 'environment-light dark-environment';
+                potElement.appendChild(darkEnv);
+                
+            } else if (condition === 'water') {
+                // Add water droplets
+                createWaterDroplets(potElement);
+            }
+        }
+
+        function createWaterDroplets(potElement) {
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const droplet = document.createElement('div');
+                    droplet.className = 'water-droplets';
+                    
+                    const x = Math.random() * (potElement.offsetWidth - 8) + 4;
+                    droplet.style.left = x + 'px';
+                    droplet.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    potElement.appendChild(droplet);
+                    
+                    setTimeout(() => {
+                        if (droplet.parentNode) {
+                            droplet.parentNode.removeChild(droplet);
+                        }
+                    }, 3000);
+                }, i * 200);
+            }
+        }
+
+        function createPhotosynthesisParticles(potElement) {
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'photosynthesis-particles';
+                    
+                    const x = Math.random() * (potElement.offsetWidth - 6) + 3;
+                    const y = Math.random() * 100 + 150;
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.animationDelay = Math.random() * 3 + 's';
+                    
+                    potElement.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 4000);
+                }, i * 400);
+            }
+        }
+
+        function updatePlantGrowth() {
+            Object.keys(plantsConditions).forEach(potId => {
+                const potElement = document.getElementById(potId);
+                const plant = potElement.querySelector('.plant');
+                const stem = plant.querySelector('.plant-stem');
+                const conditions = plantsConditions[potId];
+                
+                const hasLight = conditions.includes('light');
+                const hasWater = conditions.includes('water');
+                const hasDarkness = conditions.includes('darkness');
+                
+                let currentHeight = parseInt(stem.style.height) || 20;
+                
+                if (hasLight && hasWater && !hasDarkness) {
+                    // Healthy growth
+                    currentHeight += 15;
+                    
+                    // Add leaves after day 2
+                    if (experimentDay >= 2 && !plant.querySelector('.plant-leaf')) {
+                        addLeaves(plant);
+                    }
+                    
+                    // Add flower after day 5
+                    if (experimentDay >= 5 && !plant.querySelector('.plant-flower')) {
+                        addFlower(plant);
+                    }
+                    
+                } else if (hasDarkness || (!hasLight && !hasWater)) {
+                    // Poor growth or wilting
+                    currentHeight += 2;
+                    
+                } else {
+                    // Moderate growth
+                    currentHeight += 8;
+                }
+                
+                // Cap maximum height
+                currentHeight = Math.min(currentHeight, 120);
+                stem.style.height = currentHeight + 'px';
+            });
+        }
+
+        function addLeaves(plant) {
+            const leftLeaf = document.createElement('div');
+            leftLeaf.className = 'plant-leaf left';
+            leftLeaf.style.top = '30px';
+            plant.appendChild(leftLeaf);
+            
+            const rightLeaf = document.createElement('div');
+            rightLeaf.className = 'plant-leaf right';
+            rightLeaf.style.top = '30px';
+            plant.appendChild(rightLeaf);
+            
+            setTimeout(() => {
+                leftLeaf.style.opacity = '1';
+                rightLeaf.style.opacity = '1';
+            }, 100);
+        }
+
+        function addFlower(plant) {
+            const flower = document.createElement('div');
+            flower.className = 'plant-flower';
+            plant.appendChild(flower);
+            
+            setTimeout(() => {
+                flower.style.opacity = '1';
+            }, 100);
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const conditionItems = document.querySelectorAll('.condition-item');
+            const pots = document.querySelectorAll('.plant-pot');
+
+            conditionItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    if (!experimentStarted) {
+                        e.preventDefault();
+                        return;
+                    }
+                    e.target.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    e.target.classList.remove('dragging');
+                });
+            });
+
+            pots.forEach(pot => {
+                pot.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+
+                pot.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const draggedItem = document.querySelector('.dragging');
+                    if (!draggedItem) return;
+
+                    const condition = draggedItem.dataset.condition;
+                    applyConditionToPot(condition, e.currentTarget);
+                });
+            });
+            
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>

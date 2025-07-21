@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الدائرة الكهربائية البسيطة - Grade 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .components-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .components-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .component-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .component-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #f39c12;
+        }
+
+        .component-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .component-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .circuit-board {
+            width: 100%;
+            height: 400px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(243, 156, 18, 0.1), transparent 30%),
+                radial-gradient(circle at 75% 75%, rgba(230, 126, 34, 0.1), transparent 30%),
+                linear-gradient(45deg, transparent 48%, rgba(243, 156, 18, 0.05) 50%, transparent 52%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .circuit-board.drag-over {
+            border-color: #f39c12;
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+
+        .component-in-circuit {
+            position: absolute;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            width: 60px;
+            height: 60px;
+            cursor: grab;
+            border: 2px solid #333;
+        }
+
+        .battery-component {
+            background: linear-gradient(90deg, #27ae60 50%, #2d3436 50%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .bulb-component {
+            background: radial-gradient(circle, #f1c40f, #f39c12);
+            border-radius: 50%;
+        }
+
+        .bulb-component.lit {
+            animation: bulbGlow 1s infinite alternate;
+            box-shadow: 0 0 20px #f1c40f;
+        }
+
+        @keyframes bulbGlow {
+            0% { 
+                box-shadow: 0 0 20px #f1c40f;
+                transform: scale(1);
+            }
+            100% { 
+                box-shadow: 0 0 30px #f1c40f, 0 0 40px #f39c12;
+                transform: scale(1.1);
+            }
+        }
+
+        .wire-component {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            width: 80px;
+            height: 20px;
+            border-radius: 10px;
+        }
+
+        .switch-component {
+            background: linear-gradient(145deg, #ecf0f1, #bdc3c7);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .switch-component.on {
+            background: linear-gradient(145deg, #2ecc71, #27ae60);
+        }
+
+        .switch-lever {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 6px;
+            background: #2d3436;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .switch-component.on .switch-lever {
+            background: #ecf0f1;
+        }
+
+        .wire-connection {
+            position: absolute;
+            height: 3px;
+            background: #e67e22;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .wire-connection.active {
+            background: #f39c12;
+            animation: currentFlow 1s infinite;
+        }
+
+        @keyframes currentFlow {
+            0% { 
+                box-shadow: 0 0 5px #f39c12;
+                opacity: 0.8;
+            }
+            50% { 
+                box-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22;
+                opacity: 1;
+            }
+            100% { 
+                box-shadow: 0 0 5px #f39c12;
+                opacity: 0.8;
+            }
+        }
+
+        .current-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #f1c40f;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFlow 2s infinite linear;
+        }
+
+        @keyframes particleFlow {
+            0% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(400px, 0) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        .observations {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #f39c12;
+        }
+
+        .observations h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00b894;
+            transition: all 0.3s ease;
+        }
+
+        .observation-item.circuit {
+            border-left-color: #f39c12;
+        }
+
+        .observation-item.success {
+            border-left-color: #00b894;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .circuit-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .circuit-status.complete {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .circuit-status.incomplete {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .component-in-circuit {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ تجربة الدائرة الكهربائية البسيطة</h1>
+            <p>توصيل الكهرباء في دائرة بسيطة - الصف الرابع الابتدائي</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()">English</button>
+            <button class="btn btn-success" onclick="startExperiment()">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()">إعادة تعيين</button>
+        </div>
+
+        <div class="main-content">
+            <div class="components-panel">
+                <h3>مكونات الدائرة الكهربائية</h3>
+                
+                <div class="component-item" draggable="true" data-component="battery">
+                    <div class="component-icon">🔋</div>
+                    <div><strong>بطارية</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Battery</div>
+                    <div style="font-size: 0.7em; color: #999;">مصدر الطاقة</div>
+                </div>
+
+                <div class="component-item" draggable="true" data-component="bulb">
+                    <div class="component-icon">💡</div>
+                    <div><strong>مصباح صغير</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Light Bulb</div>
+                    <div style="font-size: 0.7em; color: #999;">يضيء عند مرور التيار</div>
+                </div>
+
+                <div class="component-item" draggable="true" data-component="wire1">
+                    <div class="component-icon">🔌</div>
+                    <div><strong>سلك توصيل 1</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Wire 1</div>
+                    <div style="font-size: 0.7em; color: #999;">ينقل الكهرباء</div>
+                </div>
+
+                <div class="component-item" draggable="true" data-component="wire2">
+                    <div class="component-icon">🔌</div>
+                    <div><strong>سلك توصيل 2</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Wire 2</div>
+                    <div style="font-size: 0.7em; color: #999;">ينقل الكهرباء</div>
+                </div>
+
+                <div class="component-item" draggable="true" data-component="switch">
+                    <div class="component-icon">🎛️</div>
+                    <div><strong>مفتاح كهربائي</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Switch</div>
+                    <div style="font-size: 0.7em; color: #999;">يتحكم في التيار</div>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <h3 style="text-align: center; margin-bottom: 20px;">اسحب المكونات لبناء الدائرة الكهربائية</h3>
+                
+                <div class="circuit-status" id="circuitStatus">
+                    <strong>حالة الدائرة:</strong> غير مكتملة - أضف جميع المكونات لإكمال الدائرة
+                </div>
+                
+                <div class="circuit-board" id="circuitBoard">
+                    <div style="margin-top: 100px;">اسحب مكونات الدائرة هنا لتوصيلها</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4>🔍 الملاحظات:</h4>
+            <div id="observationsList">
+                <div class="observation-item">انتظار بدء التجربة...</div>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4>📋 الاستنتاج:</h4>
+            <p><strong>الدائرة الكهربائية البسيطة تحتاج إلى:</strong></p>
+            <ul style="margin: 10px 0; padding-right: 20px;">
+                <li><strong>مصدر طاقة:</strong> البطارية التي تولد التيار الكهربائي</li>
+                <li><strong>موصلات:</strong> الأسلاك التي تنقل التيار</li>
+                <li><strong>حمل كهربائي:</strong> المصباح الذي يستهلك الطاقة</li>
+                <li><strong>مفتاح تحكم:</strong> لفتح وإغلاق الدائرة</li>
+                <li><strong>الشرط الأساسي:</strong> يجب أن تكون الدائرة مغلقة لمرور التيار</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let experimentStarted = false;
+        let componentsAdded = 0;
+        let totalComponents = 5;
+        let draggedElement = null;
+        let circuitComponents = {};
+        let isCircuitComplete = false;
+        let switchOn = false;
+
+        const components = {
+            battery: { 
+                ar: 'بطارية', en: 'Battery', 
+                icon: '🔋',
+                class: 'battery-component',
+                essential: true
+            },
+            bulb: { 
+                ar: 'مصباح صغير', en: 'Light Bulb', 
+                icon: '💡',
+                class: 'bulb-component',
+                essential: true
+            },
+            wire1: { 
+                ar: 'سلك توصيل 1', en: 'Wire 1', 
+                icon: '🔌',
+                class: 'wire-component',
+                essential: true
+            },
+            wire2: { 
+                ar: 'سلك توصيل 2', en: 'Wire 2', 
+                icon: '🔌',
+                class: 'wire-component',
+                essential: true
+            },
+            switch: { 
+                ar: 'مفتاح كهربائي', en: 'Switch', 
+                icon: '🎛️',
+                class: 'switch-component',
+                essential: true
+            }
+        };
+
+        function startExperiment() {
+            experimentStarted = true;
+            addObservation('تم بدء التجربة! اسحب مكونات الدائرة الكهربائية إلى اللوح.', 'Experiment started! Drag electrical components to the board.');
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            componentsAdded = 0;
+            circuitComponents = {};
+            isCircuitComplete = false;
+            switchOn = false;
+            
+            // Clear circuit board
+            const circuitBoard = document.getElementById('circuitBoard');
+            circuitBoard.querySelectorAll('.component-in-circuit, .wire-connection, .current-particle').forEach(element => {
+                element.remove();
+            });
+            circuitBoard.innerHTML = '<div style="margin-top: 100px;">اسحب مكونات الدائرة هنا لتوصيلها</div>';
+
+            // Reset observations
+            document.getElementById('observationsList').innerHTML = 
+                '<div class="observation-item">انتظار بدء التجربة...</div>';
+            
+            document.getElementById('conclusion').style.display = 'none';
+            updateCircuitStatus();
+            
+            // Reset component items
+            document.querySelectorAll('.component-item').forEach(item => {
+                item.style.opacity = '1';
+                item.draggable = true;
+            });
+        }
+
+        function addObservation(arText, enText, className = '') {
+            const observationsList = document.getElementById('observationsList');
+            if (observationsList.children[0].textContent === 'انتظار بدء التجربة...') {
+                observationsList.innerHTML = '';
+            }
+            
+            const observationItem = document.createElement('div');
+            observationItem.className = `observation-item ${className}`;
+            observationItem.textContent = currentLanguage === 'ar' ? arText : enText;
+            observationsList.appendChild(observationItem);
+            
+            // Scroll to bottom
+            observationsList.scrollTop = observationsList.scrollHeight;
+        }
+
+        function updateCircuitStatus() {
+            const statusElement = document.getElementById('circuitStatus');
+            
+            if (isCircuitComplete && switchOn) {
+                statusElement.className = 'circuit-status complete';
+                statusElement.innerHTML = '<strong>حالة الدائرة:</strong> مكتملة ومغلقة ✅ - التيار يمر والمصباح يضيء!';
+            } else if (isCircuitComplete && !switchOn) {
+                statusElement.className = 'circuit-status incomplete';
+                statusElement.innerHTML = '<strong>حالة الدائرة:</strong> مكتملة لكن مفتوحة - اضغط على المفتاح لإغلاق الدائرة';
+            } else {
+                statusElement.className = 'circuit-status incomplete';
+                statusElement.innerHTML = `<strong>حالة الدائرة:</strong> غير مكتملة (${componentsAdded}/${totalComponents}) - أضف المكونات المتبقية`;
+            }
+        }
+
+        function checkCircuitCompletion() {
+            if (componentsAdded === totalComponents) {
+                isCircuitComplete = true;
+                addObservation(
+                    'تم توصيل جميع المكونات! اضغط على المفتاح لإغلاق الدائرة.',
+                    'All components connected! Click the switch to close the circuit.',
+                    'circuit'
+                );
+                
+                // Create visual wire connections
+                createWireConnections();
+                updateCircuitStatus();
+            }
+        }
+
+        function createWireConnections() {
+            const circuitBoard = document.getElementById('circuitBoard');
+            
+            // Create visual wires between components
+            const connections = [
+                { from: 'battery', to: 'wire1' },
+                { from: 'wire1', to: 'bulb' },
+                { from: 'bulb', to: 'wire2' },
+                { from: 'wire2', to: 'switch' },
+                { from: 'switch', to: 'battery' }
+            ];
+            
+            connections.forEach((connection, index) => {
+                setTimeout(() => {
+                    const fromElement = circuitComponents[connection.from];
+                    const toElement = circuitComponents[connection.to];
+                    
+                    if (fromElement && toElement) {
+                        const wire = document.createElement('div');
+                        wire.className = 'wire-connection';
+                        wire.dataset.from = connection.from;
+                        wire.dataset.to = connection.to;
+                        
+                        const fromRect = fromElement.getBoundingClientRect();
+                        const toRect = toElement.getBoundingClientRect();
+                        const boardRect = circuitBoard.getBoundingClientRect();
+                        
+                        const fromX = fromRect.left - boardRect.left + fromRect.width / 2;
+                        const fromY = fromRect.top - boardRect.top + fromRect.height / 2;
+                        const toX = toRect.left - boardRect.left + toRect.width / 2;
+                        const toY = toRect.top - boardRect.top + toRect.height / 2;
+                        
+                        const length = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+                        const angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
+                        
+                        wire.style.left = fromX + 'px';
+                        wire.style.top = fromY + 'px';
+                        wire.style.width = length + 'px';
+                        wire.style.transform = `rotate(${angle}deg)`;
+                        wire.style.transformOrigin = '0 50%';
+                        
+                        circuitBoard.appendChild(wire);
+                    }
+                }, index * 200);
+            });
+        }
+
+        function activateCircuit() {
+            switchOn = true;
+            
+            // Light up the bulb
+            const bulb = circuitComponents.bulb;
+            if (bulb) {
+                bulb.classList.add('lit');
+            }
+            
+            // Activate wire connections
+            document.querySelectorAll('.wire-connection').forEach(wire => {
+                wire.classList.add('active');
+            });
+            
+            // Create current flow particles
+            createCurrentParticles();
+            
+            addObservation(
+                'الدائرة مغلقة! التيار يمر والمصباح يضيء! ⚡',
+                'Circuit closed! Current flows and bulb lights up! ⚡',
+                'success'
+            );
+            
+            updateCircuitStatus();
+            
+            // Show conclusion after successful circuit completion
+            setTimeout(() => {
+                document.getElementById('conclusion').style.display = 'block';
+            }, 2000);
+        }
+
+        function deactivateCircuit() {
+            switchOn = false;
+            
+            // Turn off the bulb
+            const bulb = circuitComponents.bulb;
+            if (bulb) {
+                bulb.classList.remove('lit');
+            }
+            
+            // Deactivate wire connections
+            document.querySelectorAll('.wire-connection').forEach(wire => {
+                wire.classList.remove('active');
+            });
+            
+            // Remove current particles
+            document.querySelectorAll('.current-particle').forEach(particle => {
+                particle.remove();
+            });
+            
+            addObservation(
+                'الدائرة مفتوحة! التيار توقف والمصباح انطفأ.',
+                'Circuit open! Current stopped and bulb turned off.'
+            );
+            
+            updateCircuitStatus();
+        }
+
+        function createCurrentParticles() {
+            const circuitBoard = document.getElementById('circuitBoard');
+            
+            // Create animated particles showing current flow
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'current-particle';
+                    particle.style.left = '10%';
+                    particle.style.top = '50%';
+                    particle.style.animationDelay = (i * 0.25) + 's';
+                    
+                    circuitBoard.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.remove();
+                        }
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+
+        function handleSwitchClick(switchElement) {
+            if (!isCircuitComplete) return;
+            
+            switchElement.classList.toggle('on');
+            const isOn = switchElement.classList.contains('on');
+            
+            if (isOn) {
+                activateCircuit();
+            } else {
+                deactivateCircuit();
+            }
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            // Implementation for language toggle can be added here
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const componentItems = document.querySelectorAll('.component-item');
+            const circuitBoard = document.getElementById('circuitBoard');
+
+            componentItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            circuitBoard.addEventListener('dragover', handleDragOver);
+            circuitBoard.addEventListener('dragenter', handleDragEnter);
+            circuitBoard.addEventListener('dragleave', handleDragLeave);
+            circuitBoard.addEventListener('drop', handleDrop);
+        });
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.id === 'circuitBoard') {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.id === 'circuitBoard') {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const circuitBoard = document.getElementById('circuitBoard');
+            if (!draggedElement) return;
+
+            circuitBoard.classList.remove('drag-over');
+            
+            const componentType = draggedElement.dataset.component;
+            const componentData = components[componentType];
+            
+            // Check if this component already exists in circuit
+            if (circuitComponents[componentType]) {
+                addObservation(
+                    'هذا المكون موجود بالفعل في الدائرة!',
+                    'This component is already in the circuit!'
+                );
+                return;
+            }
+            
+            componentsAdded++;
+            
+            // Hide original component
+            draggedElement.style.opacity = '0.3';
+            draggedElement.draggable = false;
+            
+            // Create component in circuit
+            const componentElement = document.createElement('div');
+            componentElement.className = `component-in-circuit ${componentData.class}`;
+            componentElement.dataset.component = componentType;
+            componentElement.innerHTML = componentData.icon;
+            
+            // Position components in a circuit layout
+            const positions = {
+                battery: { left: '10%', top: '60%' },
+                bulb: { left: '45%', top: '20%' },
+                wire1: { left: '25%', top: '35%' },
+                wire2: { left: '65%', top: '35%' },
+                switch: { left: '80%', top: '60%' }
+            };
+            
+            const position = positions[componentType];
+            componentElement.style.left = position.left;
+            componentElement.style.top = position.top;
+            
+            // Special handling for switch
+            if (componentType === 'switch') {
+                const lever = document.createElement('div');
+                lever.className = 'switch-lever';
+                componentElement.appendChild(lever);
+                
+                componentElement.addEventListener('click', () => {
+                    handleSwitchClick(componentElement);
+                });
+            }
+            
+            circuitBoard.appendChild(componentElement);
+            circuitComponents[componentType] = componentElement;
+            
+            // Clear the placeholder text
+            if (componentsAdded === 1) {
+                circuitBoard.innerHTML = '';
+                circuitBoard.appendChild(componentElement);
+            }
+            
+            addObservation(
+                `تم إضافة ${componentData.ar} إلى الدائرة.`,
+                `${componentData.en} added to circuit.`,
+                'circuit'
+            );
+            
+            updateCircuitStatus();
+            checkCircuitCompletion();
+        }
+    </script>
+</body>
+</html>

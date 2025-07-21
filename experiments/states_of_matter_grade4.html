@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة التعرف على المواد الصلبة والسائلة والغازية - Grade 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6c5ce7, #74b9ff);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff, #6c5ce7);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .materials-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .materials-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .material-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #74b9ff;
+        }
+
+        .material-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .material-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .state-zones {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .state-zone {
+            height: 200px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .state-zone.drag-over {
+            border-color: #74b9ff;
+            background: rgba(116, 185, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .solid-zone {
+            background: linear-gradient(145deg, #ffeaa7, #fdcb6e);
+            border-color: #e17055;
+        }
+
+        .liquid-zone {
+            background: linear-gradient(145deg, #74b9ff, #0984e3);
+            color: white;
+            border-color: #0984e3;
+        }
+
+        .gas-zone {
+            background: linear-gradient(145deg, #a29bfe, #6c5ce7);
+            color: white;
+            border-color: #6c5ce7;
+        }
+
+        .zone-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .zone-description {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .material-in-zone {
+            position: absolute;
+            transition: all 0.5s ease;
+            margin: 5px;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            font-size: 0.8em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .observations {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #74b9ff;
+        }
+
+        .observations h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00b894;
+            transition: all 0.3s ease;
+        }
+
+        .observation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .conclusion.show {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .material-animation {
+            animation: materialize 0.8s ease;
+        }
+
+        @keyframes materialize {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(180deg);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.1) rotate(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .particle-effect {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #74b9ff;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .solid-particles {
+            animation: solidVibrate 1s infinite;
+        }
+
+        .liquid-particles {
+            animation: liquidFlow 2s infinite ease-in-out;
+        }
+
+        .gas-particles {
+            animation: gasMove 1.5s infinite ease-in-out;
+        }
+
+        @keyframes solidVibrate {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, -1px); }
+        }
+
+        @keyframes liquidFlow {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+
+        @keyframes gasMove {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(15px, -10px) scale(0.8); }
+            50% { transform: translate(-10px, -15px) scale(1.2); }
+            75% { transform: translate(20px, 5px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .state-zones {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 تجربة التعرف على حالات المادة</h1>
+            <p>التعرف على المواد الصلبة والسائلة والغازية - الصف الرابع الابتدائي</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()">English</button>
+            <button class="btn btn-success" onclick="startExperiment()">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()">إعادة تعيين</button>
+        </div>
+
+        <div class="main-content">
+            <div class="materials-panel">
+                <h3>المواد المتاحة</h3>
+                
+                <div class="material-item" draggable="true" data-material="stone" data-state="solid">
+                    <div class="material-icon">🪨</div>
+                    <div><strong>حجر صغير</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Small Stone</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="water" data-state="liquid">
+                    <div class="material-icon">💧</div>
+                    <div><strong>ماء</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Water</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="ice" data-state="solid">
+                    <div class="material-icon">🧊</div>
+                    <div><strong>قطعة ثلج</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Ice Cube</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="air" data-state="gas">
+                    <div class="material-icon">💨</div>
+                    <div><strong>هواء (البالون)</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Air (Balloon)</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="wood" data-state="solid">
+                    <div class="material-icon">🪵</div>
+                    <div><strong>قطعة خشب</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Wood Piece</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="steam" data-state="gas">
+                    <div class="material-icon">♨️</div>
+                    <div><strong>بخار ماء</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Water Vapor</div>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <h3 style="text-align: center; margin-bottom: 20px;">اسحب المواد إلى الحالة المناسبة</h3>
+                
+                <div class="state-zones">
+                    <div class="state-zone solid-zone" data-accept="solid">
+                        <div class="zone-title">🧱 الحالة الصلبة</div>
+                        <div class="zone-description">شكل ثابت وحجم ثابت</div>
+                        <div style="font-size: 0.8em; margin-top: 5px;">Solid State</div>
+                    </div>
+
+                    <div class="state-zone liquid-zone" data-accept="liquid">
+                        <div class="zone-title">💧 الحالة السائلة</div>
+                        <div class="zone-description">حجم ثابت ولكن يأخذ شكل الإناء</div>
+                        <div style="font-size: 0.8em; margin-top: 5px;">Liquid State</div>
+                    </div>
+
+                    <div class="state-zone gas-zone" data-accept="gas">
+                        <div class="zone-title">💨 الحالة الغازية</div>
+                        <div class="zone-description">لا شكل ثابت ولا حجم ثابت</div>
+                        <div style="font-size: 0.8em; margin-top: 5px;">Gas State</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4>🔍 الملاحظات:</h4>
+            <div id="observationsList">
+                <div class="observation-item">انتظار بدء التجربة...</div>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4>📋 الاستنتاج:</h4>
+            <p><strong>المادة لها ثلاث حالات رئيسية:</strong></p>
+            <ul style="margin: 10px 0; padding-right: 20px;">
+                <li><strong>الصلبة:</strong> لها شكل ثابت وحجم ثابت (مثل الحجر والخشب والثلج)</li>
+                <li><strong>السائلة:</strong> لها حجم ثابت لكن تأخذ شكل الإناء (مثل الماء)</li>
+                <li><strong>الغازية:</strong> تنتشر وتملأ الفراغ المتاح (مثل الهواء والبخار)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let experimentStarted = false;
+        let materialsPlaced = 0;
+        let totalMaterials = 6;
+        let draggedElement = null;
+
+        const materials = {
+            stone: { ar: 'حجر صغير', en: 'Small Stone', state: 'solid', icon: '🪨' },
+            water: { ar: 'ماء', en: 'Water', state: 'liquid', icon: '💧' },
+            ice: { ar: 'قطعة ثلج', en: 'Ice Cube', state: 'solid', icon: '🧊' },
+            air: { ar: 'هواء (البالون)', en: 'Air (Balloon)', state: 'gas', icon: '💨' },
+            wood: { ar: 'قطعة خشب', en: 'Wood Piece', state: 'solid', icon: '🪵' },
+            steam: { ar: 'بخار ماء', en: 'Water Vapor', state: 'gas', icon: '♨️' }
+        };
+
+        const observations = {
+            correct: {
+                ar: ['تم وضع المادة في الحالة الصحيحة!', 'إجابة ممتازة!', 'أحسنت!'],
+                en: ['Material placed in correct state!', 'Excellent answer!', 'Well done!']
+            },
+            wrong: {
+                ar: ['هذه المادة لا تنتمي لهذه الحالة', 'حاول مرة أخرى'],
+                en: ['This material does not belong to this state', 'Try again']
+            }
+        };
+
+        function startExperiment() {
+            experimentStarted = true;
+            addObservation('تم بدء التجربة! اسحب المواد إلى الحالات المناسبة.', 'Start the experiment! Drag materials to appropriate states.');
+            createParticleEffects();
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            materialsPlaced = 0;
+            
+            // Clear all zones
+            document.querySelectorAll('.state-zone').forEach(zone => {
+                zone.querySelectorAll('.material-in-zone').forEach(material => {
+                    material.remove();
+                });
+            });
+
+            // Reset observations
+            document.getElementById('observationsList').innerHTML = 
+                '<div class="observation-item">انتظار بدء التجربة...</div>';
+            
+            document.getElementById('conclusion').style.display = 'none';
+            
+            // Reset material items
+            document.querySelectorAll('.material-item').forEach(item => {
+                item.style.opacity = '1';
+                item.draggable = true;
+            });
+        }
+
+        function addObservation(arText, enText) {
+            const observationsList = document.getElementById('observationsList');
+            if (observationsList.children[0].textContent === 'انتظار بدء التجربة...') {
+                observationsList.innerHTML = '';
+            }
+            
+            const observationItem = document.createElement('div');
+            observationItem.className = 'observation-item';
+            observationItem.textContent = currentLanguage === 'ar' ? arText : enText;
+            observationsList.appendChild(observationItem);
+            
+            // Scroll to bottom
+            observationsList.scrollTop = observationsList.scrollHeight;
+        }
+
+        function createParticleEffects() {
+            const zones = document.querySelectorAll('.state-zone');
+            
+            zones.forEach(zone => {
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle-effect';
+                        
+                        if (zone.classList.contains('solid-zone')) {
+                            particle.classList.add('solid-particles');
+                            particle.style.background = '#e17055';
+                        } else if (zone.classList.contains('liquid-zone')) {
+                            particle.classList.add('liquid-particles');
+                            particle.style.background = '#74b9ff';
+                        } else if (zone.classList.contains('gas-zone')) {
+                            particle.classList.add('gas-particles');
+                            particle.style.background = '#a29bfe';
+                        }
+                        
+                        particle.style.left = Math.random() * 90 + '%';
+                        particle.style.top = Math.random() * 80 + '%';
+                        
+                        zone.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 5000);
+                    }, i * 200);
+                }
+            });
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            // Implementation for language toggle can be added here
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialItems = document.querySelectorAll('.material-item');
+            const stateZones = document.querySelectorAll('.state-zone');
+
+            materialItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            stateZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+        });
+
+        function handleDragStart(e) {
+            if (!experimentStarted) return;
+            
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('state-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('state-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.target.closest('.state-zone');
+            if (!zone || !draggedElement) return;
+
+            zone.classList.remove('drag-over');
+            
+            const materialType = draggedElement.dataset.material;
+            const materialState = draggedElement.dataset.state;
+            const acceptedState = zone.dataset.accept;
+            
+            const material = materials[materialType];
+            
+            if (materialState === acceptedState) {
+                // Correct placement
+                materialsPlaced++;
+                
+                // Add material to zone
+                const materialInZone = document.createElement('div');
+                materialInZone.className = 'material-in-zone material-animation';
+                materialInZone.innerHTML = `${material.icon} ${material.ar}`;
+                materialInZone.style.left = Math.random() * 60 + '%';
+                materialInZone.style.top = Math.random() * 50 + 30 + '%';
+                zone.appendChild(materialInZone);
+                
+                // Hide original material
+                draggedElement.style.opacity = '0.3';
+                draggedElement.draggable = false;
+                
+                const randomCorrect = observations.correct.ar[Math.floor(Math.random() * observations.correct.ar.length)];
+                addObservation(
+                    `${randomCorrect} ${material.ar} ينتمي للحالة ${acceptedState === 'solid' ? 'الصلبة' : acceptedState === 'liquid' ? 'السائلة' : 'الغازية'}`,
+                    `${observations.correct.en[0]} ${material.en} belongs to ${acceptedState} state`
+                );
+                
+                // Check if experiment complete
+                if (materialsPlaced === totalMaterials) {
+                    setTimeout(() => {
+                        document.getElementById('conclusion').style.display = 'block';
+                        document.getElementById('conclusion').classList.add('show');
+                        addObservation(
+                            'تهانينا! تم تصنيف جميع المواد بنجاح إلى حالاتها الصحيحة!',
+                            'Congratulations! All materials have been successfully classified into their correct states!'
+                        );
+                    }, 1000);
+                }
+                
+            } else {
+                // Wrong placement
+                const randomWrong = observations.wrong.ar[Math.floor(Math.random() * observations.wrong.ar.length)];
+                addObservation(
+                    `${randomWrong}. ${material.ar} لا ينتمي للحالة ${acceptedState === 'solid' ? 'الصلبة' : acceptedState === 'liquid' ? 'السائلة' : 'الغازية'}`,
+                    `${observations.wrong.en[0]}. ${material.en} does not belong to ${acceptedState} state`
+                );
+                
+                // Visual feedback for wrong placement
+                zone.style.borderColor = '#e17055';
+                setTimeout(() => {
+                    zone.style.borderColor = '';
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

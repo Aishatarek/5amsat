@@ -990,71 +990,71 @@
                 </h2>
             </div>
             <div class="experiments-grid">
-                <div class="experiment-card" onclick="openExperiment('states-of-matter')">
+                <div class="experiment-card" onclick="openExperiment('states-of-matter-grade4')">
                     <div class="experiment-title">
                         <i class="fas fa-cube"></i>
                         <span class="english-text">States of Matter</span>
-                        <span class="arabic-text hidden">حالات المادة</span>
+                        <span class="arabic-text hidden">التعرف على حالات المادة</span>
                     </div>
                     <div class="experiment-description">
-                        <span class="english-text">Explore solid, liquid, and gas states using everyday materials</span>
-                        <span class="arabic-text hidden">استكشف حالات المادة الصلبة والسائلة والغازية</span>
+                        <span class="english-text">Drag materials to classify them as solid, liquid, or gas</span>
+                        <span class="arabic-text hidden">اسحب المواد لتصنيفها إلى صلبة أو سائلة أو غازية</span>
                     </div>
                     <div class="experiment-tools">
-                        <span class="tool-tag">Water</span>
-                        <span class="tool-tag">Stone</span>
-                        <span class="tool-tag">Balloon</span>
+                        <span class="tool-tag">🪨 Stone</span>
+                        <span class="tool-tag">💧 Water</span>
+                        <span class="tool-tag">💨 Air</span>
                     </div>
                 </div>
 
-                <div class="experiment-card" onclick="openExperiment('solubility')">
+                <div class="experiment-card" onclick="openExperiment('solubility-grade4')">
                     <div class="experiment-title">
                         <i class="fas fa-tint"></i>
-                        <span class="english-text">Solubility Test</span>
-                        <span class="arabic-text hidden">اختبار الذوبان</span>
+                        <span class="english-text">Material Solubility</span>
+                        <span class="arabic-text hidden">قابلية المواد للذوبان</span>
                     </div>
                     <div class="experiment-description">
-                        <span class="english-text">Test which materials dissolve in water</span>
-                        <span class="arabic-text hidden">اختبر أي المواد تذوب في الماء</span>
+                        <span class="english-text">Drop materials in water and observe dissolving, floating, or settling</span>
+                        <span class="arabic-text hidden">أسقط المواد في الماء ولاحظ الذوبان أو الطفو أو الترسب</span>
                     </div>
                     <div class="experiment-tools">
-                        <span class="tool-tag">Sugar</span>
-                        <span class="tool-tag">Oil</span>
-                        <span class="tool-tag">Sand</span>
+                        <span class="tool-tag">🧂 Sugar</span>
+                        <span class="tool-tag">🛢️ Oil</span>
+                        <span class="tool-tag">🏖️ Sand</span>
                     </div>
                 </div>
 
-                <div class="experiment-card" onclick="openExperiment('magnetism')">
+                <div class="experiment-card" onclick="openExperiment('magnetism-grade4')">
                     <div class="experiment-title">
                         <i class="fas fa-magnet"></i>
                         <span class="english-text">Magnetic Materials</span>
                         <span class="arabic-text hidden">المواد المغناطيسية</span>
                     </div>
                     <div class="experiment-description">
-                        <span class="english-text">Discover which materials are attracted to magnets</span>
-                        <span class="arabic-text hidden">اكتشف أي المواد تنجذب للمغناطيس</span>
+                        <span class="english-text">Move the magnet close to different materials and observe magnetic attraction</span>
+                        <span class="arabic-text hidden">حرك المغناطيس بالقرب من المواد المختلفة ولاحظ الجذب المغناطيسي</span>
                     </div>
                     <div class="experiment-tools">
-                        <span class="tool-tag">Magnet</span>
-                        <span class="tool-tag">Paper Clip</span>
-                        <span class="tool-tag">Wood</span>
+                        <span class="tool-tag">🧲 Magnet</span>
+                        <span class="tool-tag">📎 Paper Clip</span>
+                        <span class="tool-tag">🪵 Wood</span>
                     </div>
                 </div>
 
-                <div class="experiment-card" onclick="openExperiment('electrical-circuit')">
+                <div class="experiment-card" onclick="openExperiment('electrical-circuit-grade4')">
                     <div class="experiment-title">
                         <i class="fas fa-bolt"></i>
                         <span class="english-text">Simple Circuit</span>
                         <span class="arabic-text hidden">الدائرة الكهربائية البسيطة</span>
                     </div>
                     <div class="experiment-description">
-                        <span class="english-text">Build a simple electrical circuit with a battery and bulb</span>
-                        <span class="arabic-text hidden">اصنع دائرة كهربائية بسيطة بالبطارية والمصباح</span>
+                        <span class="english-text">Drag components to build a complete electrical circuit and control the flow</span>
+                        <span class="arabic-text hidden">اسحب المكونات لبناء دائرة كهربائية كاملة والتحكم في التدفق</span>
                     </div>
                     <div class="experiment-tools">
-                        <span class="tool-tag">Battery</span>
-                        <span class="tool-tag">Bulb</span>
-                        <span class="tool-tag">Wire</span>
+                        <span class="tool-tag">🔋 Battery</span>
+                        <span class="tool-tag">💡 Bulb</span>
+                        <span class="tool-tag">🎛️ Switch</span>
                     </div>
                 </div>
 
@@ -2423,6 +2423,13 @@
         function openExperiment(experimentId) {
             // Create realistic experiment pages for each experiment type
             const realisticExperiments = {
+                // Grade 4 Experiments
+                'states-of-matter-grade4': 'experiments/states_of_matter_grade4.html',
+                'solubility-grade4': 'experiments/solubility_grade4.html',
+                'magnetism-grade4': 'experiments/magnetism_grade4.html',
+                'electrical-circuit-grade4': 'experiments/electrical_circuit_grade4.html',
+                
+                // Existing experiments
                 'states-of-matter': 'experiments/states_of_matter.html',
                 'solubility': 'experiments/solubility.html',
                 'magnetism': 'experiments/magnetism.html',
