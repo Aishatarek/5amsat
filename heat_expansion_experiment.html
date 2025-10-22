@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة تأثير الحرارة على المواد - مختبر تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #ef4444;
+            --secondary: #dc2626;
+            --accent: #f59e0b;
+            --balloon-color: #3b82f6;
+            --bottle-color: #10b981;
+            --water-color: #06b6d4;
+            --hot-color: #f97316;
+            --light: #fef2f2;
+            --dark: #1e293b;
+            --success: #10b981;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --heat-gradient: linear-gradient(45deg, #ff6b35, #f7931e, #ffcd3c);
+            --expansion-gradient: linear-gradient(135deg, #60a5fa, #3b82f6, #2563eb);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #374151);
+            color: #334155;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        /* خلفية متحركة مع جزيئات متمددة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="expand" cx="50%" cy="50%"><stop offset="0%" stop-color="orange" stop-opacity="0.2"/><stop offset="100%" stop-color="red" stop-opacity="0"/></radialGradient></defs><circle cx="20" cy="10" r="5" fill="url(%23expand)"><animate attributeName="r" values="3;8;3" dur="4s" repeatCount="indefinite"/></circle><circle cx="50" cy="8" r="4" fill="url(%23expand)"><animate attributeName="r" values="2;7;2" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="12" r="6" fill="url(%23expand)"><animate attributeName="r" values="4;9;4" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat-x;
+            opacity: 0.3;
+            animation: expand-flow 20s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes expand-flow {
+            0% { transform: translateX(-200px) scale(0.8); }
+            50% { transform: translateX(100px) scale(1.2); }
+            100% { transform: translateX(400px) scale(0.8); }
+        }
+        
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--expansion-gradient);
+            opacity: 0.1;
+            animation: expansion-shine 5s infinite;
+        }
+        
+        @keyframes expansion-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4rem;
+            background: var(--expansion-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: expansion-pulse 3s infinite;
+        }
+        
+        @keyframes expansion-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--heat-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--accent);
+            min-width: 200px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 5px;
+        }
+        
+        .status-description {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 60px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: #7f1d1d;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--heat-gradient);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 18px 30px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #64748b, #475569);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+        }
+        
+        .control-btn.start {
+            background: var(--heat-gradient);
+            animation: heat-glow 3s infinite;
+        }
+        
+        @keyframes heat-glow {
+            0%, 100% { box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(239, 68, 68, 0.8), 0 0 25px rgba(239, 68, 68, 0.4); }
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            animation: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 35px;
+            border-right: 8px solid var(--accent);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><circle cx="30" cy="30" r="5" fill="orange" opacity="0.1"><animate attributeName="r" values="3;8;3" dur="6s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-expand 15s infinite linear;
+        }
+        
+        @keyframes instruction-expand {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(60px); }
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #78350f;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 35px;
+            min-height: 800px;
+        }
+        
+        .workspace-section {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 25px;
+            padding: 35px;
+            position: relative;
+            box-shadow: inset 0 6px 15px rgba(0, 0, 0, 0.08);
+            border: 4px dashed #cbd5e1;
+            overflow: hidden;
+        }
+        
+        .workspace-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .workspace-section h3 {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 22px;
+            border-radius: 35px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        .components-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .components-panel h3 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .components-area {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .component {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 18px;
+            padding: 25px;
+            cursor: grab;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+        
+        .component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.7) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 1s;
+        }
+        
+        .component:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .component:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .component-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        /* صور واقعية للمكونات */
+        .component-img.bottle-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="bottle-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ecfdf5"/><stop offset="50%" stop-color="%23a7f3d0"/><stop offset="100%" stop-color="%2310b981"/></linearGradient></defs><rect x="35" y="15" width="30" height="10" fill="%23374151" rx="2"/><rect x="30" y="25" width="40" height="60" fill="url(%23bottle-grad)" stroke="%23065f46" stroke-width="2" rx="8"/><rect x="32" y="30" width="36" height="50" fill="%23ffffff" opacity="0.3"/></svg>') center/contain no-repeat;
+            background-color: #ecfdf5;
+        }
+        
+        .component-img.balloon-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="balloon-grad" cx="30%" cy="30%"><stop offset="0%" stop-color="%2393c5fd"/><stop offset="70%" stop-color="%233b82f6"/><stop offset="100%" stop-color="%232563eb"/></radialGradient></defs><ellipse cx="50" cy="45" rx="25" ry="30" fill="url(%23balloon-grad)" stroke="%231d4ed8" stroke-width="1"/><ellipse cx="45" cy="35" rx="8" ry="12" fill="%23ffffff" opacity="0.4"/><path d="M50,75 L48,85 L52,85 Z" fill="%231d4ed8"/></svg>') center/contain no-repeat;
+            background-color: #dbeafe;
+        }
+        
+        .component-img.water-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="hot-water-grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="%23f97316"/><stop offset="50%" stop-color="%23ea580c"/><stop offset="100%" stop-color="%23dc2626"/></linearGradient></defs><rect x="15" y="40" width="70" height="45" fill="url(%23hot-water-grad)" rx="8"/><ellipse cx="50" cy="40" rx="35" ry="6" fill="%23fed7aa"/><path d="M20 50 Q35 45 50 50 T80 50" stroke="%23ffffff" stroke-width="2" fill="none" opacity="0.6"/><circle cx="25" cy="35" r="2" fill="%23ffffff" opacity="0.8"><animate attributeName="cy" values="35;25;35" dur="2s" repeatCount="indefinite"/></circle><circle cx="50" cy="30" r="1.5" fill="%23ffffff" opacity="0.8"><animate attributeName="cy" values="30;20;30" dur="1.5s" repeatCount="indefinite"/></circle><circle cx="75" cy="32" r="2.5" fill="%23ffffff" opacity="0.8"><animate attributeName="cy" values="32;22;32" dur="2.5s" repeatCount="indefinite"/></circle></svg>') center/contain no-repeat;
+            background-color: #fed7aa;
+        }
+        
+        .component-details {
+            flex: 1;
+        }
+        
+        .component-details h4 {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .component-details p {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .component-spec {
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .component-spec.bottle {
+            background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+            color: #065f46;
+        }
+        
+        .component-spec.balloon {
+            background: linear-gradient(135deg, #93c5fd, #60a5fa);
+            color: #1e40af;
+        }
+        
+        .component-spec.hot {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+            color: #9a3412;
+        }
+        
+        .component.dragging {
+            opacity: 0.8;
+            transform: rotate(10deg) scale(1.2);
+            z-index: 1000;
+        }
+        
+        .component.placed {
+            opacity: 0.7;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-color: var(--success);
+        }
+        
+        .component.placed::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 35px;
+            height: 35px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        }
+        
+        .experiment-setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+            margin-top: 60px;
+            width: 100%;
+            min-height: 600px;
+        }
+        
+        .bottle-container {
+            position: relative;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .bottle {
+            width: 120px;
+            height: 300px;
+            background: linear-gradient(135deg, #ecfdf5, #a7f3d0, #10b981);
+            border-radius: 15px 15px 25px 25px;
+            position: relative;
+            border: 4px solid #065f46;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
+            overflow: hidden;
+        }
+        
+        .bottle::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 20px;
+            background: #374151;
+            border-radius: 5px;
+            border: 2px solid #1f2937;
+        }
+        
+        .bottle::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: calc(100% - 30px);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            border-radius: 10px;
+        }
+        
+        .air-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .air-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(59, 130, 246, 0.2) 100%);
+            border-radius: 50%;
+            animation: air-movement 4s infinite;
+        }
+        
+        @keyframes air-movement {
+            0% { 
+                transform: translateY(0) scale(0.8); 
+                opacity: 0.3; 
+            }
+            25% { 
+                transform: translateY(-20px) scale(1); 
+                opacity: 0.8; 
+            }
+            50% { 
+                transform: translateY(-40px) scale(1.2); 
+                opacity: 0.6; 
+            }
+            75% { 
+                transform: translateY(-60px) scale(1.4); 
+                opacity: 0.4; 
+            }
+            100% { 
+                transform: translateY(-80px) scale(1.6); 
+                opacity: 0; 
+            }
+        }
+        
+        .balloon {
+            width: 60px;
+            height: 80px;
+            background: var(--expansion-gradient);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -90px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #1d4ed8;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .balloon::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 30%;
+            height: 40%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: balloon-shine 3s infinite;
+        }
+        
+        @keyframes balloon-shine {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 15px;
+            background: #1d4ed8;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .balloon.expanded {
+            width: 140px;
+            height: 180px;
+            top: -200px;
+            animation: balloon-bounce 3s infinite;
+        }
+        
+        @keyframes balloon-bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .hot-water-bath {
+            width: 400px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--hot-color), #dc2626);
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(249, 115, 22, 0.4);
+            border: 4px solid #dc2626;
+            margin-top: 50px;
+        }
+        
+        .hot-water-bath::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><path d="M0,15 Q25,8 50,15 T100,15 L100,20 L0,20 Z" fill="rgba(255,255,255,0.3)"/></svg>') repeat-x;
+            animation: hot-water-waves 3s infinite ease-in-out;
+        }
+        
+        @keyframes hot-water-waves {
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            25% { transform: translateX(-12px) scaleY(0.8); }
+            50% { transform: translateX(0) scaleY(1.2); }
+            75% { transform: translateX(12px) scaleY(0.8); }
+        }
+        
+        .steam-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .steam-bubble {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 100%);
+            border-radius: 50%;
+            animation: steam-rise 5s infinite;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+        
+        @keyframes steam-rise {
+            0% { 
+                transform: translateY(0) scale(0.3); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 0.9; 
+            }
+            80% { 
+                transform: translateY(-200px) scale(1.5);
+                opacity: 0.5; 
+            }
+            100% { 
+                transform: translateY(-300px) scale(2) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .experiment-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 700px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 18px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 6px solid #e2e8f0;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .step.completed {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-left-color: var(--success);
+            transform: scale(1.02);
+        }
+        
+        .step.completed .step-text {
+            text-decoration: line-through;
+            color: #059669;
+            font-weight: 800;
+        }
+        
+        .step-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #64748b;
+            transition: all 0.5s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step.completed .step-icon {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            animation: success-bounce 1s ease-out;
+        }
+        
+        @keyframes success-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        
+        .drop-zone {
+            border: 4px dashed var(--primary);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.15));
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 220px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.15) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 1s;
+        }
+        
+        .drop-zone.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.3));
+            border-color: var(--secondary);
+            transform: scale(1.08);
+        }
+        
+        .drop-zone.active::before {
+            transform: translateX(100%);
+        }
+        
+        .drop-zone.highlight {
+            animation: expansion-pulse 2.5s infinite;
+        }
+        
+        @keyframes expansion-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+                border-color: var(--balloon-color);
+            }
+            50% { 
+                box-shadow: 0 0 0 25px rgba(59, 130, 246, 0);
+                border-color: var(--accent);
+            }
+        }
+        
+        .experiment-feedback {
+            margin-top: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-shine 5s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            color: #92400e;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(232, 244, 252, 0.95), rgba(224, 242, 254, 0.95));
+            border-radius: 25px;
+            padding: 35px;
+            margin-top: 35px;
+            border-left: 8px solid var(--secondary);
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(232, 245, 233, 0.95), rgba(220, 252, 231, 0.95));
+            padding: 30px;
+            border-radius: 18px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 15px;
+            color: #065f46;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--expansion-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6);
+        }
+        
+        .temperature-gauge {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 18px 25px;
+            border-radius: 18px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--accent);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .components-panel {
+                order: -1;
+            }
+            
+            .components-area {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 18px;
+            }
+            
+            .component {
+                min-width: 160px;
+                flex: 1;
+            }
+            
+            .bottle {
+                width: 100px;
+                height: 250px;
+            }
+            
+            .balloon {
+                width: 50px;
+                height: 70px;
+                top: -75px;
+            }
+            
+            .balloon.expanded {
+                width: 120px;
+                height: 150px;
+                top: -170px;
+            }
+            
+            .hot-water-bath {
+                width: 320px;
+                height: 160px;
+            }
+            
+            .drop-zone {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .temperature-gauge, .sound-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                left: auto;
+                margin: 15px;
+            }
+        }
+        
+        /* تأثيرات متقدمة للتمدد */
+        .expansion-waves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 8;
+        }
+        
+        .expansion-wave {
+            position: absolute;
+            border: 3px solid rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            animation: expansion-wave-grow 4s infinite;
+        }
+        
+        @keyframes expansion-wave-grow {
+            0% {
+                width: 50px;
+                height: 50px;
+                opacity: 1;
+            }
+            100% {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+        
+        .pressure-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 2px solid var(--balloon-color);
+            transition: all 0.5s;
+        }
+        
+        .pressure-indicator.high {
+            background: var(--hot-color);
+            border-color: var(--primary);
+            animation: pressure-alert 2s infinite;
+        }
+        
+        @keyframes pressure-alert {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <!-- أزرار التحكم -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+    
+    <div class="temperature-gauge" id="temperatureGauge">
+        🌡️ درجة الحرارة: <span id="tempValue">25°C</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-expand-arrows-alt"></i>
+                <div class="logo-text">
+                    <h1>مختبر تأثير الحرارة على المواد</h1>
+                    <p>اكتشف كيف تؤثر الحرارة على حجم المواد وتمددها</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3>حالة التمدد</h3>
+                <div class="status-value" id="expansionStatus">عادي</div>
+                <div class="status-description" id="expansionDesc">لا يوجد تمدد</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2><i class="fas fa-thermometer-three-quarters"></i> تجربة التمدد الحراري</h2>
+                    <p>شاهد كيف يتمدد الهواء بالحرارة وينفخ البالونة</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn start" id="startHeating" disabled>
+                        <i class="fas fa-fire"></i> بدء التسخين
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> إعادة التجربة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol>
+                    <li>اسحب الزجاجة إلى منطقة التجربة</li>
+                    <li>اسحب البالونة وضعها على فوهة الزجاجة</li>
+                    <li>اسحب الماء الدافئ ووضع الزجاجة بداخله</li>
+                    <li>اضغط على "بدء التسخين" وشاهد البالونة تنتفخ</li>
+                </ol>
+            </div>
+            
+            <div class="experiment-area">
+                <div class="workspace-section" id="workspace">
+                    <h3><i class="fas fa-flask"></i> منطقة التجربة</h3>
+                    
+                    <div class="experiment-steps">
+                        <div class="step" id="step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">ضع الزجاجة في منطقة التجربة</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">ضع البالونة على فوهة الزجاجة</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">ضع الزجاجة في الماء الدافئ</div>
+                        </div>
+                        <div class="step" id="step4">
+                            <div class="step-icon">4</div>
+                            <div class="step-text">ابدأ التسخين وشاهد النتيجة</div>
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-setup" id="experimentSetup">
+                        <div class="drop-zone" id="bottleDropZone" data-for="bottle">
+                            <div class="component-img bottle-img"></div>
+                            <p style="color: var(--primary); font-weight: 800;">أسقط الزجاجة هنا</p>
+                        </div>
+                        
+                        <div class="bottle-container hidden" id="bottleContainer">
+                            <div class="bottle" id="bottle">
+                                <div class="air-particles" id="airParticles"></div>
+                                <div class="expansion-waves" id="expansionWaves"></div>
+                                
+                                <div class="balloon hidden" id="balloon">
+                                    <div class="pressure-indicator" id="pressureIndicator">
+                                        ضغط الهواء: عادي
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hot-water-bath hidden" id="hotWaterBath">
+                            <div class="steam-effect" id="steamEffect"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="components-panel">
+                    <h3><i class="fas fa-toolbox"></i> أدوات التجربة</h3>
+                    <div class="components-area" id="componentsArea">
+                        <div class="component" draggable="true" data-component="bottle" id="bottleComponent">
+                            <div class="component-img bottle-img"></div>
+                            <div class="component-details">
+                                <h4>زجاجة فارغة</h4>
+                                <p>مملوءة بالهواء عند ضغط عادي</p>
+                                <div class="component-spec bottle">زجاج شفاف</div>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="balloon" id="balloonComponent">
+                            <div class="component-img balloon-img"></div>
+                            <div class="component-details">
+                                <h4>بالونة مطاطية</h4>
+                                <p>قابلة للتمدد مع زيادة الضغط</p>
+                                <div class="component-spec balloon">مطاط مرن</div>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="hot-water" id="hotWaterComponent">
+                            <div class="component-img water-img"></div>
+                            <div class="component-details">
+                                <h4>ماء دافئ</h4>
+                                <p>درجة حرارة 60°C لتسخين الهواء</p>
+                                <div class="component-spec hot">ساخن</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p><i class="fas fa-hand-point-right"></i> ابدأ بسحب الزجاجة إلى منطقة التجربة</p>
+            </div>
+            
+            <div class="result-area">
+                <h3><i class="fas fa-chart-line"></i> نتائج تجربة التمدد الحراري</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p><i class="fas fa-expand-arrows-alt"></i> قم بإعداد التجربة لرؤية تأثير الحرارة المذهل على حجم المواد</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التجربة الرئيسية
+            const bottleContainer = document.getElementById('bottleContainer');
+            const bottle = document.getElementById('bottle');
+            const balloon = document.getElementById('balloon');
+            const hotWaterBath = document.getElementById('hotWaterBath');
+            const startBtn = document.getElementById('startHeating');
+            const resetBtn = document.getElementById('resetExperiment');
+            const airParticles = document.getElementById('airParticles');
+            const steamEffect = document.getElementById('steamEffect');
+            const expansionWaves = document.getElementById('expansionWaves');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const componentsArea = document.getElementById('componentsArea');
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const tempValue = document.getElementById('tempValue');
+            const expansionStatus = document.getElementById('expansionStatus');
+            const expansionDesc = document.getElementById('expansionDesc');
+            const pressureIndicator = document.getElementById('pressureIndicator');
+            
+            // عناصر الخطوات
+            const steps = [
+                document.getElementById('step1'),
+                document.getElementById('step2'), 
+                document.getElementById('step3'),
+                document.getElementById('step4')
+            ];
+            
+            // عناصر المكونات
+            const bottleComponent = document.getElementById('bottleComponent');
+            const balloonComponent = document.getElementById('balloonComponent');
+            const hotWaterComponent = document.getElementById('hotWaterComponent');
+            
+            // مناطق الإسقاط
+            const bottleDropZone = document.getElementById('bottleDropZone');
+            
+            // متغيرات الحالة
+            let experimentStarted = false;
+            let soundEnabled = true;
+            let currentTemp = 25;
+            let expansionLevel = 0;
+            let componentsPlaced = {
+                bottle: false,
+                balloon: false,
+                hotWater: false
+            };
+            
+            // إنشاء الأصوات
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // أصوات مختلفة للتفاعلات
+            const sounds = {
+                drop: () => playSound(400, 0.3, 'sine'),
+                success: () => playSound(600, 0.4, 'square'),
+                pop: () => playSound(800, 0.2, 'square'),
+                expansion: () => playSound(300, 1, 'triangle'),
+                heat: () => playSound(150, 1.5, 'sawtooth'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 300);
+                    setTimeout(() => playSound(784, 0.5), 600);
+                }
+            };
+            
+            // تبديل الصوت
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // إنشاء جزيئات الهواء
+            function createAirParticles() {
+                airParticles.innerHTML = '';
+                const particleCount = 8 + expansionLevel * 3;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'air-particle';
+                        
+                        const size = Math.random() * 15 + 8;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 80 + 10}%`;
+                        particle.style.bottom = `${Math.random() * 30 + 10}px`;
+                        particle.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                        particle.style.animationDelay = '0s';
+                        
+                        airParticles.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 6000);
+                    }, i * 100);
+                }
+            }
+            
+            // إنشاء بخار الماء
+            function createSteam() {
+                steamEffect.innerHTML = '';
+                const steamCount = 12;
+                
+                for (let i = 0; i < steamCount; i++) {
+                    setTimeout(() => {
+                        const steam = document.createElement('div');
+                        steam.className = 'steam-bubble';
+                        
+                        const size = Math.random() * 25 + 15;
+                        steam.style.width = `${size}px`;
+                        steam.style.height = `${size}px`;
+                        steam.style.left = `${Math.random() * 80 + 10}%`;
+                        steam.style.bottom = '10px';
+                        steam.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                        steam.style.animationDelay = '0s';
+                        
+                        steamEffect.appendChild(steam);
+                        
+                        setTimeout(() => {
+                            if (steam.parentNode) {
+                                steam.remove();
+                            }
+                        }, 7000);
+                    }, i * 150);
+                }
+            }
+            
+            // إنشاء موجات التمدد
+            function createExpansionWave() {
+                const wave = document.createElement('div');
+                wave.className = 'expansion-wave';
+                wave.style.left = '0';
+                wave.style.top = '0';
+                expansionWaves.appendChild(wave);
+                
+                setTimeout(() => {
+                    wave.remove();
+                }, 4000);
+            }
+            
+            // تحديث حالة الخطوات
+            function updateSteps() {
+                const conditions = [
+                    componentsPlaced.bottle,
+                    componentsPlaced.balloon,
+                    componentsPlaced.hotWater,
+                    experimentStarted
+                ];
+                
+                conditions.forEach((condition, index) => {
+                    if (condition) {
+                        if (!steps[index].classList.contains('completed')) {
+                            steps[index].classList.add('completed');
+                            sounds.success();
+                        }
+                    } else {
+                        steps[index].classList.remove('completed');
+                    }
+                });
+                
+                // تفعيل زر البدء
+                const readyToStart = componentsPlaced.bottle && componentsPlaced.balloon && componentsPlaced.hotWater;
+                startBtn.disabled = !readyToStart || experimentStarted;
+            }
+            
+            // تحديث حالة التمدد
+            function updateExpansionStatus() {
+                const statuses = [
+                    { level: 0, status: 'عادي', desc: 'لا يوجد تمدد', temp: 25 },
+                    { level: 1, status: 'تمدد خفيف', desc: 'بداية التمدد', temp: 35 },
+                    { level: 2, status: 'تمدد متوسط', desc: 'تمدد واضح', temp: 45 },
+                    { level: 3, status: 'تمدد كبير', desc: 'تمدد قوي', temp: 55 },
+                    { level: 4, status: 'تمدد أقصى', desc: 'أقصى تمدد', temp: 65 }
+                ];
+                
+                const current = statuses[expansionLevel] || statuses[0];
+                expansionStatus.textContent = current.status;
+                expansionDesc.textContent = current.desc;
+                tempValue.textContent = `${current.temp}°C`;
+                currentTemp = current.temp;
+                
+                // تحديث مؤشر الضغط
+                const pressures = ['عادي', 'مرتفع قليلاً', 'مرتفع', 'مرتفع جداً', 'أقصى ضغط'];
+                pressureIndicator.textContent = `ضغط الهواء: ${pressures[expansionLevel]}`;
+                
+                if (expansionLevel > 2) {
+                    pressureIndicator.classList.add('high');
+                } else {
+                    pressureIndicator.classList.remove('high');
+                }
+            }
+            
+            // معالجة السحب والإفلات
+            let draggedElement = null;
+            
+            componentsArea.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('component')) {
+                    draggedElement = e.target;
+                    e.dataTransfer.setData('text/plain', e.target.dataset.component);
+                    e.target.classList.add('dragging');
+                    
+                    const componentType = e.target.dataset.component;
+                    highlightDropZone(componentType);
+                    
+                    sounds.drop();
+                }
+            });
+            
+            componentsArea.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('component')) {
+                    e.target.classList.remove('dragging');
+                    removeHighlights();
+                    draggedElement = null;
+                }
+            });
+            
+            function highlightDropZone(componentType) {
+                removeHighlights();
+                
+                if (componentType === 'bottle' && !componentsPlaced.bottle) {
+                    bottleDropZone.classList.add('active');
+                }
+            }
+            
+            function removeHighlights() {
+                bottleDropZone.classList.remove('active');
+            }
+            
+            // إعداد مناطق الإسقاط
+            function setupDropZone(zone, validComponent, onDrop) {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const componentType = e.dataTransfer.getData('text/plain');
+                    
+                    if (componentType === validComponent) {
+                        onDrop();
+                        sounds.success();
+                    }
+                    
+                    removeHighlights();
+                });
+            }
+            
+            // إعداد إسقاط الزجاجة
+            setupDropZone(bottleDropZone, 'bottle', () => {
+                if (!componentsPlaced.bottle) {
+                    bottleContainer.classList.remove('hidden');
+                    bottleDropZone.classList.add('hidden');
+                    componentsPlaced.bottle = true;
+                    bottleComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! تم وضع الزجاجة. الآن ضع البالونة على الفوهة', 'success');
+                    updateSteps();
+                    createAirParticles();
+                    
+                    setTimeout(() => {
+                        if (!componentsPlaced.balloon) {
+                            updateFeedback('اسحب البالونة وضعها على فوهة الزجاجة', 'info');
+                        }
+                    }, 1500);
+                }
+            });
+            
+            // إعداد إسقاط البالونة على الزجاجة
+            bottle.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            bottle.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const componentType = e.dataTransfer.getData('text/plain');
+                
+                if (componentType === 'balloon' && componentsPlaced.bottle && !componentsPlaced.balloon) {
+                    balloon.classList.remove('hidden');
+                    componentsPlaced.balloon = true;
+                    balloonComponent.classList.add('placed');
+                    
+                    updateFeedback('رائع! تم ربط البالونة بالزجاجة. الآن ضع الماء الدافئ', 'success');
+                    sounds.pop();
+                    updateSteps();
+                    
+                } else if (componentType === 'hot-water' && !componentsPlaced.hotWater) {
+                    hotWaterBath.classList.remove('hidden');
+                    componentsPlaced.hotWater = true;
+                    hotWaterComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! جميع المكونات جاهزة. اضغط على "بدء التسخين"', 'complete');
+                    sounds.success();
+                    updateSteps();
+                    
+                    // بدء إنتاج البخار
+                    createSteam();
+                    setInterval(() => {
+                        if (!hotWaterBath.classList.contains('hidden') && !experimentStarted) {
+                            createSteam();
+                        }
+                    }, 4000);
+                }
+            });
+            
+            // تحديث رسائل التغذية الراجعة
+            function updateFeedback(message, type = 'info') {
+                const icons = {
+                    info: 'fas fa-info-circle',
+                    success: 'fas fa-check-circle',
+                    complete: 'fas fa-star',
+                    warning: 'fas fa-exclamation-triangle',
+                    expansion: 'fas fa-expand-arrows-alt'
+                };
+                
+                const colors = {
+                    info: '#3b82f6',
+                    success: '#10b981',
+                    complete: '#f59e0b',
+                    warning: '#ef4444',
+                    expansion: '#8b5cf6'
+                };
+                
+                experimentFeedback.innerHTML = `
+                    <p><i class="${icons[type]}" style="color: ${colors[type]};"></i> ${message}</p>
+                `;
+                
+                // تأثير وميض
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // بدء التسخين والتمدد
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-fire"></i> جارٍ التسخين...';
+                
+                updateFeedback('بدء التسخين... شاهد كيف يتمدد الهواء وينفخ البالونة! 🎈', 'expansion');
+                sounds.heat();
+                updateSteps();
+                
+                // تحريك الزجاجة إلى الماء الدافئ
+                setTimeout(() => {
+                    bottleContainer.style.transform = 'translateY(100px)';
+                    updateFeedback('الزجاجة في الماء الدافئ... الهواء بداخلها يسخن ويتمدد', 'info');
+                }, 1000);
+                
+                // بدء عملية التمدد التدريجية
+                const expansionInterval = setInterval(() => {
+                    expansionLevel++;
+                    updateExpansionStatus();
+                    createAirParticles();
+                    createExpansionWave();
+                    sounds.expansion();
+                    
+                    if (expansionLevel === 1) {
+                        updateFeedback('الهواء يبدأ في التمدد... البالونة تبدأ في الانتفاخ قليلاً', 'expansion');
+                    } else if (expansionLevel === 2) {
+                        updateFeedback('التمدد يزداد... البالونة تنتفخ أكثر!', 'expansion');
+                        balloon.classList.add('expanded');
+                    } else if (expansionLevel === 3) {
+                        updateFeedback('تمدد كبير! البالونة منتفخة بوضوح', 'expansion');
+                        createExpansionWave();
+                    } else if (expansionLevel >= 4) {
+                        clearInterval(expansionInterval);
+                        finishExperiment();
+                    }
+                }, 3000);
+                
+                // إنتاج بخار مكثف أثناء التسخين
+                const steamInterval = setInterval(() => {
+                    if (experimentStarted) {
+                        createSteam();
+                    } else {
+                        clearInterval(steamInterval);
+                    }
+                }, 2000);
+            });
+            
+            // انتهاء التجربة
+            function finishExperiment() {
+                updateFeedback('🎉 التجربة مكتملة! البالونة انتفخت بسبب تمدد الهواء بالحرارة', 'complete');
+                sounds.complete();
+                
+                startBtn.innerHTML = '<i class="fas fa-check"></i> التجربة مكتملة';
+                startBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                
+                // عرض النتائج النهائية
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // عرض النتائج النهائية
+            function showFinalResults() {
+                conclusionDiv.innerHTML = `
+                    <p><strong style="color: #ef4444;">🌡️ نتائج تجربة التمدد الحراري:</strong></p>
+                    <p>✅ <strong>الهواء تمدد</strong> - من ${25}°C إلى ${currentTemp}°C</p>
+                    <p>✅ <strong>البالونة انتفخت</strong> - زاد حجمها بسبب تمدد الهواء</p>
+                    <p>✅ <strong>الضغط ازداد</strong> - الهواء الساخن يحتاج مساحة أكبر</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #ef4444;">📚 الشرح العلمي:</strong></p>
+                    <p>🔬 <strong>التمدد الحراري</strong> - المواد تزداد في الحجم عند التسخين</p>
+                    <p>🔬 <strong>حركة الجزيئات</strong> - الحرارة تزيد سرعة حركة جزيئات الهواء</p>
+                    <p>🔬 <strong>قانون شارل</strong> - حجم الغاز يزداد بزيادة درجة الحرارة عند ضغط ثابت</p>
+                    <p>🔬 <strong>الضغط والحجم</strong> - الهواء المتمدد يدفع البالونة للانتفاخ</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #f59e0b;">🌟 تطبيقات عملية:</strong></p>
+                    <p>⚙️ <strong>البالونات الهوائية الساخنة</strong> - تطير بسبب تمدد الهواء الساخن</p>
+                    <p>⚙️ <strong>مقاييس الحرارة</strong> - السوائل تتمدد وتنكمش مع تغير الحرارة</p>
+                    <p>⚙️ <strong>السكك الحديدية</strong> - فجوات التمدد لمنع انحناء القضبان</p>
+                    <p>⚙️ <strong>المحركات</strong> - تحتاج مساحة للتمدد الحراري للمعادن</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #10b981;">🧪 استنتاجات مهمة:</strong></p>
+                    <p>💡 الحرارة تسبب تمدد جميع المواد تقريباً</p>
+                    <p>💡 التمدد الحراري خاصية فيزيائية مهمة في التصميم</p>
+                    <p>💡 الغازات تتمدد أكثر من السوائل والمواد الصلبة</p>
+                    <p>💡 فهم التمدد الحراري ضروري في الهندسة والبناء</p>
+                `;
+                
+                sounds.complete();
+            }
+            
+            // إعادة تعيين التجربة
+            resetBtn.addEventListener('click', () => {
+                // إخفاء العناصر
+                bottleContainer.classList.add('hidden');
+                balloon.classList.add('hidden');
+                hotWaterBath.classList.add('hidden');
+                bottleDropZone.classList.remove('hidden');
+                
+                // إزالة التأثيرات
+                balloon.classList.remove('expanded');
+                bottleContainer.style.transform = 'translateY(0)';
+                airParticles.innerHTML = '';
+                steamEffect.innerHTML = '';
+                expansionWaves.innerHTML = '';
+                
+                // إعادة تعيين الحالات
+                experimentStarted = false;
+                expansionLevel = 0;
+                componentsPlaced = {
+                    bottle: false,
+                    balloon: false,
+                    hotWater: false
+                };
+                
+                // إعادة تعيين المكونات
+                [bottleComponent, balloonComponent, hotWaterComponent].forEach(component => {
+                    component.classList.remove('placed');
+                });
+                
+                // إعادة تعيين الأزرار
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-fire"></i> بدء التسخين';
+                startBtn.style.background = '';
+                
+                // إعادة تعيين الحالة
+                updateExpansionStatus();
+                
+                // إعادة تعيين الخطوات
+                steps.forEach(step => step.classList.remove('completed'));
+                
+                // إعادة تعيين الرسائل
+                updateSteps();
+                updateFeedback('ابدأ بسحب الزجاجة إلى منطقة التجربة', 'info');
+                conclusionDiv.innerHTML = `
+                    <p><i class="fas fa-expand-arrows-alt"></i> قم بإعداد التجربة لرؤية تأثير الحرارة المذهل على حجم المواد</p>
+                `;
+                
+                sounds.drop();
+                
+                // توجيه المستخدم
+                setTimeout(() => {
+                    bottleDropZone.classList.add('highlight');
+                }, 500);
+            });
+            
+            // بدء التوجيه التفاعلي
+            setTimeout(() => {
+                updateFeedback('مرحباً بك في مختبر التمدد الحراري! ابدأ بسحب الزجاجة', 'info');
+                bottleDropZone.classList.add('highlight');
+                updateExpansionStatus();
+            }, 1000);
+            
+            // تحديث درجة الحرارة المحيطة
+            setInterval(() => {
+                if (!experimentStarted) {
+                    const ambientTemp = 25 + Math.sin(Date.now() / 5000) * 2;
+                    if (expansionLevel === 0) {
+                        tempValue.textContent = `${Math.round(ambientTemp)}°C`;
+                    }
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

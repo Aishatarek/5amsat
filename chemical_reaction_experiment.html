@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة التفاعل الكيميائي - Chemical Reaction Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            width: 95%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .safety-warning {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+        }
+
+        .sound-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .sound-btn:hover {
+            background: linear-gradient(45deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .lang-btn:hover {
+            background: linear-gradient(45deg, #229954, #1e8449);
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            min-height: 500px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px dashed #bdc3c7;
+        }
+
+        .tools-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .tool-item {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+            border-radius: 15px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-item:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-item.dragging {
+            transform: scale(1.2) rotate(10deg);
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        .magnesium {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            color: white;
+        }
+
+        .tongs {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+        }
+
+        .burner {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .test-tube {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .workspace {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #3498db;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .workspace.drag-over {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #d5f4e6, #a8e6cf);
+        }
+
+        .workspace.ignition {
+            background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+            border-color: #e74c3c;
+        }
+
+        .lab-setup {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .burner-display {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .flame {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flame-flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flame-flicker {
+            0% { 
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateX(-50%) scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .tongs-display {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 10px;
+            display: none;
+            z-index: 10;
+        }
+
+        .tongs-handle {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 8px;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 4px;
+        }
+
+        .magnesium-strip {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 4px;
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            border-radius: 2px;
+            display: none;
+        }
+
+        .magnesium-strip.burning {
+            background: linear-gradient(135deg, #fff, #f1c40f);
+            animation: intense-glow 0.3s infinite alternate;
+            box-shadow: 0 0 20px #f1c40f;
+        }
+
+        @keyframes intense-glow {
+            0% { 
+                background: linear-gradient(135deg, #fff, #f1c40f);
+                box-shadow: 0 0 20px #f1c40f;
+            }
+            100% { 
+                background: linear-gradient(135deg, #fff, #fff);
+                box-shadow: 0 0 30px #fff, 0 0 40px #f39c12;
+            }
+        }
+
+        .test-tube-display {
+            position: absolute;
+            top: 100px;
+            right: 50px;
+            width: 30px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.3));
+            border: 2px solid #3498db;
+            border-radius: 0 0 15px 15px;
+            display: none;
+        }
+
+        .oxygen-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .white-ash {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 15px;
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            border-radius: 50%;
+            display: none;
+            animation: ash-settle 2s ease-out;
+        }
+
+        @keyframes ash-settle {
+            0% { 
+                opacity: 0;
+                transform: translateX(-50%) translateY(-50px);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .sparks {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #f1c40f;
+            border-radius: 50%;
+            animation: spark-fly 1s ease-out forwards;
+        }
+
+        @keyframes spark-fly {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.2);
+            }
+        }
+
+        .observations-section {
+            background: linear-gradient(135deg, #fef9e7, #fcf3cf);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #f4d03f;
+        }
+
+        .observations-title {
+            font-size: 1.4em;
+            color: #d68910;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f39c12;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .observation-item h4 {
+            color: #d68910;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .observation-item p {
+            color: #5d4e75;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #e8f5e8, #d4f1d4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #27ae60;
+        }
+
+        .instructions h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .step {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #27ae60;
+            transition: all 0.3s ease;
+        }
+
+        .step.completed {
+            background: #d5f4e6;
+            opacity: 0.7;
+        }
+
+        .step.active {
+            background: #a8e6cf;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: bold;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .chemical-equation {
+            background: linear-gradient(135deg, #e8f4fd, #d6eaf8);
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .floating-instruction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            max-width: 300px;
+            animation: pulse-instruction 2s infinite;
+        }
+
+        @keyframes pulse-instruction {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 2em;
+            }
+
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .tool-item {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+
+            .lab-setup {
+                width: 250px;
+                height: 250px;
+            }
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+        }
+
+        [dir="ltr"] .container {
+            direction: ltr;
+        }
+
+        [dir="ltr"] .tongs-display {
+            left: auto;
+            right: 20px;
+        }
+
+        [dir="ltr"] .test-tube-display {
+            right: auto;
+            left: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title" data-ar="🔥 تجربة التفاعل الكيميائي - إشعال المغنيسيوم" data-en="🔥 Chemical Reaction - Magnesium Ignition">🔥 تجربة التفاعل الكيميائي - إشعال المغنيسيوم</h1>
+            <p class="subtitle" data-ar="اكتشف تفاعل الأكسدة القوي بين المغنيسيوم والأكسجين" data-en="Discover the strong oxidation reaction between magnesium and oxygen">اكتشف تفاعل الأكسدة القوي بين المغنيسيوم والأكسجين</p>
+        </div>
+
+        <div class="safety-warning" data-ar="⚠️ تحذير الأمان: هذه تجربة محاكاة فقط - لا تحاول إجراءها بدون إشراف متخصص" data-en="⚠️ Safety Warning: This is a simulation only - do not attempt without expert supervision">⚠️ تحذير الأمان: هذه تجربة محاكاة فقط - لا تحاول إجراءها بدون إشراف متخصص</div>
+
+        <div class="controls">
+            <button class="control-btn reset-btn" onclick="resetExperiment()" data-ar="🔄 إعادة تعيين" data-en="🔄 Reset">🔄 إعادة تعيين</button>
+            <button class="control-btn sound-btn" onclick="toggleSound()" data-ar="🔊 الصوت: تشغيل" data-en="🔊 Sound: ON">🔊 الصوت: تشغيل</button>
+            <button class="control-btn lang-btn" onclick="toggleLanguage()" data-ar="🌐 English" data-en="🌐 العربية">🌐 English</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="instructions">
+            <h3 data-ar="📋 خطوات التجربة" data-en="📋 Experiment Steps">📋 خطوات التجربة</h3>
+            <div class="step active" data-step="1" data-ar="1. اسحب الموقد إلى منطقة العمل" data-en="1. Drag the burner to the workspace">1. اسحب الموقد إلى منطقة العمل</div>
+            <div class="step" data-step="2" data-ar="2. اسحب الملقط إلى منطقة العمل" data-en="2. Drag the tongs to the workspace">2. اسحب الملقط إلى منطقة العمل</div>
+            <div class="step" data-step="3" data-ar="3. اسحب شريط المغنيسيوم إلى الملقط" data-en="3. Drag magnesium strip to the tongs">3. اسحب شريط المغنيسيوم إلى الملقط</div>
+            <div class="step" data-step="4" data-ar="4. اسحب أنبوب الاختبار لجمع النتاج" data-en="4. Drag test tube to collect product">4. اسحب أنبوب الاختبار لجمع النتاج</div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="tools-section">
+                <h3 class="tools-title" data-ar="🧪 الأدوات" data-en="🧪 Tools">🧪 الأدوات</h3>
+                <div class="tool-item burner" draggable="true" data-tool="burner" title="موقد - Burner">🔥</div>
+                <div class="tool-item tongs" draggable="true" data-tool="tongs" title="ملقط - Tongs">🔧</div>
+                <div class="tool-item magnesium" draggable="true" data-tool="magnesium" title="شريط مغنيسيوم - Magnesium Strip">🪙</div>
+                <div class="tool-item test-tube" draggable="true" data-tool="test-tube" title="أنبوب اختبار - Test Tube">🧪</div>
+            </div>
+
+            <div class="workspace" id="workspace">
+                <div class="floating-instruction" id="floatingInstruction" data-ar="اسحب الأدوات هنا لبدء التجربة" data-en="Drag tools here to start the experiment">اسحب الأدوات هنا لبدء التجربة</div>
+                
+                <div class="lab-setup" id="labSetup">
+                    <div class="burner-display" id="burnerDisplay">
+                        <div class="flame" id="flame"></div>
+                    </div>
+                    
+                    <div class="tongs-display" id="tongsDisplay">
+                        <div class="tongs-handle"></div>
+                        <div class="magnesium-strip" id="magnesiumStrip"></div>
+                    </div>
+                    
+                    <div class="test-tube-display" id="testTubeDisplay">
+                        <div class="oxygen-indicator" data-ar="O₂" data-en="O₂">O₂</div>
+                        <div class="white-ash" id="whiteAsh"></div>
+                    </div>
+                    
+                    <div class="sparks" id="sparks"></div>
+                </div>
+            </div>
+
+            <div class="observations-section">
+                <h3 class="observations-title" data-ar="👁️ الملاحظات" data-en="👁️ Observations">👁️ الملاحظات</h3>
+                <div id="observationsList">
+                    <div class="observation-item">
+                        <h4 data-ar="الإعداد الأولي" data-en="Initial Setup">الإعداد الأولي</h4>
+                        <p data-ar="جهز الأدوات اللازمة للتفاعل الكيميائي" data-en="Prepare the necessary tools for the chemical reaction">جهز الأدوات اللازمة للتفاعل الكيميائي</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chemical-equation" id="chemicalEquation">
+            <span data-ar="المعادلة الكيميائية: 2Mg + O₂ → 2MgO" data-en="Chemical Equation: 2Mg + O₂ → 2MgO">المعادلة الكيميائية: 2Mg + O₂ → 2MgO</span>
+        </div>
+
+        <table class="results-table" id="resultsTable">
+            <thead>
+                <tr>
+                    <th data-ar="المرحلة" data-en="Phase">المرحلة</th>
+                    <th data-ar="المادة المتفاعلة" data-en="Reactant">المادة المتفاعلة</th>
+                    <th data-ar="الملاحظة" data-en="Observation">الملاحظة</th>
+                    <th data-ar="النتاج" data-en="Product">النتاج</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+                <tr>
+                    <td>1</td>
+                    <td data-ar="مغنيسيوم معدني" data-en="Metallic Magnesium">مغنيسيوم معدني</td>
+                    <td data-ar="شريط فضي لامع" data-en="Shiny silver strip">شريط فضي لامع</td>
+                    <td data-ar="--" data-en="--">--</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let currentStep = 1;
+        let hasBurner = false;
+        let hasTongs = false;
+        let hasMagnesium = false;
+        let hasTestTube = false;
+        let reactionStarted = false;
+        let phaseNumber = 1;
+
+        // Audio context for sound effects
+        let audioContext;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+
+        function playSound(frequency, duration = 200) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (e) {
+                console.log('Sound play failed');
+            }
+        }
+
+        function playExplosionSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                // Create a more complex sound for the reaction
+                const oscillator1 = audioContext.createOscillator();
+                const oscillator2 = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator1.connect(gainNode);
+                oscillator2.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator1.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator2.frequency.setValueAtTime(400, audioContext.currentTime);
+                oscillator1.type = 'sawtooth';
+                oscillator2.type = 'square';
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+                
+                oscillator1.start(audioContext.currentTime);
+                oscillator2.start(audioContext.currentTime);
+                oscillator1.stop(audioContext.currentTime + 0.8);
+                oscillator2.stop(audioContext.currentTime + 0.8);
+            } catch (e) {
+                console.log('Explosion sound failed');
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.querySelector('.sound-btn');
+            if (currentLanguage === 'ar') {
+                btn.textContent = soundEnabled ? '🔊 الصوت: تشغيل' : '🔇 الصوت: إيقاف';
+            } else {
+                btn.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+            }
+            playSound(soundEnabled ? 800 : 400);
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            const elements = document.querySelectorAll('[data-ar][data-en]');
+            const body = document.body;
+            const container = document.querySelector('.container');
+            
+            if (currentLanguage === 'en') {
+                body.setAttribute('dir', 'ltr');
+                container.setAttribute('dir', 'ltr');
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-en');
+                });
+            } else {
+                body.setAttribute('dir', 'rtl');
+                container.setAttribute('dir', 'rtl');
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-ar');
+                });
+            }
+            playSound(600);
+        }
+
+        function updateProgress() {
+            const progress = (currentStep - 1) * 25;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateStep(step) {
+            // Mark previous steps as completed
+            for (let i = 1; i < step; i++) {
+                const stepEl = document.querySelector(`[data-step="${i}"]`);
+                if (stepEl) {
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('completed');
+                }
+            }
+            
+            // Mark current step as active
+            const currentStepEl = document.querySelector(`[data-step="${step}"]`);
+            if (currentStepEl) {
+                currentStepEl.classList.add('active');
+                currentStepEl.classList.remove('completed');
+            }
+            
+            currentStep = step;
+            updateProgress();
+        }
+
+        function addObservation(titleKey, textKey) {
+            const observationsList = document.getElementById('observationsList');
+            const newObservation = document.createElement('div');
+            newObservation.className = 'observation-item';
+            
+            const title = currentLanguage === 'ar' ? titleKey.ar : titleKey.en;
+            const text = currentLanguage === 'ar' ? textKey.ar : textKey.en;
+            
+            newObservation.innerHTML = `
+                <h4>${title}</h4>
+                <p>${text}</p>
+            `;
+            
+            observationsList.appendChild(newObservation);
+            playSound(500, 300);
+        }
+
+        function addResult(phase, reactant, observation, product) {
+            const resultsBody = document.getElementById('resultsBody');
+            const newRow = document.createElement('tr');
+            
+            const reactantText = currentLanguage === 'ar' ? reactant.ar : reactant.en;
+            const obsText = currentLanguage === 'ar' ? observation.ar : observation.en;
+            const prodText = currentLanguage === 'ar' ? product.ar : product.en;
+            
+            newRow.innerHTML = `
+                <td>${phase}</td>
+                <td>${reactantText}</td>
+                <td>${obsText}</td>
+                <td>${prodText}</td>
+            `;
+            
+            resultsBody.appendChild(newRow);
+        }
+
+        function createSparks() {
+            const sparksContainer = document.getElementById('sparks');
+            sparksContainer.innerHTML = '';
+            
+            for (let i = 0; i < 15; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                
+                const angle = (Math.PI * 2 * i) / 15;
+                const distance = 30 + Math.random() * 40;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                spark.style.animationDelay = Math.random() * 0.5 + 's';
+                
+                sparksContainer.appendChild(spark);
+                
+                setTimeout(() => {
+                    if (spark.parentNode) {
+                        spark.parentNode.removeChild(spark);
+                    }
+                }, 1000);
+            }
+        }
+
+        function startReaction() {
+            if (reactionStarted) return;
+            reactionStarted = true;
+            
+            const workspace = document.getElementById('workspace');
+            const magnesiumStrip = document.getElementById('magnesiumStrip');
+            const whiteAsh = document.getElementById('whiteAsh');
+            
+            workspace.classList.add('ignition');
+            
+            // Start intense burning animation
+            magnesiumStrip.classList.add('burning');
+            
+            // Play reaction sound
+            playExplosionSound();
+            
+            // Create sparks effect
+            createSparks();
+            
+            // Show observations
+            addObservation(
+                {ar: 'بداية التفاعل', en: 'Reaction begins'},
+                {ar: 'شريط المغنيسيوم يشتعل بلهب أبيض ساطع', en: 'Magnesium strip ignites with brilliant white flame'}
+            );
+            
+            addResult(++phaseNumber, 
+                {ar: 'مغنيسيوم + أكسجين', en: 'Magnesium + Oxygen'}, 
+                {ar: 'لهب أبيض ساطع', en: 'Brilliant white flame'}, 
+                {ar: 'أكسيد المغنيسيوم', en: 'Magnesium Oxide'}
+            );
+            
+            setTimeout(() => {
+                // Show white ash formation
+                whiteAsh.style.display = 'block';
+                magnesiumStrip.style.display = 'none';
+                
+                addObservation(
+                    {ar: 'تكوين النتاج', en: 'Product formation'},
+                    {ar: 'تكون رماد أبيض من أكسيد المغنيسيوم (MgO)', en: 'White ash of magnesium oxide (MgO) forms'}
+                );
+                
+                addResult(++phaseNumber, 
+                    {ar: 'أكسيد المغنيسيوم', en: 'Magnesium Oxide'}, 
+                    {ar: 'مسحوق أبيض', en: 'White powder'}, 
+                    {ar: 'MgO', en: 'MgO'}
+                );
+                
+                workspace.classList.remove('ignition');
+                
+                setTimeout(() => {
+                    addObservation(
+                        {ar: 'اكتمال التجربة', en: 'Experiment completed'},
+                        {ar: 'التفاعل مكتمل: تم تحويل المغنيسيوم إلى أكسيد المغنيسيوم', en: 'Reaction complete: Magnesium converted to magnesium oxide'}
+                    );
+                }, 1000);
+            }, 3000);
+        }
+
+        // Drag and drop functionality
+        document.querySelectorAll('.tool-item').forEach(tool => {
+            tool.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', tool.dataset.tool);
+                tool.classList.add('dragging');
+                playSound(300);
+            });
+
+            tool.addEventListener('dragend', () => {
+                tool.classList.remove('dragging');
+            });
+        });
+
+        const workspace = document.getElementById('workspace');
+
+        workspace.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            workspace.classList.add('drag-over');
+        });
+
+        workspace.addEventListener('dragleave', () => {
+            workspace.classList.remove('drag-over');
+        });
+
+        workspace.addEventListener('drop', (e) => {
+            e.preventDefault();
+            workspace.classList.remove('drag-over');
+            
+            const toolType = e.dataTransfer.getData('text/plain');
+            handleToolDrop(toolType);
+        });
+
+        function handleToolDrop(toolType) {
+            const floatingInstruction = document.getElementById('floatingInstruction');
+            
+            switch (toolType) {
+                case 'burner':
+                    if (!hasBurner) {
+                        hasBurner = true;
+                        document.getElementById('burnerDisplay').style.display = 'block';
+                        floatingInstruction.style.display = 'none';
+                        updateStep(2);
+                        addObservation(
+                            {ar: 'تم تشغيل الموقد', en: 'Burner activated'},
+                            {ar: 'الموقد يوفر اللهب اللازم لبدء التفاعل', en: 'Burner provides flame needed to start reaction'}
+                        );
+                        playSound(700, 400);
+                    }
+                    break;
+
+                case 'tongs':
+                    if (hasBurner && !hasTongs) {
+                        hasTongs = true;
+                        document.getElementById('tongsDisplay').style.display = 'block';
+                        updateStep(3);
+                        addObservation(
+                            {ar: 'تم وضع الملقط', en: 'Tongs positioned'},
+                            {ar: 'الملقط لحمل شريط المغنيسيوم بأمان', en: 'Tongs to safely hold magnesium strip'}
+                        );
+                        playSound(800, 400);
+                    }
+                    break;
+
+                case 'magnesium':
+                    if (hasTongs && !hasMagnesium) {
+                        hasMagnesium = true;
+                        document.getElementById('magnesiumStrip').style.display = 'block';
+                        updateStep(4);
+                        addObservation(
+                            {ar: 'تم وضع شريط المغنيسيوم', en: 'Magnesium strip placed'},
+                            {ar: 'شريط المغنيسيوم جاهز للاشتعال', en: 'Magnesium strip ready for ignition'}
+                        );
+                        playSound(600, 400);
+                    }
+                    break;
+
+                case 'test-tube':
+                    if (hasMagnesium && !hasTestTube) {
+                        hasTestTube = true;
+                        document.getElementById('testTubeDisplay').style.display = 'block';
+                        addObservation(
+                            {ar: 'تم وضع أنبوب الاختبار', en: 'Test tube positioned'},
+                            {ar: 'أنبوب الاختبار يحتوي على الأكسجين ويجمع النتاج', en: 'Test tube contains oxygen and collects product'}
+                        );
+                        
+                        // Start the reaction automatically
+                        setTimeout(() => {
+                            startReaction();
+                        }, 1000);
+                        
+                        playSound(900, 400);
+                    }
+                    break;
+            }
+        }
+
+        function resetExperiment() {
+            currentStep = 1;
+            hasBurner = false;
+            hasTongs = false;
+            hasMagnesium = false;
+            hasTestTube = false;
+            reactionStarted = false;
+            phaseNumber = 1;
+            
+            // Reset UI
+            document.getElementById('burnerDisplay').style.display = 'none';
+            document.getElementById('tongsDisplay').style.display = 'none';
+            document.getElementById('magnesiumStrip').style.display = 'none';
+            document.getElementById('testTubeDisplay').style.display = 'none';
+            document.getElementById('whiteAsh').style.display = 'none';
+            document.getElementById('sparks').innerHTML = '';
+            document.getElementById('floatingInstruction').style.display = 'block';
+            
+            const magnesiumStrip = document.getElementById('magnesiumStrip');
+            magnesiumStrip.classList.remove('burning');
+            
+            const workspace = document.getElementById('workspace');
+            workspace.classList.remove('ignition');
+            
+            updateStep(1);
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `
+                <div class="observation-item">
+                    <h4 data-ar="الإعداد الأولي" data-en="Initial Setup">الإعداد الأولي</h4>
+                    <p data-ar="جهز الأدوات اللازمة للتفاعل الكيميائي" data-en="Prepare the necessary tools for the chemical reaction">جهز الأدوات اللازمة للتفاعل الكيميائي</p>
+                </div>
+            `;
+            
+            // Reset results table
+            const resultsBody = document.getElementById('resultsBody');
+            resultsBody.innerHTML = `
+                <tr>
+                    <td>1</td>
+                    <td data-ar="مغنيسيوم معدني" data-en="Metallic Magnesium">مغنيسيوم معدني</td>
+                    <td data-ar="شريط فضي لامع" data-en="Shiny silver strip">شريط فضي لامع</td>
+                    <td data-ar="--" data-en="--">--</td>
+                </tr>
+            `;
+            
+            // Reset steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.querySelector('[data-step="1"]').classList.add('active');
+            
+            // Update language
+            if (currentLanguage === 'en') {
+                toggleLanguage();
+                toggleLanguage();
+            }
+            
+            playSound(400, 500);
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة تأثير الضوء على نمو النبات - مختبر تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #fbbf24;
+            --secondary: #f59e0b;
+            --accent: #d97706;
+            --light-green: #22c55e;
+            --dark-green: #15803d;
+            --pale-green: #a3e635;
+            --soil-color: #8b5a2b;
+            --dark-color: #1e293b;
+            --light: #fffbeb;
+            --success: #10b981;
+            --warning: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --sunlight-gradient: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+            --darkness-gradient: linear-gradient(135deg, #1e293b, #374151, #4b5563);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7, #fed7aa);
+            color: #334155;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع أشعة الشمس */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="sun-ray" cx="50%" cy="50%"><stop offset="0%" stop-color="gold" stop-opacity="0.3"/><stop offset="100%" stop-color="orange" stop-opacity="0.1"/></radialGradient></defs><path d="M10 10 L20 5 L15 15 Z" fill="url(%23sun-ray)"><animateTransform attributeName="transform" type="rotate" values="0 15 10;360 15 10" dur="30s" repeatCount="indefinite"/></path><path d="M40 8 L50 3 L45 13 Z" fill="url(%23sun-ray)"><animateTransform attributeName="transform" type="rotate" values="0 45 8;360 45 8" dur="25s" repeatCount="indefinite"/></path><path d="M70 12 L80 7 L75 17 Z" fill="url(%23sun-ray)"><animateTransform attributeName="transform" type="rotate" values="0 75 12;360 75 12" dur="35s" repeatCount="indefinite"/></path></svg>') repeat-x;
+            opacity: 0.4;
+            animation: sunlight-move 40s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes sunlight-move {
+            0% { transform: translateX(-200px) scale(0.8); }
+            50% { transform: translateX(100px) scale(1.2); }
+            100% { transform: translateX(400px) scale(0.8); }
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--sunlight-gradient);
+            opacity: 0.1;
+            animation: sunlight-shine 6s infinite;
+        }
+        
+        @keyframes sunlight-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4rem;
+            background: var(--sunlight-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: sun-pulse 4s infinite;
+        }
+        
+        @keyframes sun-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(15deg); filter: brightness(1.2); }
+            50% { transform: scale(1.15) rotate(-15deg); filter: brightness(1.4); }
+            75% { transform: scale(1.05) rotate(10deg); filter: brightness(1.1); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--sunlight-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--accent);
+            min-width: 250px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 5px;
+        }
+        
+        .status-description {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 60px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(251, 191, 36, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: #92400e;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--sunlight-gradient);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 18px 30px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(251, 191, 36, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #64748b, #475569);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+        }
+        
+        .control-btn.fast-forward {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 35px;
+            border-right: 8px solid var(--light-green);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="3" fill="lightgreen" opacity="0.1"><animate attributeName="r" values="2;6;2" dur="6s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-glow 18s infinite linear;
+        }
+        
+        @keyframes instruction-glow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: #15803d;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #166534;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--light-green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 6px 15px rgba(34, 197, 94, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            min-height: 800px;
+            margin-bottom: 35px;
+        }
+        
+        .plant-environment {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 25px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 4px solid transparent;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .plant-environment.sunlight {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7, #fed7aa);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(251, 191, 36, 0.3);
+        }
+        
+        .plant-environment.darkness {
+            background: linear-gradient(135deg, #1e293b, #374151, #4b5563);
+            border-color: #64748b;
+            box-shadow: 0 15px 35px rgba(30, 41, 59, 0.5);
+        }
+        
+        .environment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+        
+        .sunlight .environment-header {
+            background: rgba(251, 191, 36, 0.2);
+            color: #92400e;
+        }
+        
+        .darkness .environment-header {
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+        }
+        
+        .environment-icon {
+            font-size: 2.5rem;
+            animation: environment-pulse 3s infinite;
+        }
+        
+        .sunlight .environment-icon {
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+        }
+        
+        .darkness .environment-icon {
+            color: #64748b;
+        }
+        
+        @keyframes environment-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .plant-container {
+            position: relative;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+        
+        .soil {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(135deg, #8b5a2b, #a16207, #92400e);
+            border-radius: 15px;
+            position: relative;
+            margin-bottom: 0;
+            box-shadow: 0 8px 20px rgba(139, 90, 43, 0.4);
+        }
+        
+        .soil::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="5" cy="8" r="1.5" fill="saddlebrown" opacity="0.6"/><circle cx="15" cy="12" r="1" fill="chocolate" opacity="0.7"/><circle cx="10" cy="5" r="1.2" fill="brown" opacity="0.5"/></svg>') repeat;
+            border-radius: 15px;
+        }
+        
+        .plant {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stem {
+            width: 8px;
+            background: linear-gradient(180deg, var(--light-green), var(--dark-green));
+            border-radius: 8px;
+            position: relative;
+            margin: 0 auto;
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100px;
+        }
+        
+        .sunlight .stem {
+            background: linear-gradient(180deg, #22c55e, #15803d);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+        }
+        
+        .darkness .stem {
+            background: linear-gradient(180deg, #a3e635, #84cc16);
+            height: 60px;
+            width: 6px;
+        }
+        
+        .leaves-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .leaf {
+            position: absolute;
+            background: linear-gradient(135deg, var(--light-green), var(--dark-green));
+            border-radius: 0 100% 0 100%;
+            transform-origin: bottom center;
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: leaf-sway 4s infinite ease-in-out;
+        }
+        
+        .sunlight .leaf {
+            background: linear-gradient(135deg, #22c55e, #15803d, #166534);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+        
+        .darkness .leaf {
+            background: linear-gradient(135deg, #a3e635, #84cc16);
+            width: 20px !important;
+            height: 30px !important;
+        }
+        
+        .leaf-1 {
+            width: 40px;
+            height: 60px;
+            left: -45px;
+            top: -10px;
+            transform: rotate(-45deg);
+            animation-delay: 0s;
+        }
+        
+        .leaf-2 {
+            width: 35px;
+            height: 50px;
+            right: -40px;
+            top: -5px;
+            transform: rotate(45deg);
+            animation-delay: 1s;
+        }
+        
+        .leaf-3 {
+            width: 45px;
+            height: 65px;
+            left: -50px;
+            top: 20px;
+            transform: rotate(-60deg);
+            animation-delay: 2s;
+        }
+        
+        .leaf-4 {
+            width: 38px;
+            height: 55px;
+            right: -45px;
+            top: 25px;
+            transform: rotate(60deg);
+            animation-delay: 3s;
+        }
+        
+        @keyframes leaf-sway {
+            0%, 100% { transform: rotate(var(--base-rotation, 0deg)) scale(1); }
+            25% { transform: rotate(calc(var(--base-rotation, 0deg) + 3deg)) scale(1.02); }
+            50% { transform: rotate(var(--base-rotation, 0deg)) scale(1.05); }
+            75% { transform: rotate(calc(var(--base-rotation, 0deg) - 3deg)) scale(1.02); }
+        }
+        
+        .leaf::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+            border-radius: 0 100% 0 100%;
+        }
+        
+        .sun-rays {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .sun-ray {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.6), transparent);
+            height: 3px;
+            animation: sun-ray-move 4s infinite ease-in-out;
+        }
+        
+        .sun-ray:nth-child(1) {
+            width: 100px;
+            top: 0;
+            right: 0;
+            animation-delay: 0s;
+        }
+        
+        .sun-ray:nth-child(2) {
+            width: 120px;
+            top: 30px;
+            right: 10px;
+            animation-delay: 0.5s;
+        }
+        
+        .sun-ray:nth-child(3) {
+            width: 80px;
+            top: 60px;
+            right: 5px;
+            animation-delay: 1s;
+        }
+        
+        @keyframes sun-ray-move {
+            0%, 100% { opacity: 0.3; transform: translateX(0); }
+            50% { opacity: 0.8; transform: translateX(-20px); }
+        }
+        
+        .darkness-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(30, 41, 59, 0.8) 70%);
+            border-radius: 25px;
+            pointer-events: none;
+        }
+        
+        .time-controls {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.15);
+            border: 2px solid var(--light-green);
+        }
+        
+        .day-counter {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--light-green);
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .growth-progress {
+            flex: 1;
+            margin: 0 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--sunlight-gradient);
+            width: 0%;
+            transition: width 1s ease-in-out;
+            border-radius: 10px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: var(--dark-green);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        
+        .stat-card {
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stat-card.sunlight-stats {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 3px solid var(--primary);
+            box-shadow: 0 10px 25px rgba(251, 191, 36, 0.2);
+        }
+        
+        .stat-card.darkness-stats {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border: 3px solid #64748b;
+            box-shadow: 0 10px 25px rgba(75, 85, 99, 0.3);
+            color: white;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 1s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .sunlight-stats .stat-title {
+            color: var(--primary);
+        }
+        
+        .darkness-stats .stat-title {
+            color: #e2e8f0;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        
+        .sunlight-stats .stat-value {
+            color: var(--light-green);
+        }
+        
+        .darkness-stats .stat-value {
+            color: #a3e635;
+        }
+        
+        .stat-description {
+            font-size: 1rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        
+        .experiment-feedback {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(217, 119, 6, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-shine 8s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            color: #92400e;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(240, 253, 244, 0.95), rgba(220, 252, 231, 0.95));
+            border-radius: 25px;
+            padding: 35px;
+            border-left: 8px solid var(--light-green);
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--light-green);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(240, 253, 244, 0.95), rgba(220, 252, 231, 0.95));
+            padding: 30px;
+            border-radius: 18px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 15px;
+            color: #065f46;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--sunlight-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .comparison-stats {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .plant-container {
+                height: 400px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .time-controls {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .growth-progress {
+                margin: 0;
+                width: 100%;
+            }
+        }
+        
+        /* تأثيرات الفوتوسينثيس */
+        .photosynthesis-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .photosynthesis-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.8) 0%, rgba(34, 197, 94, 0.2) 100%);
+            border-radius: 50%;
+            animation: photosynthesis-flow 6s infinite;
+        }
+        
+        @keyframes photosynthesis-flow {
+            0% { 
+                transform: translateY(0) scale(0.3); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 0.8; 
+            }
+            80% { 
+                transform: translateY(-150px) scale(1.2);
+                opacity: 0.6; 
+            }
+            100% { 
+                transform: translateY(-200px) scale(1.5); 
+                opacity: 0; 
+            }
+        }
+        
+        /* تأثيرات الذبول */
+        .wilting-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+        }
+        
+        .wilt-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(163, 230, 53, 0.6) 0%, rgba(163, 230, 53, 0.2) 100%);
+            border-radius: 50%;
+            animation: wilt-fall 8s infinite;
+        }
+        
+        @keyframes wilt-fall {
+            0% { 
+                transform: translateY(-20px) scale(0.5); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 0.6; 
+            }
+            80% { 
+                transform: translateY(100px) scale(1);
+                opacity: 0.4; 
+            }
+            100% { 
+                transform: translateY(150px) scale(1.2); 
+                opacity: 0; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- أزرار التحكم -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-sun"></i>
+                <div class="logo-text">
+                    <h1>مختبر تأثير الضوء على النبات</h1>
+                    <p>اكتشف أهمية الضوء في نمو النباتات والتمثيل الضوئي</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3>التقدم الزمني</h3>
+                <div class="status-value" id="experimentStatus">يوم 0</div>
+                <div class="status-description" id="experimentDesc">قبل بداية التجربة</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2><i class="fas fa-leaf"></i> تجربة تأثير الضوء على نمو النبات</h2>
+                    <p>قارن بين نبتتين: واحدة في الضوء وأخرى في الظلام</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startExperiment">
+                        <i class="fas fa-play"></i> بدء التجربة
+                    </button>
+                    <button class="control-btn fast-forward" id="fastForward" disabled>
+                        <i class="fas fa-forward"></i> تسريع الوقت
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> إعادة التجربة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol>
+                    <li>نبتة واحدة ستوضع في ضوء الشمس المباشر</li>
+                    <li>نبتة أخرى ستوضع في مكان مظلم تماماً</li>
+                    <li>راقب النبتتين لمدة أسبوع كامل</li>
+                    <li>لاحظ الفرق في اللون والطول والصحة العامة</li>
+                </ol>
+            </div>
+            
+            <div class="time-controls">
+                <div class="day-counter" id="dayCounter">يوم 0</div>
+                <div class="growth-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">استعد لبدء التجربة</div>
+                </div>
+            </div>
+            
+            <div class="experiment-area">
+                <!-- النبات في الضوء -->
+                <div class="plant-environment sunlight" id="sunlightEnvironment">
+                    <div class="environment-header">
+                        <span>النبات في ضوء الشمس</span>
+                        <i class="fas fa-sun environment-icon"></i>
+                    </div>
+                    
+                    <div class="sun-rays">
+                        <div class="sun-ray"></div>
+                        <div class="sun-ray"></div>
+                        <div class="sun-ray"></div>
+                    </div>
+                    
+                    <div class="plant-container">
+                        <div class="photosynthesis-particles" id="photosynthesisParticles"></div>
+                        
+                        <div class="plant" id="sunlightPlant">
+                            <div class="leaves-container">
+                                <div class="leaf leaf-1" style="--base-rotation: -45deg;"></div>
+                                <div class="leaf leaf-2" style="--base-rotation: 45deg;"></div>
+                                <div class="leaf leaf-3" style="--base-rotation: -60deg;"></div>
+                                <div class="leaf leaf-4" style="--base-rotation: 60deg;"></div>
+                            </div>
+                            <div class="stem"></div>
+                        </div>
+                        
+                        <div class="soil"></div>
+                    </div>
+                </div>
+                
+                <!-- النبات في الظلام -->
+                <div class="plant-environment darkness" id="darknessEnvironment">
+                    <div class="environment-header">
+                        <span>النبات في الظلام</span>
+                        <i class="fas fa-moon environment-icon"></i>
+                    </div>
+                    
+                    <div class="darkness-overlay"></div>
+                    
+                    <div class="plant-container">
+                        <div class="wilting-effect" id="wiltingEffect"></div>
+                        
+                        <div class="plant" id="darknessPlant">
+                            <div class="leaves-container">
+                                <div class="leaf leaf-1" style="--base-rotation: -45deg;"></div>
+                                <div class="leaf leaf-2" style="--base-rotation: 45deg;"></div>
+                                <div class="leaf leaf-3" style="--base-rotation: -60deg;"></div>
+                                <div class="leaf leaf-4" style="--base-rotation: 60deg;"></div>
+                            </div>
+                            <div class="stem"></div>
+                        </div>
+                        
+                        <div class="soil"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comparison-stats">
+                <div class="stat-card sunlight-stats">
+                    <div class="stat-title">
+                        <i class="fas fa-sun"></i>
+                        النبات في الضوء
+                    </div>
+                    <div class="stat-value" id="sunlightHeight">100%</div>
+                    <div class="stat-description">صحي وأخضر</div>
+                </div>
+                
+                <div class="stat-card darkness-stats">
+                    <div class="stat-title">
+                        <i class="fas fa-moon"></i>
+                        النبات في الظلام
+                    </div>
+                    <div class="stat-value" id="darknessHeight">60%</div>
+                    <div class="stat-description">ضعيف وباهت</div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" لمشاهدة تأثير الضوء على النمو</p>
+            </div>
+            
+            <div class="result-area">
+                <h3><i class="fas fa-chart-line"></i> نتائج تجربة تأثير الضوء على النمو</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p><i class="fas fa-sun"></i> ابدأ التجربة لرؤية الفرق المذهل بين النبات في الضوء والظلام</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التجربة الرئيسية
+            const sunlightPlant = document.getElementById('sunlightPlant');
+            const darknessPlant = document.getElementById('darknessPlant');
+            const photosynthesisParticles = document.getElementById('photosynthesisParticles');
+            const wiltingEffect = document.getElementById('wiltingEffect');
+            
+            // أزرار التحكم
+            const startBtn = document.getElementById('startExperiment');
+            const fastForwardBtn = document.getElementById('fastForward');
+            const resetBtn = document.getElementById('resetExperiment');
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            
+            // عناصر المعلومات
+            const dayCounter = document.getElementById('dayCounter');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const experimentStatus = document.getElementById('experimentStatus');
+            const experimentDesc = document.getElementById('experimentDesc');
+            const sunlightHeight = document.getElementById('sunlightHeight');
+            const darknessHeight = document.getElementById('darknessHeight');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            
+            // متغيرات الحالة
+            let currentDay = 0;
+            let experimentTimer = null;
+            let fastMode = false;
+            let soundEnabled = true;
+            let experimentStarted = false;
+            
+            // مراحل التجربة (7 أيام)
+            const experimentStages = [
+                { day: 0, progress: 0, status: 'يوم 0', desc: 'قبل بداية التجربة' },
+                { day: 1, progress: 14, status: 'يوم 1', desc: 'بداية التجربة' },
+                { day: 2, progress: 28, status: 'يوم 2', desc: 'فروق طفيفة تبدأ' },
+                { day: 3, progress: 42, status: 'يوم 3', desc: 'الفروق تصبح واضحة' },
+                { day: 4, progress: 57, status: 'يوم 4', desc: 'فروق كبيرة في النمو' },
+                { day: 5, progress: 71, status: 'يوم 5', desc: 'تدهور النبات المظلم' },
+                { day: 6, progress: 85, status: 'يوم 6', desc: 'فروق جذرية واضحة' },
+                { day: 7, progress: 100, status: 'يوم 7', desc: 'النتائج النهائية' }
+            ];
+            
+            // إنشاء الأصوات
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // أصوات مختلفة للتجربة
+            const sounds = {
+                start: () => playSound(400, 0.5, 'sine'),
+                growth: () => playSound(500, 0.8, 'triangle'),
+                photosynthesis: () => playSound(600, 0.6, 'square'),
+                wilting: () => playSound(300, 1, 'sawtooth'),
+                day: () => playSound(450, 0.4, 'sine'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 300);
+                    setTimeout(() => playSound(784, 0.5), 600);
+                }
+            };
+            
+            // تبديل الصوت
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // إنشاء جزيئات التمثيل الضوئي
+            function createPhotosynthesisParticles() {
+                photosynthesisParticles.innerHTML = '';
+                const particleCount = 8;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'photosynthesis-particle';
+                        
+                        const size = Math.random() * 10 + 6;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 80 + 10}%`;
+                        particle.style.bottom = '100px';
+                        particle.style.animationDuration = `${Math.random() * 3 + 4}s`;
+                        particle.style.animationDelay = '0s';
+                        
+                        photosynthesisParticles.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 7000);
+                    }, i * 300);
+                }
+            }
+            
+            // إنشاء تأثيرات الذبول
+            function createWiltingEffect() {
+                wiltingEffect.innerHTML = '';
+                const particleCount = 6;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'wilt-particle';
+                        
+                        const size = Math.random() * 8 + 4;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 80 + 10}%`;
+                        particle.style.top = '50px';
+                        particle.style.animationDuration = `${Math.random() * 4 + 6}s`;
+                        particle.style.animationDelay = '0s';
+                        
+                        wiltingEffect.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 10000);
+                    }, i * 400);
+                }
+            }
+            
+            // تحديث حالة التجربة
+            function updateExperimentStatus(day) {
+                const stage = experimentStages[day] || experimentStages[experimentStages.length - 1];
+                
+                dayCounter.textContent = stage.status;
+                experimentStatus.textContent = stage.status;
+                experimentDesc.textContent = stage.desc;
+                progressFill.style.width = `${stage.progress}%`;
+                progressText.textContent = stage.desc;
+                
+                // تحديث النباتات حسب اليوم
+                updatePlantsGrowth(day);
+                
+                // تحديث الإحصائيات
+                updateStats(day);
+                
+                // تحديث رسائل التغذية الراجعة
+                updateFeedbackForDay(day);
+                
+                sounds.day();
+            }
+            
+            // تحديث نمو النباتات
+            function updatePlantsGrowth(day) {
+                const sunlightStem = sunlightPlant.querySelector('.stem');
+                const darknessStem = darknessPlant.querySelector('.stem');
+                const sunlightLeaves = sunlightPlant.querySelectorAll('.leaf');
+                const darknessLeaves = darknessPlant.querySelectorAll('.leaf');
+                
+                // نمو النبات في الضوء (نمو طبيعي وصحي)
+                const sunlightGrowth = Math.min(100 + (day * 20), 200); // من 100px إلى 200px
+                sunlightStem.style.height = `${sunlightGrowth}px`;
+                
+                sunlightLeaves.forEach((leaf, index) => {
+                    const scale = Math.min(1 + (day * 0.15), 1.8);
+                    const brightness = Math.min(1 + (day * 0.1), 1.5);
+                    leaf.style.transform += ` scale(${scale})`;
+                    leaf.style.filter = `brightness(${brightness})`;
+                });
+                
+                // نمو النبات في الظلام (نمو ضعيف ومريض)
+                const darknessGrowth = Math.max(60 - (day * 5), 40); // من 60px إلى 40px
+                darknessStem.style.height = `${darknessGrowth}px`;
+                
+                darknessLeaves.forEach((leaf, index) => {
+                    const scale = Math.max(1 - (day * 0.1), 0.5);
+                    const opacity = Math.max(1 - (day * 0.12), 0.3);
+                    const yellowish = day * 0.3;
+                    leaf.style.transform += ` scale(${scale})`;
+                    leaf.style.opacity = opacity;
+                    leaf.style.filter = `sepia(${yellowish}) saturate(0.5)`;
+                });
+                
+                // تأثيرات خاصة
+                if (day >= 2) {
+                    createPhotosynthesisParticles();
+                    sounds.photosynthesis();
+                    
+                    // تكرار تأثيرات التمثيل الضوئي
+                    setInterval(() => {
+                        if (currentDay >= 2 && currentDay < 7) {
+                            createPhotosynthesisParticles();
+                        }
+                    }, 5000);
+                }
+                
+                if (day >= 3) {
+                    createWiltingEffect();
+                    sounds.wilting();
+                    
+                    // تكرار تأثيرات الذبول
+                    setInterval(() => {
+                        if (currentDay >= 3 && currentDay < 7) {
+                            createWiltingEffect();
+                        }
+                    }, 6000);
+                }
+            }
+            
+            // تحديث الإحصائيات
+            function updateStats(day) {
+                const sunlightPercent = Math.min(100 + (day * 10), 150);
+                const darknessPercent = Math.max(100 - (day * 8), 30);
+                
+                sunlightHeight.textContent = `${sunlightPercent}%`;
+                darknessHeight.textContent = `${darknessPercent}%`;
+                
+                // تحديث الأوصاف
+                const sunlightDesc = document.querySelector('.sunlight-stats .stat-description');
+                const darknessDesc = document.querySelector('.darkness-stats .stat-description');
+                
+                const sunlightDescriptions = [
+                    'صحي وأخضر', 'نمو ممتاز', 'أوراق كثيفة', 'نمو قوي', 
+                    'صحة مثالية', 'نمو مزدهر', 'مكتمل النمو', 'نبات مثالي'
+                ];
+                
+                const darknessDescriptions = [
+                    'ضعيف وباهت', 'بداية الضعف', 'أوراق صفراء', 'نمو متدهور',
+                    'حالة سيئة', 'ذبول شديد', 'نبات مريض', 'نبات محتضر'
+                ];
+                
+                sunlightDesc.textContent = sunlightDescriptions[day] || sunlightDescriptions[sunlightDescriptions.length - 1];
+                darknessDesc.textContent = darknessDescriptions[day] || darknessDescriptions[darknessDescriptions.length - 1];
+            }
+            
+            // تحديث رسائل التغذية الراجعة حسب اليوم
+            function updateFeedbackForDay(day) {
+                const messages = [
+                    'اضغط على "بدء التجربة" لمشاهدة تأثير الضوء على النمو',
+                    'بداية التجربة... النباتان متشابهان الآن 🌱',
+                    'فروق طفيفة تبدأ بالظهور... النبات في الضوء أكثر حيوية! ☀️',
+                    'الفروق تصبح واضحة... النبات المظلم يبدأ بالذبول 🌿',
+                    'فروق كبيرة في النمو! النبات في الضوء ينمو بقوة 💪',
+                    'النبات المظلم يتدهور... بينما الآخر يزدهر! 🌞',
+                    'فروق جذرية واضحة... الضوء ضروري للحياة! ⚡',
+                    '🎉 النتائج مذهلة! الفرق واضح تماماً بين النبتين'
+                ];
+                
+                const icons = ['info', 'info', 'success', 'warning', 'success', 'warning', 'expansion', 'complete'];
+                updateFeedback(messages[day], icons[day] || 'info');
+            }
+            
+            // تحديث رسائل التغذية الراجعة
+            function updateFeedback(message, type = 'info') {
+                const icons = {
+                    info: 'fas fa-info-circle',
+                    success: 'fas fa-check-circle',
+                    complete: 'fas fa-star',
+                    warning: 'fas fa-exclamation-triangle',
+                    expansion: 'fas fa-sun'
+                };
+                
+                const colors = {
+                    info: '#3b82f6',
+                    success: '#10b981',
+                    complete: '#f59e0b',
+                    warning: '#ef4444',
+                    expansion: '#fbbf24'
+                };
+                
+                experimentFeedback.innerHTML = `
+                    <p><i class="${icons[type]}" style="color: ${colors[type]};"></i> ${message}</p>
+                `;
+                
+                // تأثير وميض
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // بدء التجربة
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                fastForwardBtn.disabled = false;
+                currentDay = 1;
+                
+                sounds.start();
+                
+                // بدء دورة الأيام
+                experimentTimer = setInterval(() => {
+                    updateExperimentStatus(currentDay);
+                    currentDay++;
+                    
+                    if (currentDay > 7) {
+                        clearInterval(experimentTimer);
+                        finishExperiment();
+                    }
+                }, fastMode ? 1500 : 4000); // سرعة عادية 4 ثوان، سرعة مضاعفة 1.5 ثانية
+                
+                updateFeedback('بدء التجربة... شاهد الفرق المذهل خلال الأسبوع! 🌱', 'expansion');
+                updateExperimentStatus(1);
+            });
+            
+            // تسريع الوقت
+            fastForwardBtn.addEventListener('click', () => {
+                fastMode = !fastMode;
+                
+                if (experimentTimer) {
+                    clearInterval(experimentTimer);
+                    
+                    experimentTimer = setInterval(() => {
+                        updateExperimentStatus(currentDay);
+                        currentDay++;
+                        
+                        if (currentDay > 7) {
+                            clearInterval(experimentTimer);
+                            finishExperiment();
+                        }
+                    }, fastMode ? 800 : 4000);
+                }
+                
+                fastForwardBtn.innerHTML = fastMode ? 
+                    '<i class="fas fa-play"></i> سرعة عادية' : 
+                    '<i class="fas fa-forward"></i> تسريع الوقت';
+                
+                updateFeedback(fastMode ? 'تم تفعيل السرعة المضاعفة ⏩' : 'تم العودة للسرعة العادية ⏯️', 'info');
+            });
+            
+            // انتهاء التجربة
+            function finishExperiment() {
+                fastForwardBtn.disabled = true;
+                updateFeedback('🎉 التجربة مكتملة! النتائج واضحة ومذهلة', 'complete');
+                sounds.complete();
+                
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // عرض النتائج النهائية
+            function showFinalResults() {
+                conclusionDiv.innerHTML = `
+                    <p><strong style="color: #fbbf24;">☀️ نتائج تجربة تأثير الضوء على النمو:</strong></p>
+                    <p>✅ <strong>النبات في الضوء:</strong> نمو صحي وقوي بنسبة 150%</p>
+                    <p>❌ <strong>النبات في الظلام:</strong> ذبول وضعف بنسبة 30%</p>
+                    <p>📊 <strong>الفرق في النمو:</strong> 500% لصالح النبات المضيء</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #22c55e;">📚 الشرح العلمي:</strong></p>
+                    <p>🔬 <strong>التمثيل الضوئي</strong> - النباتات تحتاج الضوء لصنع الغذاء</p>
+                    <p>🔬 <strong>الكلوروفيل</strong> - الصبغة الخضراء تمتص ضوء الشمس</p>
+                    <p>🔬 <strong>عملية التمثيل:</strong> ضوء + ماء + CO₂ → سكر + أكسجين</p>
+                    <p>🔬 <strong>بدون ضوء:</strong> لا يمكن للنبات صنع غذائه فيذبل ويموت</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #f59e0b;">🌟 الملاحظات المهمة:</strong></p>
+                    <p>🌱 <strong>اللون:</strong> النبات في الضوء أخضر غامق، في الظلام أصفر باهت</p>
+                    <p>🌱 <strong>الطول:</strong> النبات المضيء أطول وأقوى</p>
+                    <p>🌱 <strong>الأوراق:</strong> في الضوء كثيفة ومتينة، في الظلام قليلة وضعيفة</p>
+                    <p>🌱 <strong>الصحة العامة:</strong> فرق واضح في الحيوية والنشاط</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #10b981;">🧪 استنتاجات علمية:</strong></p>
+                    <p>💡 الضوء ضروري جداً لنمو النباتات الصحي</p>
+                    <p>💡 بدون ضوء، النباتات لا تستطيع البقاء على قيد الحياة</p>
+                    <p>💡 التمثيل الضوئي هو أساس الحياة على الأرض</p>
+                    <p>💡 النباتات تحول ضوء الشمس إلى طاقة قابلة للاستخدام</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #8b5cf6;">🌍 التطبيقات العملية:</strong></p>
+                    <p>🌾 <strong>الزراعة:</strong> أهمية اختيار الأماكن المشمسة للمحاصيل</p>
+                    <p>🌾 <strong>البيوت المحمية:</strong> استخدام الإضاءة الصناعية</p>
+                    <p>🌾 <strong>النباتات المنزلية:</strong> وضعها قرب النوافذ</p>
+                    <p>🌾 <strong>البيئة:</strong> دور النباتات في تنقية الهواء وإنتاج الأكسجين</p>
+                `;
+                
+                sounds.complete();
+            }
+            
+            // إعادة تعيين التجربة
+            resetBtn.addEventListener('click', () => {
+                // إيقاف التايمر
+                if (experimentTimer) {
+                    clearInterval(experimentTimer);
+                    experimentTimer = null;
+                }
+                
+                // إزالة التأثيرات
+                photosynthesisParticles.innerHTML = '';
+                wiltingEffect.innerHTML = '';
+                
+                // إعادة تعيين النباتات
+                const allStems = document.querySelectorAll('.stem');
+                const allLeaves = document.querySelectorAll('.leaf');
+                
+                allStems.forEach(stem => {
+                    stem.style.height = '100px';
+                });
+                
+                allLeaves.forEach(leaf => {
+                    leaf.style.transform = '';
+                    leaf.style.filter = '';
+                    leaf.style.opacity = '';
+                });
+                
+                // إعادة تعيين الحالات
+                experimentStarted = false;
+                currentDay = 0;
+                fastMode = false;
+                
+                // إعادة تعيين الأزرار
+                startBtn.disabled = false;
+                fastForwardBtn.disabled = true;
+                fastForwardBtn.innerHTML = '<i class="fas fa-forward"></i> تسريع الوقت';
+                
+                // إعادة تعيين المعلومات
+                updateExperimentStatus(0);
+                updateStats(0);
+                updateFeedback('اضغط على "بدء التجربة" لمشاهدة تأثير الضوء على النمو', 'info');
+                conclusionDiv.innerHTML = `
+                    <p><i class="fas fa-sun"></i> ابدأ التجربة لرؤية الفرق المذهل بين النبات في الضوء والظلام</p>
+                `;
+                
+                sounds.start();
+            });
+            
+            // بدء التوجيه التفاعلي
+            setTimeout(() => {
+                updateFeedback('مرحباً بك في تجربة تأثير الضوء! اضغط بدء التجربة', 'info');
+                updateExperimentStatus(0);
+                updateStats(0);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

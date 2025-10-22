@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة المواد المغناطيسية - Grade 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .materials-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .materials-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .material-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #e74c3c;
+        }
+
+        .material-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .material-item.magnetic {
+            border-color: #e74c3c;
+            background: linear-gradient(145deg, #fff, #ffebee);
+        }
+
+        .material-item.non-magnetic {
+            border-color: #95a5a6;
+            background: linear-gradient(145deg, #fff, #f5f5f5);
+        }
+
+        .material-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .test-zone {
+            width: 100%;
+            height: 400px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(231, 76, 60, 0.1), transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .magnet {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(45deg, #e74c3c 50%, #2980b9 50%);
+            border: 3px solid #333;
+            border-radius: 8px;
+            position: absolute;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .magnet::before {
+            content: 'N';
+            position: absolute;
+            left: 8px;
+        }
+
+        .magnet::after {
+            content: 'S';
+            position: absolute;
+            right: 8px;
+        }
+
+        .magnet.active {
+            animation: magnetPulse 1s infinite;
+        }
+
+        @keyframes magnetPulse {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                box-shadow: 0 4px 25px rgba(231, 76, 60, 0.6);
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        .material-in-test {
+            position: absolute;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            width: 50px;
+            height: 50px;
+            cursor: grab;
+        }
+
+        .magnetic-field-line {
+            position: absolute;
+            width: 2px;
+            background: rgba(231, 76, 60, 0.4);
+            border-radius: 1px;
+            pointer-events: none;
+            animation: fieldPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes fieldPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .attracted {
+            animation: attractToMagnet 0.8s ease-out forwards;
+        }
+
+        @keyframes attractToMagnet {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .not-attracted {
+            animation: noAttraction 0.5s ease-out;
+        }
+
+        @keyframes noAttraction {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-3px);
+            }
+            75% {
+                transform: translateX(3px);
+            }
+        }
+
+        .magnetic-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #e74c3c;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: magneticFlow 1.5s infinite;
+        }
+
+        @keyframes magneticFlow {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(30px, 15px) scale(0.3);
+            }
+        }
+
+        .observations {
+            background: #ffe8e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .observations h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00b894;
+            transition: all 0.3s ease;
+        }
+
+        .observation-item.magnetic {
+            border-left-color: #e74c3c;
+        }
+
+        .observation-item.non-magnetic {
+            border-left-color: #95a5a6;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .results-table {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .results-table th {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .magnetic-result {
+            background: rgba(231, 76, 60, 0.1) !important;
+        }
+
+        .non-magnetic-result {
+            background: rgba(149, 165, 166, 0.1) !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .magnet {
+                width: 60px;
+                height: 30px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧲 تجربة المواد المغناطيسية</h1>
+            <p>اختبار المواد المغناطيسية وغير المغناطيسية - الصف الرابع الابتدائي</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()">English</button>
+            <button class="btn btn-success" onclick="startExperiment()">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()">إعادة تعيين</button>
+        </div>
+
+        <div class="main-content">
+            <div class="materials-panel">
+                <h3>المواد المتاحة للاختبار</h3>
+                
+                <div class="material-item" draggable="true" data-material="paperclip" data-magnetic="true">
+                    <div class="material-icon">📎</div>
+                    <div><strong>مشبك ورق</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Paper Clip</div>
+                    <div style="font-size: 0.7em; color: #999;">معدن حديدي</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="coin" data-magnetic="true">
+                    <div class="material-icon">🪙</div>
+                    <div><strong>عملة معدنية</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Metal Coin</div>
+                    <div style="font-size: 0.7em; color: #999;">معدن</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="wood" data-magnetic="false">
+                    <div class="material-icon">🪵</div>
+                    <div><strong>قطعة خشب</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Wood Piece</div>
+                    <div style="font-size: 0.7em; color: #999;">مادة طبيعية</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="paper" data-magnetic="false">
+                    <div class="material-icon">📄</div>
+                    <div><strong>ورقة</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Paper</div>
+                    <div style="font-size: 0.7em; color: #999;">مادة ورقية</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="nail" data-magnetic="true">
+                    <div class="material-icon">🔩</div>
+                    <div><strong>مسمار حديد</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Iron Nail</div>
+                    <div style="font-size: 0.7em; color: #999;">حديد</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="plastic" data-magnetic="false">
+                    <div class="material-icon">🧸</div>
+                    <div><strong>قطعة بلاستيك</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Plastic Piece</div>
+                    <div style="font-size: 0.7em; color: #999;">بولمر صناعي</div>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <h3 style="text-align: center; margin-bottom: 20px;">احرك المغناطيس واسحب المواد لاختبارها</h3>
+                
+                <div class="test-zone" id="testZone">
+                    <div class="magnet" id="magnet">🧲</div>
+                    <div style="margin-top: 100px;">اسحب المواد هنا واقترب بالمغناطيس منها</div>
+                </div>
+
+                <div class="results-table" id="resultsTable" style="display: none;">
+                    <h4>جدول النتائج</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المادة</th>
+                                <th>النتيجة</th>
+                                <th>السبب</th>
+                                <th>النوع</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4>🔍 الملاحظات:</h4>
+            <div id="observationsList">
+                <div class="observation-item">انتظار بدء التجربة...</div>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4>📋 الاستنتاج:</h4>
+            <p><strong>المواد تنقسم إلى نوعين حسب تفاعلها مع المغناطيس:</strong></p>
+            <ul style="margin: 10px 0; padding-right: 20px;">
+                <li><strong>المواد المغناطيسية:</strong> مثل الحديد والنيكل والكوبالت - تنجذب للمغناطيس</li>
+                <li><strong>المواد غير المغناطيسية:</strong> مثل الخشب والورق والبلاستيك - لا تنجذب للمغناطيس</li>
+                <li><strong>القاعدة:</strong> المعادن الحديدية فقط تنجذب للمغناطيس</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let experimentStarted = false;
+        let materialsAdded = 0;
+        let materialsTotal = 6;
+        let draggedElement = null;
+        let magnet = null;
+        let isDraggingMagnet = false;
+        let testResults = [];
+
+        const materials = {
+            paperclip: { 
+                ar: 'مشبك ورق', en: 'Paper Clip', 
+                magnetic: true, 
+                icon: '📎',
+                reason: { ar: 'يحتوي على حديد', en: 'Contains iron' },
+                type: { ar: 'معدن مغناطيسي', en: 'Magnetic metal' }
+            },
+            coin: { 
+                ar: 'عملة معدنية', en: 'Metal Coin', 
+                magnetic: true, 
+                icon: '🪙',
+                reason: { ar: 'معدن يحتوي على حديد', en: 'Metal containing iron' },
+                type: { ar: 'معدن مغناطيسي', en: 'Magnetic metal' }
+            },
+            wood: { 
+                ar: 'قطعة خشب', en: 'Wood Piece', 
+                magnetic: false, 
+                icon: '🪵',
+                reason: { ar: 'مادة طبيعية غير معدنية', en: 'Non-metallic natural material' },
+                type: { ar: 'مادة غير مغناطيسية', en: 'Non-magnetic material' }
+            },
+            paper: { 
+                ar: 'ورقة', en: 'Paper', 
+                magnetic: false, 
+                icon: '📄',
+                reason: { ar: 'مادة ورقية', en: 'Paper material' },
+                type: { ar: 'مادة غير مغناطيسية', en: 'Non-magnetic material' }
+            },
+            nail: { 
+                ar: 'مسمار حديد', en: 'Iron Nail', 
+                magnetic: true, 
+                icon: '🔩',
+                reason: { ar: 'مصنوع من الحديد', en: 'Made of iron' },
+                type: { ar: 'معدن مغناطيسي', en: 'Magnetic metal' }
+            },
+            plastic: { 
+                ar: 'قطعة بلاستيك', en: 'Plastic Piece', 
+                magnetic: false, 
+                icon: '🧸',
+                reason: { ar: 'بولمر صناعي', en: 'Synthetic polymer' },
+                type: { ar: 'مادة غير مغناطيسية', en: 'Non-magnetic material' }
+            }
+        };
+
+        function startExperiment() {
+            experimentStarted = true;
+            addObservation('تم بدء التجربة! احرك المغناطيس واسحب المواد إلى منطقة الاختبار.', 'Experiment started! Move the magnet and drag materials to the test area.');
+            
+            // Initialize magnet
+            magnet = document.getElementById('magnet');
+            makeMagnetDraggable();
+            
+            // Create magnetic field visualization
+            createMagneticFieldLines();
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            materialsAdded = 0;
+            testResults = [];
+            
+            // Clear test zone
+            const testZone = document.getElementById('testZone');
+            testZone.querySelectorAll('.material-in-test, .magnetic-field-line, .magnetic-particle').forEach(element => {
+                element.remove();
+            });
+
+            // Reset magnet position
+            if (magnet) {
+                magnet.style.left = '50%';
+                magnet.style.top = '50%';
+                magnet.classList.remove('active');
+            }
+
+            // Reset observations
+            document.getElementById('observationsList').innerHTML = 
+                '<div class="observation-item">انتظار بدء التجربة...</div>';
+            
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('resultsTable').style.display = 'none';
+            document.getElementById('resultsTableBody').innerHTML = '';
+            
+            // Reset material items
+            document.querySelectorAll('.material-item').forEach(item => {
+                item.style.opacity = '1';
+                item.draggable = true;
+            });
+        }
+
+        function addObservation(arText, enText, className = '') {
+            const observationsList = document.getElementById('observationsList');
+            if (observationsList.children[0].textContent === 'انتظار بدء التجربة...') {
+                observationsList.innerHTML = '';
+            }
+            
+            const observationItem = document.createElement('div');
+            observationItem.className = `observation-item ${className}`;
+            observationItem.textContent = currentLanguage === 'ar' ? arText : enText;
+            observationsList.appendChild(observationItem);
+            
+            // Scroll to bottom
+            observationsList.scrollTop = observationsList.scrollHeight;
+        }
+
+        function addToResultsTable(material, result, reason, type) {
+            const tableBody = document.getElementById('resultsTableBody');
+            const row = document.createElement('tr');
+            
+            const materialData = materials[material];
+            const resultClass = materialData.magnetic ? 'magnetic-result' : 'non-magnetic-result';
+            
+            row.className = resultClass;
+            row.innerHTML = `
+                <td>${materialData.icon} ${materialData.ar}</td>
+                <td>${result}</td>
+                <td>${reason}</td>
+                <td>${type}</td>
+            `;
+            
+            tableBody.appendChild(row);
+            document.getElementById('resultsTable').style.display = 'block';
+        }
+
+        function createMagneticFieldLines() {
+            const testZone = document.getElementById('testZone');
+            const magnetRect = magnet.getBoundingClientRect();
+            const zoneRect = testZone.getBoundingClientRect();
+            
+            // Create field lines
+            for (let i = 0; i < 8; i++) {
+                const line = document.createElement('div');
+                line.className = 'magnetic-field-line';
+                
+                const angle = (i * 45) * Math.PI / 180;
+                const length = 80 + Math.random() * 40;
+                
+                line.style.height = length + 'px';
+                line.style.left = '50%';
+                line.style.top = '50%';
+                line.style.transformOrigin = 'top center';
+                line.style.transform = `translate(-50%, -50%) rotate(${angle}rad)`;
+                line.style.animationDelay = (i * 0.2) + 's';
+                
+                testZone.appendChild(line);
+            }
+        }
+
+        function createMagneticParticles(x, y) {
+            const testZone = document.getElementById('testZone');
+            
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'magnetic-particle';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.animationDelay = (i * 0.1) + 's';
+                    
+                    testZone.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 1500);
+                }, i * 50);
+            }
+        }
+
+        function checkMagneticAttraction(materialElement, materialType) {
+            const materialData = materials[materialType];
+            const magnetRect = magnet.getBoundingClientRect();
+            const materialRect = materialElement.getBoundingClientRect();
+            
+            // Calculate distance between magnet and material
+            const distance = Math.sqrt(
+                Math.pow(magnetRect.left - materialRect.left, 2) + 
+                Math.pow(magnetRect.top - materialRect.top, 2)
+            );
+            
+            // If magnet is close enough (within 100px)
+            if (distance < 100) {
+                if (materialData.magnetic) {
+                    // Attracted
+                    materialElement.classList.add('attracted');
+                    magnet.classList.add('active');
+                    
+                    createMagneticParticles(materialRect.left, materialRect.top);
+                    
+                    addObservation(
+                        `${materialData.ar} انجذب للمغناطيس! إنه مادة مغناطيسية.`,
+                        `${materialData.en} was attracted to the magnet! It's a magnetic material.`,
+                        'magnetic'
+                    );
+                    
+                    addToResultsTable(materialType, 'ينجذب ✅', materialData.reason.ar, materialData.type.ar);
+                    
+                } else {
+                    // Not attracted
+                    materialElement.classList.add('not-attracted');
+                    
+                    addObservation(
+                        `${materialData.ar} لم ينجذب للمغناطيس. إنه مادة غير مغناطيسية.`,
+                        `${materialData.en} was not attracted to the magnet. It's a non-magnetic material.`,
+                        'non-magnetic'
+                    );
+                    
+                    addToResultsTable(materialType, 'لا ينجذب ❌', materialData.reason.ar, materialData.type.ar);
+                }
+                
+                testResults.push({
+                    material: materialType,
+                    magnetic: materialData.magnetic
+                });
+                
+                // Check if experiment complete
+                if (testResults.length === materialsTotal) {
+                    setTimeout(() => {
+                        document.getElementById('conclusion').style.display = 'block';
+                        addObservation(
+                            'تمت التجربة بنجاح! تم اختبار جميع المواد وتحديد خصائصها المغناطيسية.',
+                            'Experiment completed successfully! All materials have been tested for magnetic properties.'
+                        );
+                    }, 2000);
+                }
+                
+                setTimeout(() => {
+                    materialElement.classList.remove('attracted', 'not-attracted');
+                    magnet.classList.remove('active');
+                }, 1000);
+                
+                return true;
+            }
+            
+            return false;
+        }
+
+        function makeMagnetDraggable() {
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            magnet.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - magnet.getBoundingClientRect().left;
+                offsetY = e.clientY - magnet.getBoundingClientRect().top;
+                magnet.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const testZone = document.getElementById('testZone');
+                    const zoneRect = testZone.getBoundingClientRect();
+                    
+                    let x = e.clientX - zoneRect.left - offsetX;
+                    let y = e.clientY - zoneRect.top - offsetY;
+                    
+                    // Constrain to test zone
+                    x = Math.max(0, Math.min(x, zoneRect.width - 80));
+                    y = Math.max(0, Math.min(y, zoneRect.height - 40));
+                    
+                    magnet.style.left = x + 'px';
+                    magnet.style.top = y + 'px';
+                    magnet.style.transform = 'none';
+                    
+                    // Check for nearby materials
+                    const materials = document.querySelectorAll('.material-in-test');
+                    materials.forEach(material => {
+                        const materialType = material.dataset.material;
+                        checkMagneticAttraction(material, materialType);
+                    });
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                magnet.style.cursor = 'move';
+            });
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            // Implementation for language toggle can be added here
+        }
+
+        // Drag and Drop functionality for materials
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialItems = document.querySelectorAll('.material-item');
+            const testZone = document.getElementById('testZone');
+
+            materialItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            testZone.addEventListener('dragover', handleDragOver);
+            testZone.addEventListener('dragenter', handleDragEnter);
+            testZone.addEventListener('dragleave', handleDragLeave);
+            testZone.addEventListener('drop', handleDrop);
+        });
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.id === 'testZone') {
+                e.target.style.borderColor = '#e74c3c';
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.id === 'testZone') {
+                e.target.style.borderColor = '#ccc';
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const testZone = document.getElementById('testZone');
+            if (!draggedElement) return;
+
+            testZone.style.borderColor = '#ccc';
+            
+            const materialType = draggedElement.dataset.material;
+            const materialData = materials[materialType];
+            
+            // Check if this material already exists in test zone
+            if (testZone.querySelector(`[data-material="${materialType}"]`)) {
+                addObservation(
+                    'هذه المادة موجودة بالفعل في منطقة الاختبار!',
+                    'This material is already in the test area!'
+                );
+                return;
+            }
+            
+            materialsAdded++;
+            
+            // Hide original material
+            draggedElement.style.opacity = '0.3';
+            draggedElement.draggable = false;
+            
+            // Create material in test zone
+            const materialElement = document.createElement('div');
+            materialElement.className = 'material-in-test';
+            materialElement.dataset.material = materialType;
+            materialElement.innerHTML = materialData.icon;
+            materialElement.style.background = materialData.magnetic ? 
+                'linear-gradient(145deg, #ffebee, #ffcdd2)' : 
+                'linear-gradient(145deg, #f5f5f5, #eeeeee)';
+            
+            // Position randomly in test zone
+            const randomX = Math.random() * (testZone.clientWidth - 50) + 'px';
+            const randomY = Math.random() * (testZone.clientHeight - 50) + 'px';
+            materialElement.style.left = randomX;
+            materialElement.style.top = randomY;
+            
+            testZone.appendChild(materialElement);
+            
+            addObservation(
+                `تم وضع ${materialData.ar} في منطقة الاختبار. اقترب بالمغناطيس لاختبارها.`,
+                `${materialData.en} placed in test area. Bring the magnet close to test it.`
+            );
+        }
+    </script>
+</body>
+</html>

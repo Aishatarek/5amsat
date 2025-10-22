@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة التغير الفيزيائي - إذابة السكر | Physical Change - Sugar Dissolution</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --secondary: #e67e22;
+            --accent: #9b59b6;
+            --sugar-color: #f8f9fa;
+            --water-color: #74c0fc;
+            --dissolved-color: #a6e9ff;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --water-gradient: linear-gradient(135deg, #74c0fc, #339af0, #228be6);
+            --sugar-gradient: linear-gradient(135deg, #f8f9fa, #e9ecef, #dee2e6);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #74c0fc, #339af0, #9775fa);
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع جزيئات الماء */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="water-molecule" cx="50%" cy="50%"><stop offset="0%" stop-color="lightblue" stop-opacity="0.4"/><stop offset="100%" stop-color="blue" stop-opacity="0.1"/></radialGradient></defs><circle cx="20" cy="8" r="3" fill="url(%23water-molecule)"><animate attributeName="r" values="2;5;2" dur="4s" repeatCount="indefinite"/></circle><circle cx="50" cy="12" r="2" fill="url(%23water-molecule)"><animate attributeName="r" values="1;4;1" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="6" r="4" fill="url(%23water-molecule)"><animate attributeName="r" values="3;6;3" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: molecules-flow 30s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes molecules-flow {
+            0% { transform: translateX(-200px) translateY(-30px); }
+            50% { transform: translateX(100px) translateY(20px); }
+            100% { transform: translateX(400px) translateY(-30px); }
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            background: var(--water-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(116, 192, 252, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .language-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(116, 192, 252, 0.6);
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 25px 60px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--water-gradient);
+            opacity: 0.1;
+            animation: header-flow 8s infinite;
+        }
+        
+        @keyframes header-flow {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4.5rem;
+            background: var(--water-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: molecule-dance 4s infinite;
+        }
+        
+        @keyframes molecule-dance {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(10deg); filter: brightness(1.3); }
+            50% { transform: scale(1.2) rotate(-10deg); filter: brightness(1.5); }
+            75% { transform: scale(1.05) rotate(5deg); filter: brightness(1.2); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--water-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: var(--water-gradient);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(116, 192, 252, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 280px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .status-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 30px 70px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(116, 192, 252, 0.1), rgba(155, 89, 182, 0.1));
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(116, 192, 252, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--water-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(116, 192, 252, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(116, 192, 252, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            border-right: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="3" fill="lightgreen" opacity="0.1"><animate attributeName="r" values="2;7;2" dur="6s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-float 20s infinite linear;
+        }
+        
+        @keyframes instruction-float {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: var(--success);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #1e7e34;
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            min-height: 600px;
+            align-items: start;
+        }
+        
+        .tools-section {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9), rgba(233, 236, 239, 0.9));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--sugar-color);
+            text-align: center;
+            height: fit-content;
+        }
+        
+        .tools-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* Draggable Items */
+        .draggable-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .draggable-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(155, 89, 182, 0.4);
+        }
+        
+        .draggable-item.dragging {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            opacity: 0.8;
+            cursor: grabbing;
+            box-shadow: 0 20px 50px rgba(155, 89, 182, 0.6);
+        }
+        
+        .draggable-item.used {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.9);
+            filter: grayscale(50%);
+        }
+        
+        .draggable-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.3), transparent);
+            transition: left 1s;
+        }
+        
+        .draggable-item:hover::before {
+            left: 100%;
+        }
+        
+        .item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .draggable-item:hover .item-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .item-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .item-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        /* Sugar Cube Specific */
+        .sugar-cube {
+            background: var(--sugar-gradient);
+            border: 3px solid #dee2e6;
+        }
+        
+        .sugar-cube:hover {
+            border-color: #f39c12;
+            box-shadow: 0 15px 35px rgba(243, 156, 18, 0.4);
+        }
+        
+        .sugar-cube .item-icon {
+            color: #f39c12;
+        }
+        
+        /* Spoon Specific */
+        .spoon-item {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            border: 3px solid #adb5bd;
+        }
+        
+        .spoon-item:hover {
+            border-color: #6c757d;
+            box-shadow: 0 15px 35px rgba(108, 117, 125, 0.4);
+        }
+        
+        .spoon-item .item-icon {
+            color: #6c757d;
+        }
+        
+        .experiment-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(116, 192, 252, 0.1), rgba(51, 154, 240, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(116, 192, 252, 0.2);
+            border: 3px solid var(--water-color);
+            position: relative;
+            min-height: 500px;
+        }
+        
+        /* Drop Zone */
+        .drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+            pointer-events: all;
+        }
+        
+        .drop-zone.invalid-drop {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .glass-container {
+            position: relative;
+            width: 200px;
+            height: 300px;
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+        
+        .glass {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.2), 
+                rgba(255, 255, 255, 0.1), 
+                rgba(255, 255, 255, 0.05));
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px 15px 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px rgba(255, 255, 255, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 25%;
+            height: 50%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            border-radius: 10px;
+            transform: rotate(-10deg);
+        }
+        
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--water-gradient);
+            border-radius: 0 0 20px 20px;
+            transition: all 2s ease-in-out;
+            height: 60%;
+            opacity: 0.8;
+        }
+        
+        .water::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><path d="M0,10 Q25,5 50,10 T100,10 L100,20 L0,20 Z" fill="white" opacity="0.2"><animateTransform attributeName="transform" type="translateX" values="0;-50;0" dur="4s" repeatCount="indefinite"/></path></svg>') repeat-x;
+            animation: water-ripple 4s infinite;
+        }
+        
+        @keyframes water-ripple {
+            0%, 100% { transform: translateX(0) scaleY(1); }
+            50% { transform: translateX(-25px) scaleY(1.1); }
+        }
+        
+        .sugar-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .sugar-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(248, 249, 250, 0.9) 0%, rgba(233, 236, 239, 0.7) 100%);
+            border-radius: 3px;
+            transition: all 3s ease-in-out;
+        }
+        
+        .dissolving-particle {
+            animation: dissolve-animation 3s ease-in-out forwards;
+        }
+        
+        @keyframes dissolve-animation {
+            0% { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: translateY(50px) scale(0.7);
+                opacity: 0.7;
+            }
+            100% { 
+                transform: translateY(100px) scale(0.2);
+                opacity: 0;
+            }
+        }
+        
+        .spoon {
+            position: absolute;
+            top: -20px;
+            right: 10px;
+            width: 40px;
+            height: 120px;
+            background: linear-gradient(180deg, #c0c0c0, #a8a8a8, #909090);
+            border-radius: 20px 20px 5px 5px;
+            transform-origin: center top;
+            transition: transform 1s ease-in-out;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+        }
+        
+        .spoon.visible {
+            opacity: 1;
+        }
+        
+        .spoon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 5px;
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(135deg, #e0e0e0, #c0c0c0);
+            border-radius: 50%;
+            border: 2px solid #a0a0a0;
+        }
+        
+        .spoon.stirring {
+            animation: stirring-motion 2s ease-in-out infinite;
+        }
+        
+        @keyframes stirring-motion {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        /* Drag Feedback */
+        .drag-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drag-feedback.show {
+            opacity: 1;
+        }
+        
+        .process-info {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(243, 156, 18, 0.1));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.2);
+            border: 3px solid var(--secondary);
+            height: fit-content;
+        }
+        
+        .process-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .process-step {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            transition: all 0.5s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .process-step.active {
+            opacity: 1;
+            border-left-color: var(--secondary);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .process-step.completed {
+            opacity: 1;
+            border-left-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .measurement-panel {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 2px solid var(--success);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .measurement-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+        
+        .measurement-icon {
+            font-size: 2rem;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .measurement-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .measurement-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .experiment-feedback {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(116, 192, 252, 0.15), rgba(155, 89, 182, 0.15));
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(116, 192, 252, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-shine 10s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--success);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(46, 204, 113, 0.05));
+            padding: 35px;
+            border-radius: 20px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 18px;
+            color: #1e7e34;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--water-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(116, 192, 252, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 15px 40px rgba(116, 192, 252, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* English Language Styles */
+        .lang-en {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .lang-en .instructions {
+            border-right: none;
+            border-left: 8px solid var(--success);
+        }
+        
+        .lang-en .experiment-header,
+        .lang-en .experiment-feedback,
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-right: none;
+            border-left: 8px solid var(--primary);
+        }
+        
+        .lang-en .experiment-feedback,
+        .lang-en .result-area {
+            border-left: 8px solid var(--accent);
+        }
+        
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-left: 8px solid var(--success);
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .measurement-panel {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .glass-container {
+                width: 150px;
+                height: 225px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .draggable-item {
+                margin-bottom: 15px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <button class="language-toggle" id="languageToggle">
+        <i class="fas fa-language"></i> English
+    </button>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <!-- Drag Feedback -->
+    <div class="drag-feedback" id="dragFeedback">اسحب العنصر إلى الكوب</div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-flask"></i>
+                <div class="logo-text">
+                    <h1 id="headerTitle">مختبر التغير الفيزيائي - إذابة السكر</h1>
+                    <p id="headerSubtitle">اكتشف الفرق بين التغير الفيزيائي والكيميائي</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3 id="statusTitle">حالة التجربة</h3>
+                <div class="status-value" id="experimentStatus">جاهز</div>
+                <div class="status-description" id="statusDescription">ابدأ التجربة</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2 id="experimentTitle"><i class="fas fa-atom"></i> تجربة التغير الفيزيائي - إذابة السكر في الماء</h2>
+                    <p id="experimentSubtitle">فهم أن بعض التغيرات لا تنتج مواد جديدة</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startExperiment">
+                        <i class="fas fa-play"></i> <span id="startBtn">بدء التجربة</span>
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> <span id="resetBtn">إعادة التجربة</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3 id="instructionsTitle"><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol id="instructionsList">
+                    <li id="step1">اسحب السكر إلى الكوب لإضافته للماء</li>
+                    <li id="step2">اسحب الملعقة إلى الكوب للتحريك</li>
+                    <li id="step3">راقب عملية الذوبان التدريجي</li>
+                    <li id="step4">لاحظ أن السكر لم يختف بل ذاب فقط</li>
+                </ol>
+            </div>
+            
+            <div class="measurement-panel">
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-cube"></i></div>
+                    <div class="measurement-value" id="sugarAmount">5g</div>
+                    <div class="measurement-label" id="sugarLabel">كمية السكر</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-tint"></i></div>
+                    <div class="measurement-value" id="waterAmount">200ml</div>
+                    <div class="measurement-label" id="waterLabel">كمية الماء</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-thermometer-half"></i></div>
+                    <div class="measurement-value" id="temperature">25°C</div>
+                    <div class="measurement-label" id="tempLabel">درجة الحرارة</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-clock"></i></div>
+                    <div class="measurement-value" id="dissolutionTime">0s</div>
+                    <div class="measurement-label" id="timeLabel">وقت الذوبان</div>
+                </div>
+            </div>
+            
+            <div class="experiment-area">
+                <!-- Tools Section -->
+                <div class="tools-section">
+                    <div class="tools-header">
+                        <i class="fas fa-tools"></i>
+                        <span id="toolsTitle">الأدوات المطلوبة</span>
+                    </div>
+                    
+                    <div class="draggable-item sugar-cube" draggable="true" data-type="sugar" id="sugarTool">
+                        <div class="item-icon"><i class="fas fa-cube"></i></div>
+                        <div class="item-name" id="sugarName">سكر أبيض</div>
+                        <div class="item-description" id="sugarDesc">اسحبني إلى الكوب لإضافة السكر!</div>
+                    </div>
+                    
+                    <div class="draggable-item spoon-item" draggable="true" data-type="spoon" id="spoonTool">
+                        <div class="item-icon"><i class="fas fa-utensil-spoon"></i></div>
+                        <div class="item-name" id="spoonName">ملعقة</div>
+                        <div class="item-description" id="spoonDesc">اسحبني إلى الكوب للتحريك!</div>
+                    </div>
+                    
+                    <div class="draggable-item" id="waterTool">
+                        <div class="item-icon"><i class="fas fa-tint"></i></div>
+                        <div class="item-name" id="waterName">كوب ماء</div>
+                        <div class="item-description" id="waterDesc">200 مل من الماء النقي متوفر بالفعل</div>
+                    </div>
+                </div>
+                
+                <!-- Experiment Container -->
+                <div class="experiment-container" id="experimentContainer">
+                    <div class="drop-zone" id="dropZone"></div>
+                    
+                    <div class="glass-container">
+                        <div class="glass">
+                            <div class="water" id="waterLevel"></div>
+                            <div class="sugar-particles" id="sugarParticles"></div>
+                            <div class="spoon" id="spoon"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-status" id="experimentStatusText">
+                        <p id="currentStepText">ابدأ التجربة أولاً</p>
+                    </div>
+                </div>
+                
+                <!-- Process Information -->
+                <div class="process-info">
+                    <div class="process-header">
+                        <i class="fas fa-cogs"></i>
+                        <span id="processTitle">مراحل العملية</span>
+                    </div>
+                    
+                    <div class="process-step" id="step-1">
+                        <div class="step-title">
+                            <i class="fas fa-play-circle"></i>
+                            <span id="processStep1">بداية التجربة</span>
+                        </div>
+                        <div class="step-description" id="processDesc1">الماء النقي في الكوب</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-2">
+                        <div class="step-title">
+                            <i class="fas fa-plus-circle"></i>
+                            <span id="processStep2">إضافة السكر</span>
+                        </div>
+                        <div class="step-description" id="processDesc2">اسحب السكر إلى الكوب</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-3">
+                        <div class="step-title">
+                            <i class="fas fa-sync-alt"></i>
+                            <span id="processStep3">التحريك</span>
+                        </div>
+                        <div class="step-description" id="processDesc3">اسحب الملعقة للتحريك</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-4">
+                        <div class="step-title">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="processStep4">اكتمال الذوبان</span>
+                        </div>
+                        <div class="step-description" id="processDesc4">السكر ذاب تماماً في الماء</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p id="feedbackText"><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر إلى الكوب</p>
+            </div>
+            
+            <div class="result-area">
+                <h3 id="resultsTitle"><i class="fas fa-chart-line"></i> نتائج تجربة التغير الفيزيائي</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p id="conclusionText"><i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Translation data
+            const translations = {
+                ar: {
+                    headerTitle: 'مختبر التغير الفيزيائي - إذابة السكر',
+                    headerSubtitle: 'اكتشف الفرق بين التغير الفيزيائي والكيميائي',
+                    statusTitle: 'حالة التجربة',
+                    experimentTitle: 'تجربة التغير الفيزيائي - إذابة السكر في الماء',
+                    experimentSubtitle: 'فهم أن بعض التغيرات لا تنتج مواد جديدة',
+                    startBtn: 'بدء التجربة',
+                    resetBtn: 'إعادة التجربة',
+                    instructionsTitle: 'تعليمات التجربة',
+                    step1: 'اسحب السكر إلى الكوب لإضافته للماء',
+                    step2: 'اسحب الملعقة إلى الكوب للتحريك',
+                    step3: 'راقب عملية الذوبان التدريجي',
+                    step4: 'لاحظ أن السكر لم يختف بل ذاب فقط',
+                    sugarLabel: 'كمية السكر',
+                    waterLabel: 'كمية الماء',
+                    tempLabel: 'درجة الحرارة',
+                    timeLabel: 'وقت الذوبان',
+                    toolsTitle: 'الأدوات المطلوبة',
+                    waterName: 'كوب ماء',
+                    waterDesc: '200 مل من الماء النقي متوفر بالفعل',
+                    sugarName: 'سكر أبيض',
+                    sugarDesc: 'اسحبني إلى الكوب لإضافة السكر!',
+                    spoonName: 'ملعقة',
+                    spoonDesc: 'اسحبني إلى الكوب للتحريك!',
+                    processTitle: 'مراحل العملية',
+                    processStep1: 'بداية التجربة',
+                    processDesc1: 'الماء النقي في الكوب',
+                    processStep2: 'إضافة السكر',
+                    processDesc2: 'اسحب السكر إلى الكوب',
+                    processStep3: 'التحريك',
+                    processDesc3: 'اسحب الملعقة للتحريك',
+                    processStep4: 'اكتمال الذوبان',
+                    processDesc4: 'السكر ذاب تماماً في الماء',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر إلى الكوب',
+                    resultsTitle: 'نتائج تجربة التغير الفيزيائي',
+                    conclusionText: '<i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي',
+                    ready: 'جاهز',
+                    startExp: 'ابدأ التجربة',
+                    currentStepText: 'ابدأ التجربة أولاً',
+                    dragSugar: 'اسحب السكر إلى الكوب',
+                    dragSpoon: 'اسحب الملعقة إلى الكوب',
+                    langBtn: 'English',
+                    dragFeedback: 'اسحب العنصر إلى الكوب'
+                },
+                en: {
+                    headerTitle: 'Physical Change Lab - Sugar Dissolution',
+                    headerSubtitle: 'Discover the difference between physical and chemical changes',
+                    statusTitle: 'Experiment Status',
+                    experimentTitle: 'Physical Change Experiment - Dissolving Sugar in Water',
+                    experimentSubtitle: 'Understanding that some changes do not produce new substances',
+                    startBtn: 'Start Experiment',
+                    resetBtn: 'Reset Experiment',
+                    instructionsTitle: 'Experiment Instructions',
+                    step1: 'Drag sugar to the glass to add it to water',
+                    step2: 'Drag the spoon to the glass for stirring',
+                    step3: 'Observe the gradual dissolution process',
+                    step4: 'Notice that sugar didn\'t disappear, it just dissolved',
+                    sugarLabel: 'Sugar Amount',
+                    waterLabel: 'Water Amount',
+                    tempLabel: 'Temperature',
+                    timeLabel: 'Dissolution Time',
+                    toolsTitle: 'Required Tools',
+                    waterName: 'Glass of Water',
+                    waterDesc: '200 ml of pure water already available',
+                    sugarName: 'White Sugar',
+                    sugarDesc: 'Drag me to the glass to add sugar!',
+                    spoonName: 'Spoon',
+                    spoonDesc: 'Drag me to the glass for stirring!',
+                    processTitle: 'Process Stages',
+                    processStep1: 'Experiment Start',
+                    processDesc1: 'Pure water in the glass',
+                    processStep2: 'Adding Sugar',
+                    processDesc2: 'Drag sugar to the glass',
+                    processStep3: 'Stirring',
+                    processDesc3: 'Drag spoon for stirring',
+                    processStep4: 'Complete Dissolution',
+                    processDesc4: 'Sugar completely dissolved in water',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag elements to the glass',
+                    resultsTitle: 'Physical Change Experiment Results',
+                    conclusionText: '<i class="fas fa-atom"></i> Start the experiment to discover the difference between physical and chemical changes',
+                    ready: 'Ready',
+                    startExp: 'Start Experiment',
+                    currentStepText: 'Start the experiment first',
+                    dragSugar: 'Drag sugar to the glass',
+                    dragSpoon: 'Drag spoon to the glass',
+                    langBtn: 'العربية',
+                    dragFeedback: 'Drag element to the glass'
+                }
+            };
+            
+            // Language management
+            let currentLang = 'ar';
+            const languageToggle = document.getElementById('languageToggle');
+            const body = document.body;
+            
+            function updateLanguage(lang) {
+                currentLang = lang;
+                const texts = translations[lang];
+                
+                // Update all text elements
+                Object.keys(texts).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (key.includes('Text') || key.includes('feedbackText') || key.includes('conclusionText')) {
+                            element.innerHTML = texts[key];
+                        } else {
+                            element.textContent = texts[key];
+                        }
+                    }
+                });
+                
+                // Update body class for RTL/LTR
+                if (lang === 'en') {
+                    body.classList.add('lang-en');
+                    body.dir = 'ltr';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                } else {
+                    body.classList.remove('lang-en');
+                    body.dir = 'rtl';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                }
+            }
+            
+            languageToggle.addEventListener('click', () => {
+                updateLanguage(currentLang === 'ar' ? 'en' : 'ar');
+            });
+            
+            // Experiment elements
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const startBtn = document.getElementById('startExperiment');
+            const resetBtn = document.getElementById('resetExperiment');
+            const dragFeedback = document.getElementById('dragFeedback');
+            
+            // Visual elements
+            const sugarParticles = document.getElementById('sugarParticles');
+            const spoon = document.getElementById('spoon');
+            const waterLevel = document.getElementById('waterLevel');
+            const experimentContainer = document.getElementById('experimentContainer');
+            const dropZone = document.getElementById('dropZone');
+            
+            // Draggable elements
+            const sugarTool = document.getElementById('sugarTool');
+            const spoonTool = document.getElementById('spoonTool');
+            
+            // Status elements
+            const experimentStatus = document.getElementById('experimentStatus');
+            const statusDescription = document.getElementById('statusDescription');
+            const dissolutionTime = document.getElementById('dissolutionTime');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const currentStepText = document.getElementById('currentStepText');
+            
+            // State variables
+            let soundEnabled = true;
+            let experimentStarted = false;
+            let sugarAdded = false;
+            let isStirring = false;
+            let dissolutionStartTime = 0;
+            let dissolutionTimer = null;
+            let draggedElement = null;
+            
+            // Audio context for sounds
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // Sound effects
+            const sounds = {
+                start: () => playSound(500, 0.5, 'sine'),
+                drag: () => playSound(350, 0.3, 'triangle'),
+                drop: () => playSound(450, 0.5, 'square'),
+                addSugar: () => playSound(400, 0.8, 'triangle'),
+                stir: () => playSound(300, 1.2, 'square'),
+                dissolve: () => playSound(600, 1.5, 'sine'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 200);
+                    setTimeout(() => playSound(784, 0.4), 400);
+                },
+                error: () => playSound(200, 0.5, 'sawtooth')
+            };
+            
+            // Sound toggle
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // Drag and Drop functionality
+            function handleDragStart(e) {
+                if (!experimentStarted) {
+                    e.preventDefault();
+                    const message = currentLang === 'ar' ? 'يجب بدء التجربة أولاً!' : 'Must start experiment first!';
+                    showDragFeedback(message);
+                    sounds.error();
+                    return;
+                }
+                
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+                sounds.drag();
+                
+                const type = e.target.dataset.type;
+                let message = '';
+                
+                if (type === 'sugar' && !sugarAdded) {
+                    message = currentLang === 'ar' ? 'اسحب السكر إلى الكوب' : 'Drag sugar to the glass';
+                } else if (type === 'spoon' && sugarAdded && !isStirring) {
+                    message = currentLang === 'ar' ? 'اسحب الملعقة إلى الكوب' : 'Drag spoon to the glass';
+                } else {
+                    message = currentLang === 'ar' ? 'هذا العنصر غير متاح الآن' : 'This element is not available now';
+                }
+                
+                showDragFeedback(message);
+            }
+            
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                draggedElement = null;
+                hideDragFeedback();
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }
+            
+            function handleDragLeave(e) {
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                if (!draggedElement) return;
+                
+                const type = draggedElement.dataset.type;
+                
+                if (type === 'sugar' && !sugarAdded) {
+                    addSugar();
+                } else if (type === 'spoon' && sugarAdded && !isStirring) {
+                    startStirring();
+                } else {
+                    dropZone.classList.add('invalid-drop');
+                    sounds.error();
+                    setTimeout(() => {
+                        dropZone.classList.remove('invalid-drop');
+                    }, 1000);
+                }
+            }
+            
+            function showDragFeedback(message) {
+                dragFeedback.textContent = message;
+                dragFeedback.classList.add('show');
+            }
+            
+            function hideDragFeedback() {
+                dragFeedback.classList.remove('show');
+            }
+            
+            // Add event listeners to draggable elements
+            sugarTool.addEventListener('dragstart', handleDragStart);
+            sugarTool.addEventListener('dragend', handleDragEnd);
+            spoonTool.addEventListener('dragstart', handleDragStart);
+            spoonTool.addEventListener('dragend', handleDragEnd);
+            
+            // Add event listeners to drop zone
+            experimentContainer.addEventListener('dragover', handleDragOver);
+            experimentContainer.addEventListener('dragleave', handleDragLeave);
+            experimentContainer.addEventListener('drop', handleDrop);
+            
+            // Create sugar particles
+            function createSugarParticles() {
+                sugarParticles.innerHTML = '';
+                const particleCount = 15;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'sugar-particle';
+                    
+                    const size = Math.random() * 8 + 4;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    const x = Math.random() * 160 + 20;
+                    const y = Math.random() * 100 + 20;
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    sugarParticles.appendChild(particle);
+                }
+            }
+            
+            // Add sugar function
+            function addSugar() {
+                sugarAdded = true;
+                sugarTool.classList.add('used');
+                sugarTool.draggable = false;
+                
+                createSugarParticles();
+                sounds.addSugar();
+                
+                const statusText = currentLang === 'ar' ? 'تم إضافة السكر' : 'Sugar Added';
+                const descText = currentLang === 'ar' ? 'السكر في الماء' : 'Sugar in water';
+                const stepText = currentLang === 'ar' ? 'اسحب الملعقة للتحريك' : 'Drag spoon for stirring';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-plus-circle"></i> تم إضافة السكر! الآن اسحب الملعقة إلى الكوب للتحريك' :
+                    '<i class="fas fa-plus-circle"></i> Sugar added! Now drag the spoon to the glass for stirring';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'warning');
+                updateProcessStep(2);
+            }
+            
+            // Start stirring function
+            function startStirring() {
+                isStirring = true;
+                spoonTool.classList.add('used');
+                spoonTool.draggable = false;
+                spoon.classList.add('visible', 'stirring');
+                
+                dissolutionStartTime = Date.now();
+                dissolutionTimer = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - dissolutionStartTime) / 1000);
+                    dissolutionTime.textContent = `${elapsed}s`;
+                }, 100);
+                
+                const statusText = currentLang === 'ar' ? 'يذوب السكر' : 'Sugar Dissolving';
+                const descText = currentLang === 'ar' ? 'التحريك جاري' : 'Stirring in progress';
+                const stepText = currentLang === 'ar' ? 'راقب عملية الذوبان' : 'Watch the dissolution process';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-sync-alt"></i> التحريك بدأ! شاهد كيف يذوب السكر في الماء تدريجياً' :
+                    '<i class="fas fa-sync-alt"></i> Stirring started! Watch how sugar gradually dissolves in water';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'info');
+                updateProcessStep(3);
+                sounds.stir();
+                
+                // Start dissolution animation
+                setTimeout(() => {
+                    animateDissolve();
+                    sounds.dissolve();
+                }, 1000);
+                
+                // Complete dissolution
+                setTimeout(() => {
+                    completeDisolution();
+                }, 5000);
+            }
+            
+            // Animate dissolution
+            function animateDissolve() {
+                const particles = sugarParticles.querySelectorAll('.sugar-particle');
+                particles.forEach((particle, index) => {
+                    setTimeout(() => {
+                        particle.classList.add('dissolving-particle');
+                    }, index * 200);
+                });
+                
+                // Change water color gradually
+                let opacity = 0.8;
+                let colorIntensity = 0;
+                const colorChange = setInterval(() => {
+                    colorIntensity += 0.02;
+                    waterLevel.style.background = `linear-gradient(135deg, 
+                        rgba(116, 192, 252, ${opacity}), 
+                        rgba(51, 154, 240, ${opacity + colorIntensity}), 
+                        rgba(34, 139, 230, ${opacity + colorIntensity * 2}))`;
+                    
+                    if (colorIntensity >= 0.3) {
+                        clearInterval(colorChange);
+                    }
+                }, 100);
+            }
+            
+            // Update process steps
+            function updateProcessStep(stepNumber, status = 'active') {
+                // Reset all steps
+                for (let i = 1; i <= 4; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    step.classList.remove('active', 'completed');
+                }
+                
+                // Update current step
+                for (let i = 1; i <= stepNumber; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    if (i < stepNumber) {
+                        step.classList.add('completed');
+                    } else if (i === stepNumber) {
+                        step.classList.add(status);
+                    }
+                }
+            }
+            
+            // Update experiment feedback
+            function updateFeedback(message, type = 'info') {
+                document.getElementById('feedbackText').innerHTML = message;
+                
+                // Visual feedback
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // Start experiment
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                
+                const statusText = currentLang === 'ar' ? 'بدء التجربة' : 'Starting Experiment';
+                const descText = currentLang === 'ar' ? 'جاهز للتفاعل' : 'Ready for interaction';
+                const stepText = currentLang === 'ar' ? 'اسحب السكر إلى الكوب' : 'Drag sugar to the glass';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-play-circle"></i> بدأت التجربة! اسحب السكر إلى الكوب لبدء عملية الذوبان' :
+                    '<i class="fas fa-play-circle"></i> Experiment started! Drag sugar to the glass to begin dissolution';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'success');
+                updateProcessStep(1);
+                sounds.start();
+            });
+            
+            // Complete dissolution
+            function completeDisolution() {
+                clearInterval(dissolutionTimer);
+                spoon.classList.remove('stirring');
+                
+                const statusText = currentLang === 'ar' ? 'اكتمل الذوبان' : 'Dissolution Complete';
+                const descText = currentLang === 'ar' ? 'تغير فيزيائي' : 'Physical change';
+                const stepText = currentLang === 'ar' ? 'التجربة اكتملت!' : 'Experiment completed!';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-check-circle"></i> ممتاز! السكر ذاب تماماً - هذا تغير فيزيائي!' :
+                    '<i class="fas fa-check-circle"></i> Excellent! Sugar completely dissolved - this is a physical change!';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'complete');
+                updateProcessStep(4, 'completed');
+                sounds.complete();
+                
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // Show final results
+            function showFinalResults() {
+                const conclusion = currentLang === 'ar' ? `
+                    <p><strong style="color: #3498db;">🧪 نتائج تجربة التغير الفيزيائي:</strong></p>
+                    <p>✅ <strong>المشاهدة:</strong> السكر ذاب تماماً في الماء</p>
+                    <p>📊 <strong>الوقت المستغرق:</strong> ${document.getElementById('dissolutionTime').textContent}</p>
+                    <p>🌡️ <strong>درجة الحرارة:</strong> 25°C (درجة حرارة الغرفة)</p>
+                    <p>🎯 <strong>طريقة التفاعل:</strong> السحب والإفلات (Drag & Drop)</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 الشرح العلمي:</strong></p>
+                    <p>💧 <strong>التغير الفيزيائي:</strong> تغير في الشكل أو الحالة دون تكوين مادة جديدة</p>
+                    <p>🔄 <strong>عملية الذوبان:</strong> جزيئات السكر تتفرق بين جزيئات الماء</p>
+                    <p>⚗️ <strong>المحلول:</strong> خليط متجانس من السكر والماء</p>
+                    <p>🧬 <strong>بقاء التركيب:</strong> جزيئات السكر لم تتغير كيميائياً</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e67e22;">📌 لماذا هذا تغير فيزيائي؟</strong></p>
+                    <p>✅ <strong>لا توجد مادة جديدة:</strong> السكر ما زال سكراً، والماء ما زال ماءً</p>
+                    <p>🔄 <strong>قابل للعكس:</strong> يمكن استرداد السكر بالتبخير</p>
+                    <p>🌡️ <strong>نفس التركيب:</strong> التركيب الكيميائي لم يتغير</p>
+                    <p>⚡ <strong>نفس الخصائص:</strong> السكر يحتفظ بطعمه الحلو</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #9b59b6;">🔬 الفرق بين التغير الفيزيائي والكيميائي:</strong></p>
+                    <p>🔵 <strong>التغير الفيزيائي:</strong> تغير في الشكل فقط (ذوبان، تجمد، غليان)</p>
+                    <p>🔴 <strong>التغير الكيميائي:</strong> تكوين مواد جديدة (احتراق، صدأ، هضم)</p>
+                    <p>↩️ <strong>الفيزيائي قابل للعكس</strong> - الكيميائي غير قابل للعكس</p>
+                    <p>🧪 <strong>الفيزيائي يحافظ على التركيب</strong> - الكيميائي يغير التركيب</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">🌍 أمثلة من الحياة اليومية:</strong></p>
+                    <p>❄️ <strong>تغيرات فيزيائية:</strong> ذوبان الثلج، غليان الماء، كسر الزجاج</p>
+                    <p>🔥 <strong>تغيرات كيميائية:</strong> طبخ الطعام، احتراق الخشب، هضم الطعام</p>
+                    <p>🥤 <strong>المشروبات:</strong> إذابة السكر في الشاي أو القهوة</p>
+                    <p>🧂 <strong>الطبخ:</strong> إذابة الملح في الحساء</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 الاستنتاج النهائي:</strong></p>
+                    <p>💡 السكر لم يختف، بل ذاب فقط في الماء</p>
+                    <p>💡 هذا تغير فيزيائي لأنه لم ينتج مواد جديدة</p>
+                    <p>💡 يمكن استرداد السكر بتبخير الماء</p>
+                    <p>💡 التركيب الكيميائي للسكر لم يتغير</p>
+                    <p>💡 التفاعل بالسحب والإفلات جعل التجربة أكثر واقعية!</p>
+                ` : `
+                    <p><strong style="color: #3498db;">🧪 Physical Change Experiment Results:</strong></p>
+                    <p>✅ <strong>Observation:</strong> Sugar completely dissolved in water</p>
+                    <p>📊 <strong>Time Taken:</strong> ${document.getElementById('dissolutionTime').textContent}</p>
+                    <p>🌡️ <strong>Temperature:</strong> 25°C (Room temperature)</p>
+                    <p>🎯 <strong>Interaction Method:</strong> Drag & Drop</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 Scientific Explanation:</strong></p>
+                    <p>💧 <strong>Physical Change:</strong> Change in form or state without forming new substances</p>
+                    <p>🔄 <strong>Dissolution Process:</strong> Sugar molecules disperse between water molecules</p>
+                    <p>⚗️ <strong>Solution:</strong> Homogeneous mixture of sugar and water</p>
+                    <p>🧬 <strong>Structure Preservation:</strong> Sugar molecules unchanged chemically</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e67e22;">📌 Why is this a Physical Change?</strong></p>
+                    <p>✅ <strong>No New Substance:</strong> Sugar is still sugar, water is still water</p>
+                    <p>🔄 <strong>Reversible:</strong> Sugar can be recovered by evaporation</p>
+                    <p>🌡️ <strong>Same Composition:</strong> Chemical composition unchanged</p>
+                    <p>⚡ <strong>Same Properties:</strong> Sugar retains its sweet taste</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #9b59b6;">🔬 Physical vs Chemical Changes:</strong></p>
+                    <p>🔵 <strong>Physical Change:</strong> Change in form only (melting, freezing, boiling)</p>
+                    <p>🔴 <strong>Chemical Change:</strong> Formation of new substances (burning, rusting, digestion)</p>
+                    <p>↩️ <strong>Physical is reversible</strong> - Chemical is irreversible</p>
+                    <p>🧪 <strong>Physical preserves composition</strong> - Chemical changes composition</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">🌍 Daily Life Examples:</strong></p>
+                    <p>❄️ <strong>Physical Changes:</strong> Ice melting, water boiling, glass breaking</p>
+                    <p>🔥 <strong>Chemical Changes:</strong> Cooking food, wood burning, food digestion</p>
+                    <p>🥤 <strong>Beverages:</strong> Dissolving sugar in tea or coffee</p>
+                    <p>🧂 <strong>Cooking:</strong> Dissolving salt in soup</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 Final Conclusion:</strong></p>
+                    <p>💡 Sugar didn't disappear, it just dissolved in water</p>
+                    <p>💡 This is a physical change because no new substances formed</p>
+                    <p>💡 Sugar can be recovered by evaporating water</p>
+                    <p>💡 Chemical composition of sugar remained unchanged</p>
+                    <p>💡 Drag & Drop interaction made the experiment more realistic!</p>
+                `;
+                
+                conclusionDiv.innerHTML = conclusion;
+            }
+            
+            // Reset experiment
+            resetBtn.addEventListener('click', () => {
+                // Reset state
+                experimentStarted = false;
+                sugarAdded = false;
+                isStirring = false;
+                draggedElement = null;
+                
+                if (dissolutionTimer) {
+                    clearInterval(dissolutionTimer);
+                }
+                
+                // Reset UI
+                startBtn.disabled = false;
+                sugarTool.classList.remove('used');
+                sugarTool.draggable = true;
+                spoonTool.classList.remove('used');
+                spoonTool.draggable = true;
+                
+                // Reset visual elements
+                sugarParticles.innerHTML = '';
+                spoon.classList.remove('visible', 'stirring');
+                waterLevel.style.background = '';
+                dropZone.classList.remove('drag-over', 'invalid-drop');
+                
+                // Reset status
+                const readyText = currentLang === 'ar' ? 'جاهز' : 'Ready';
+                const startText = currentLang === 'ar' ? 'ابدأ التجربة' : 'Start Experiment';
+                const stepText = currentLang === 'ar' ? 'ابدأ التجربة أولاً' : 'Start the experiment first';
+                const resetFeedback = currentLang === 'ar' ? 
+                    '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب العناصر إلى الكوب' :
+                    '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag elements to the glass';
+                
+                experimentStatus.textContent = readyText;
+                statusDescription.textContent = startText;
+                currentStepText.textContent = stepText;
+                dissolutionTime.textContent = '0s';
+                
+                updateFeedback(resetFeedback, 'info');
+                updateProcessStep(1);
+                hideDragFeedback();
+                
+                const resetConclusion = currentLang === 'ar' ?
+                    '<i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف الفرق بين التغير الفيزيائي والكيميائي' :
+                    '<i class="fas fa-atom"></i> Start the experiment to discover the difference between physical and chemical changes';
+                
+                conclusionDiv.innerHTML = `<p>${resetConclusion}</p>`;
+                
+                sounds.start();
+            });
+            
+            // Initial setup
+            updateProcessStep(1);
+            updateLanguage('ar');
+        });
+    </script>
+</body>
+</html>

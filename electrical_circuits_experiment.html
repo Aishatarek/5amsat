@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الدوائر الكهربائية - Electrical Circuits Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #fff3e0);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196f3, #ff9800);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20a138);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .tools-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .tool-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #2196f3;
+        }
+
+        .tool-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .circuit-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #2196f3;
+            color: white;
+        }
+
+        .circuit-panel {
+            display: none;
+            min-height: 400px;
+        }
+
+        .circuit-panel.active {
+            display: block;
+        }
+
+        .circuit-diagram {
+            width: 100%;
+            height: 300px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            position: relative;
+            margin: 20px 0;
+            background: #fafafa;
+        }
+
+        .circuit-element {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .battery {
+            background: linear-gradient(90deg, #ff4444, #cc3333);
+            color: white;
+            width: 80px;
+        }
+
+        .bulb {
+            background: linear-gradient(90deg, #ffeb3b, #ffc107);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+        }
+
+        .bulb.on {
+            background: linear-gradient(90deg, #ffff00, #ffd700);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+            animation: glow 1s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(255, 255, 0, 0.8); }
+            100% { box-shadow: 0 0 30px rgba(255, 255, 0, 1); }
+        }
+
+        .switch {
+            background: linear-gradient(90deg, #9e9e9e, #757575);
+            color: white;
+            cursor: pointer;
+        }
+
+        .switch.closed {
+            background: linear-gradient(90deg, #4caf50, #388e3c);
+        }
+
+        .wire {
+            position: absolute;
+            background: #333;
+            z-index: 1;
+        }
+
+        .wire.horizontal {
+            height: 3px;
+        }
+
+        .wire.vertical {
+            width: 3px;
+        }
+
+        .wire.energized {
+            background: #2196f3;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.8);
+            animation: current-flow 2s infinite;
+        }
+
+        @keyframes current-flow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #2196f3;
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .progress-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2196f3, #ff9800);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .observations {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .safety-icon {
+            color: #dc3545;
+            margin-right: 10px;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2196f3;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #2196f3;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .current-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(33, 150, 243, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .current-indicator.active {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .circuit-diagram {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">⚡ تجربة الدوائر الكهربائية</h1>
+            <p id="subtitle">Electrical Circuits Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">بناء دائرة التوالي</div>
+            <div class="step" id="step2">اختبار المفتاح</div>
+            <div class="step" id="step3">بناء دائرة التوازي</div>
+            <div class="step" id="step4">مقارنة النتائج</div>
+        </div>
+
+        <div class="main-content">
+            <div class="tools-panel">
+                <h3 id="toolsTitle">الأدوات المطلوبة</h3>
+                
+                <div class="tool-item" draggable="true" data-tool="battery" id="batteryTool">
+                    <div style="font-size: 2em;">🔋</div>
+                    <div id="batteryName">بطارية</div>
+                    <small>Battery</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="bulb" id="bulbTool">
+                    <div style="font-size: 2em;">💡</div>
+                    <div id="bulbName">مصباح</div>
+                    <small>Light Bulb</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="wire" id="wireTool">
+                    <div style="font-size: 2em;">〰️</div>
+                    <div id="wireName">أسلاك توصيل</div>
+                    <small>Connecting Wires</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="switch" id="switchTool">
+                    <div style="font-size: 2em;">🔘</div>
+                    <div id="switchName">مفتاح كهربائي</div>
+                    <small>Electric Switch</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="circuit-tabs">
+                    <button class="tab active" onclick="switchTab('series')" id="seriesTab">دائرة التوالي</button>
+                    <button class="tab" onclick="switchTab('parallel')" id="parallelTab">دائرة التوازي</button>
+                </div>
+
+                <div class="circuit-panel active" id="seriesPanel">
+                    <h4 id="seriesTitle">دائرة التوالي (Series Circuit)</h4>
+                    <div class="current-indicator" id="seriesCurrent">التيار: 0A</div>
+                    <div class="drop-zone" data-accept="battery,bulb,wire,switch" id="seriesZone">
+                        <span id="seriesInstruction">اسحب المكونات لبناء دائرة التوالي</span>
+                    </div>
+                    <div class="circuit-diagram" id="seriesDiagram">
+                        <!-- Series circuit elements will be added here -->
+                    </div>
+                </div>
+
+                <div class="circuit-panel" id="parallelPanel">
+                    <h4 id="parallelTitle">دائرة التوازي (Parallel Circuit)</h4>
+                    <div class="current-indicator" id="parallelCurrent">التيار: 0A</div>
+                    <div class="drop-zone" data-accept="battery,bulb,wire,switch" id="parallelZone">
+                        <span id="parallelInstruction">اسحب المكونات لبناء دائرة التوازي</span>
+                    </div>
+                    <div class="circuit-diagram" id="parallelDiagram">
+                        <!-- Parallel circuit elements will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="timer" id="timer">00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">استعد لبدء التجربة</div>
+        </div>
+
+        <div class="warning">
+            <span class="safety-icon">⚠️</span>
+            <strong id="warningTitle">تحذير أمان:</strong>
+            <span id="warningText">هذه التجربة تتطلب إشراف المعلم. تأكد من سلامة التوصيلات الكهربائية.</span>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4 id="conclusionTitle">الاستنتاج:</h4>
+            <p id="conclusionText">في التوالي: المصابيح تعتمد على بعضها. في التوازي: كل مصباح مستقل.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let timer = 0;
+        let timerInterval;
+        let currentTab = 'series';
+        let circuits = {
+            series: { battery: false, bulbs: 0, switch: false, wires: 0, complete: false },
+            parallel: { battery: false, bulbs: 0, switch: false, wires: 0, complete: false }
+        };
+
+        // Audio Context
+        let audioContext;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+                soundEnabled = false;
+            }
+        }
+
+        function playSound(frequency, duration) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Error playing sound:', e);
+            }
+        }
+
+        const translations = {
+            ar: {
+                title: "⚡ تجربة الدوائر الكهربائية",
+                subtitle: "Electrical Circuits Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                toolsTitle: "الأدوات المطلوبة",
+                batteryName: "بطارية",
+                bulbName: "مصباح",
+                wireName: "أسلاك توصيل",
+                switchName: "مفتاح كهربائي",
+                seriesTab: "دائرة التوالي",
+                parallelTab: "دائرة التوازي",
+                seriesTitle: "دائرة التوالي (Series Circuit)",
+                parallelTitle: "دائرة التوازي (Parallel Circuit)",
+                seriesInstruction: "اسحب المكونات لبناء دائرة التوالي",
+                parallelInstruction: "اسحب المكونات لبناء دائرة التوازي",
+                warningTitle: "تحذير أمان:",
+                warningText: "هذه التجربة تتطلب إشراف المعلم. تأكد من سلامة التوصيلات الكهربائية.",
+                observationsTitle: "الملاحظات:",
+                conclusionTitle: "الاستنتاج:",
+                conclusionText: "في التوالي: المصابيح تعتمد على بعضها. في التوازي: كل مصباح مستقل.",
+                obs1: "انتظار بدء التجربة...",
+                step1: "بناء دائرة التوالي",
+                step2: "اختبار المفتاح",
+                step3: "بناء دائرة التوازي",
+                step4: "مقارنة النتائج",
+                progressReady: "استعد لبدء التجربة",
+                progressSeries: "تم بناء دائرة التوالي",
+                progressSwitch: "تم اختبار المفتاح",
+                progressParallel: "تم بناء دائرة التوازي",
+                progressComplete: "التجربة مكتملة - لاحظ الفروق بين الدائرتين"
+            },
+            en: {
+                title: "⚡ Electrical Circuits Experiment",
+                subtitle: "تجربة الدوائر الكهربائية",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                toolsTitle: "Required Tools",
+                batteryName: "Battery",
+                bulbName: "Light Bulb",
+                wireName: "Connecting Wires",
+                switchName: "Electric Switch",
+                seriesTab: "Series Circuit",
+                parallelTab: "Parallel Circuit",
+                seriesTitle: "Series Circuit (دائرة التوالي)",
+                parallelTitle: "Parallel Circuit (دائرة التوازي)",
+                seriesInstruction: "Drag components to build series circuit",
+                parallelInstruction: "Drag components to build parallel circuit",
+                warningTitle: "Safety Warning:",
+                warningText: "This experiment requires teacher supervision. Ensure electrical connections are safe.",
+                observationsTitle: "Observations:",
+                conclusionTitle: "Conclusion:",
+                conclusionText: "In series: bulbs depend on each other. In parallel: each bulb is independent.",
+                obs1: "Waiting to start experiment...",
+                step1: "Build Series Circuit",
+                step2: "Test Switch",
+                step3: "Build Parallel Circuit",
+                step4: "Compare Results",
+                progressReady: "Ready to start experiment",
+                progressSeries: "Series circuit built",
+                progressSwitch: "Switch tested",
+                progressParallel: "Parallel circuit built",
+                progressComplete: "Experiment complete - observe circuit differences"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+            
+            // Update current indicators
+            updateCurrentIndicators();
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled && !audioContext) {
+                initAudio();
+            }
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            
+            experimentStarted = true;
+            initAudio();
+            playSound(440, 0.2);
+            
+            timer = 0;
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            updateProgress();
+            updateStep(1);
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            timer = 0;
+            currentTab = 'series';
+            circuits = {
+                series: { battery: false, bulbs: 0, switch: false, wires: 0, complete: false },
+                parallel: { battery: false, bulbs: 0, switch: false, wires: 0, complete: false }
+            };
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Reset UI
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = translations[currentLanguage].progressReady;
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('seriesDiagram').innerHTML = '';
+            document.getElementById('parallelDiagram').innerHTML = '';
+            
+            // Reset tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('seriesTab').classList.add('active');
+            document.querySelectorAll('.circuit-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById('seriesPanel').classList.add('active');
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+            
+            updateCurrentIndicators();
+            playSound(220, 0.2);
+        }
+
+        function updateTimer() {
+            timer++;
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            let progress = 0;
+            let text = translations[currentLanguage].progressReady;
+            
+            if (circuits.series.complete) {
+                progress = 25;
+                text = translations[currentLanguage].progressSeries;
+            }
+            if (circuits.series.complete && circuits.series.switch) {
+                progress = 50;
+                text = translations[currentLanguage].progressSwitch;
+            }
+            if (circuits.parallel.complete) {
+                progress = 75;
+                text = translations[currentLanguage].progressParallel;
+            }
+            if (circuits.series.complete && circuits.parallel.complete) {
+                progress = 100;
+                text = translations[currentLanguage].progressComplete;
+            }
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab appearance
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tab + 'Tab').classList.add('active');
+            
+            // Update panel visibility
+            document.querySelectorAll('.circuit-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(tab + 'Panel').classList.add('active');
+            
+            playSound(330, 0.1);
+        }
+
+        function createCircuitElement(type, x, y, diagram) {
+            const element = document.createElement('div');
+            element.className = `circuit-element ${type}`;
+            element.style.left = x + 'px';
+            element.style.top = y + 'px';
+            
+            switch (type) {
+                case 'battery':
+                    element.textContent = '+|-';
+                    element.dataset.type = 'battery';
+                    break;
+                case 'bulb':
+                    element.textContent = '💡';
+                    element.dataset.type = 'bulb';
+                    element.onclick = () => toggleBulb(element);
+                    break;
+                case 'switch':
+                    element.textContent = '⏯️';
+                    element.dataset.type = 'switch';
+                    element.onclick = () => toggleSwitch(element);
+                    break;
+            }
+            
+            diagram.appendChild(element);
+            return element;
+        }
+
+        function createWire(x1, y1, x2, y2, diagram) {
+            const wire = document.createElement('div');
+            wire.className = 'wire';
+            
+            if (x1 === x2) {
+                // Vertical wire
+                wire.classList.add('vertical');
+                wire.style.left = x1 + 'px';
+                wire.style.top = Math.min(y1, y2) + 'px';
+                wire.style.height = Math.abs(y2 - y1) + 'px';
+            } else {
+                // Horizontal wire
+                wire.classList.add('horizontal');
+                wire.style.left = Math.min(x1, x2) + 'px';
+                wire.style.top = y1 + 'px';
+                wire.style.width = Math.abs(x2 - x1) + 'px';
+            }
+            
+            diagram.appendChild(wire);
+            return wire;
+        }
+
+        function buildSeriesCircuit() {
+            const diagram = document.getElementById('seriesDiagram');
+            diagram.innerHTML = '';
+            
+            // Create elements
+            const battery = createCircuitElement('battery', 50, 130, diagram);
+            const bulb1 = createCircuitElement('bulb', 200, 50, diagram);
+            const bulb2 = createCircuitElement('bulb', 350, 50, diagram);
+            const switch1 = createCircuitElement('switch', 500, 130, diagram);
+            
+            // Create wires
+            createWire(130, 150, 200, 150, diagram); // Battery to first connection point
+            createWire(200, 150, 200, 75, diagram);  // Up to bulb1
+            createWire(225, 75, 350, 75, diagram);   // Bulb1 to bulb2
+            createWire(375, 75, 500, 75, diagram);   // Bulb2 to switch top
+            createWire(500, 75, 500, 130, diagram);  // Down to switch
+            createWire(500, 150, 50, 150, diagram);  // Switch back to battery
+            
+            circuits.series.complete = true;
+            updateProgress();
+            updateStep(2);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                'تم بناء دائرة التوالي - المصابيح متصلة في سلسلة' : 
+                'Series circuit built - bulbs connected in sequence');
+        }
+
+        function buildParallelCircuit() {
+            const diagram = document.getElementById('parallelDiagram');
+            diagram.innerHTML = '';
+            
+            // Create elements
+            const battery = createCircuitElement('battery', 50, 130, diagram);
+            const bulb1 = createCircuitElement('bulb', 200, 50, diagram);
+            const bulb2 = createCircuitElement('bulb', 350, 50, diagram);
+            const switch1 = createCircuitElement('switch', 500, 130, diagram);
+            
+            // Create wires for parallel connection
+            createWire(130, 150, 500, 150, diagram); // Bottom wire
+            createWire(200, 150, 200, 75, diagram);  // Up to bulb1
+            createWire(350, 150, 350, 75, diagram);  // Up to bulb2
+            createWire(200, 50, 350, 50, diagram);   // Top wire connecting bulbs
+            createWire(350, 50, 500, 50, diagram);   // Top wire to switch
+            createWire(500, 50, 500, 130, diagram);  // Down to switch
+            
+            circuits.parallel.complete = true;
+            updateProgress();
+            updateStep(4);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                'تم بناء دائرة التوازي - كل مصباح له مسار منفصل' : 
+                'Parallel circuit built - each bulb has separate path');
+            
+            document.getElementById('conclusion').style.display = 'block';
+        }
+
+        function toggleSwitch(switchElement) {
+            const isClosed = switchElement.classList.contains('closed');
+            switchElement.classList.toggle('closed');
+            
+            const diagram = switchElement.closest('.circuit-diagram');
+            const wires = diagram.querySelectorAll('.wire');
+            const bulbs = diagram.querySelectorAll('.bulb');
+            
+            if (!isClosed) {
+                // Switch closed - energize circuit
+                wires.forEach(wire => wire.classList.add('energized'));
+                bulbs.forEach(bulb => bulb.classList.add('on'));
+                
+                updateCurrentIndicator(diagram.id, true);
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم إغلاق المفتاح - المصابيح مضاءة' : 
+                    'Switch closed - bulbs are lit');
+                
+                playSound(523, 0.3);
+            } else {
+                // Switch opened - de-energize circuit
+                wires.forEach(wire => wire.classList.remove('energized'));
+                bulbs.forEach(bulb => bulb.classList.remove('on'));
+                
+                updateCurrentIndicator(diagram.id, false);
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم فتح المفتاح - المصابيح منطفئة' : 
+                    'Switch opened - bulbs are off');
+                
+                playSound(220, 0.3);
+            }
+            
+            if (diagram.id === 'seriesDiagram') {
+                circuits.series.switch = true;
+                updateProgress();
+                if (circuits.series.complete && !circuits.parallel.complete) {
+                    updateStep(3);
+                }
+            }
+        }
+
+        function toggleBulb(bulbElement) {
+            const diagram = bulbElement.closest('.circuit-diagram');
+            
+            if (diagram.id === 'seriesDiagram') {
+                // In series, removing one bulb breaks the circuit
+                const allBulbs = diagram.querySelectorAll('.bulb');
+                const wires = diagram.querySelectorAll('.wire');
+                
+                allBulbs.forEach(bulb => bulb.classList.remove('on'));
+                wires.forEach(wire => wire.classList.remove('energized'));
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'في التوالي: فصل مصباح واحد يطفئ الباقي' : 
+                    'In series: disconnecting one bulb turns off others');
+                    
+            } else if (diagram.id === 'parallelDiagram') {
+                // In parallel, each bulb is independent
+                bulbElement.classList.toggle('on');
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'في التوازي: كل مصباح يعمل بشكل مستقل' : 
+                    'In parallel: each bulb works independently');
+            }
+            
+            playSound(392, 0.2);
+        }
+
+        function updateCurrentIndicator(diagramId, active) {
+            const indicatorId = diagramId === 'seriesDiagram' ? 'seriesCurrent' : 'parallelCurrent';
+            const indicator = document.getElementById(indicatorId);
+            
+            if (active) {
+                indicator.classList.add('active');
+                indicator.textContent = currentLanguage === 'ar' ? 'التيار: 1A' : 'Current: 1A';
+            } else {
+                indicator.classList.remove('active');
+                indicator.textContent = currentLanguage === 'ar' ? 'التيار: 0A' : 'Current: 0A';
+            }
+        }
+
+        function updateCurrentIndicators() {
+            const seriesIndicator = document.getElementById('seriesCurrent');
+            const parallelIndicator = document.getElementById('parallelCurrent');
+            
+            seriesIndicator.textContent = currentLanguage === 'ar' ? 'التيار: 0A' : 'Current: 0A';
+            parallelIndicator.textContent = currentLanguage === 'ar' ? 'التيار: 0A' : 'Current: 0A';
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateLanguage();
+        });
+
+        function initDragAndDrop() {
+            const toolItems = document.querySelectorAll('.tool-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            toolItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            playSound(330, 0.1);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.drop-zone');
+            if (!dropZone || !draggedItem) return;
+
+            dropZone.classList.remove('drag-over');
+            
+            const toolType = draggedItem.dataset.tool;
+            const acceptedTools = dropZone.dataset.accept.split(',');
+            
+            if (!acceptedTools.includes(toolType)) {
+                playSound(150, 0.3);
+                return;
+            }
+
+            playSound(523, 0.2);
+            
+            if (dropZone.id === 'seriesZone' && !circuits.series.complete) {
+                circuits.series[toolType] = true;
+                circuits.series[toolType + 's'] = (circuits.series[toolType + 's'] || 0) + 1;
+                
+                // Check if we have enough components for series circuit
+                if (circuits.series.battery && circuits.series.bulbs >= 2 && 
+                    circuits.series.switch && circuits.series.wires >= 4) {
+                    buildSeriesCircuit();
+                }
+                
+            } else if (dropZone.id === 'parallelZone' && !circuits.parallel.complete && circuits.series.complete) {
+                circuits.parallel[toolType] = true;
+                circuits.parallel[toolType + 's'] = (circuits.parallel[toolType + 's'] || 0) + 1;
+                
+                // Check if we have enough components for parallel circuit
+                if (circuits.parallel.battery && circuits.parallel.bulbs >= 2 && 
+                    circuits.parallel.switch && circuits.parallel.wires >= 5) {
+                    buildParallelCircuit();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

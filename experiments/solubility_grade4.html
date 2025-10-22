@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة قابلية المواد للذوبان في الماء - Grade 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0984e3, #74b9ff);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .materials-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .materials-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .material-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #74b9ff;
+        }
+
+        .material-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .material-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .water-cups {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .water-cup {
+            width: 150px;
+            height: 200px;
+            border: 4px solid #333;
+            border-radius: 10px 10px 15px 15px;
+            margin: 0 auto;
+            position: relative;
+            background: linear-gradient(to bottom, 
+                rgba(116, 185, 255, 0.3) 0%, 
+                rgba(116, 185, 255, 0.8) 100%);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .water-cup.drag-over {
+            border-color: #74b9ff;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.4);
+        }
+
+        .water-surface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(116, 185, 255, 0.4) 0%, 
+                rgba(116, 185, 255, 0.6) 50%, 
+                rgba(116, 185, 255, 0.8) 100%);
+            animation: water-ripple 3s infinite ease-in-out;
+        }
+
+        @keyframes water-ripple {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+
+        .cup-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            border: 2px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .material-in-cup {
+            position: absolute;
+            transition: all 2s ease;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .dissolving {
+            animation: dissolve 3s ease-in-out forwards;
+        }
+
+        @keyframes dissolve {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 0.2;
+                transform: scale(0.3);
+            }
+        }
+
+        .floating {
+            animation: float 2s ease-in-out infinite;
+            top: 20px !important;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .settling {
+            animation: settle 2s ease-out forwards;
+        }
+
+        @keyframes settle {
+            0% {
+                top: 50px;
+                opacity: 1;
+            }
+            100% {
+                top: 160px;
+                opacity: 0.8;
+            }
+        }
+
+        .bubble {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: bubble-rise 2s infinite;
+        }
+
+        @keyframes bubble-rise {
+            0% {
+                bottom: 0;
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                bottom: 200px;
+                opacity: 0;
+                transform: translateX(10px);
+            }
+        }
+
+        .stir-animation {
+            animation: stir 1s ease-in-out;
+        }
+
+        @keyframes stir {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .observations {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #74b9ff;
+        }
+
+        .observations h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00b894;
+            transition: all 0.3s ease;
+        }
+
+        .observation-item.sugar {
+            border-left-color: #fdcb6e;
+        }
+
+        .observation-item.oil {
+            border-left-color: #e17055;
+        }
+
+        .observation-item.sand {
+            border-left-color: #a29bfe;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .results-table {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .results-table th {
+            background: #74b9ff;
+            color: white;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .water-cups {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 تجربة قابلية المواد للذوبان</h1>
+            <p>قابلية المواد للذوبان في الماء - الصف الرابع الابتدائي</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()">English</button>
+            <button class="btn btn-success" onclick="startExperiment()">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()">إعادة تعيين</button>
+        </div>
+
+        <div class="main-content">
+            <div class="materials-panel">
+                <h3>المواد المتاحة</h3>
+                
+                <div class="material-item" draggable="true" data-material="sugar">
+                    <div class="material-icon">🧂</div>
+                    <div><strong>سكر</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Sugar</div>
+                    <div style="font-size: 0.7em; color: #999;">يذوب في الماء</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="oil">
+                    <div class="material-icon">🛢️</div>
+                    <div><strong>زيت</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Oil</div>
+                    <div style="font-size: 0.7em; color: #999;">لا يمتزج مع الماء</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="sand">
+                    <div class="material-icon">🏖️</div>
+                    <div><strong>رمل</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Sand</div>
+                    <div style="font-size: 0.7em; color: #999;">لا يذوب في الماء</div>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="salt">
+                    <div class="material-icon">🧂</div>
+                    <div><strong>ملح</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Salt</div>
+                    <div style="font-size: 0.7em; color: #999;">يذوب في الماء</div>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <h3 style="text-align: center; margin-bottom: 20px;">اسحب المواد إلى أكواب الماء</h3>
+                
+                <div class="water-cups">
+                    <div class="water-cup" data-cup="1">
+                        <div class="water-surface"></div>
+                        <div class="cup-label">كوب 1</div>
+                    </div>
+
+                    <div class="water-cup" data-cup="2">
+                        <div class="water-surface"></div>
+                        <div class="cup-label">كوب 2</div>
+                    </div>
+
+                    <div class="water-cup" data-cup="3">
+                        <div class="water-surface"></div>
+                        <div class="cup-label">كوب 3</div>
+                    </div>
+                </div>
+
+                <div class="results-table" id="resultsTable" style="display: none;">
+                    <h4>جدول النتائج</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المادة</th>
+                                <th>الكوب</th>
+                                <th>النتيجة</th>
+                                <th>السبب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4>🔍 الملاحظات:</h4>
+            <div id="observationsList">
+                <div class="observation-item">انتظار بدء التجربة...</div>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4>📋 الاستنتاج:</h4>
+            <p><strong>المواد تتفاعل مع الماء بطرق مختلفة:</strong></p>
+            <ul style="margin: 10px 0; padding-right: 20px;">
+                <li><strong>المواد القابلة للذوبان:</strong> مثل السكر والملح - تذوب تماماً في الماء</li>
+                <li><strong>المواد غير القابلة للامتزاج:</strong> مثل الزيت - تطفو على سطح الماء</li>
+                <li><strong>المواد غير القابلة للذوبان:</strong> مثل الرمل - تترسب في قاع الكوب</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let experimentStarted = false;
+        let materialsAdded = 0;
+        let totalMaterials = 4;
+        let draggedElement = null;
+        let testResults = [];
+
+        const materials = {
+            sugar: { 
+                ar: 'سكر', en: 'Sugar', 
+                behavior: 'dissolves', 
+                icon: '🧂',
+                color: '#f8c471',
+                reason: { ar: 'قابل للذوبان', en: 'Soluble' }
+            },
+            oil: { 
+                ar: 'زيت', en: 'Oil', 
+                behavior: 'floats', 
+                icon: '🛢️',
+                color: '#f39c12',
+                reason: { ar: 'لا يمتزج مع الماء', en: 'Immiscible with water' }
+            },
+            sand: { 
+                ar: 'رمل', en: 'Sand', 
+                behavior: 'settles', 
+                icon: '🏖️',
+                color: '#d4af37',
+                reason: { ar: 'غير قابل للذوبان', en: 'Insoluble' }
+            },
+            salt: { 
+                ar: 'ملح', en: 'Salt', 
+                behavior: 'dissolves', 
+                icon: '🧂',
+                color: '#ecf0f1',
+                reason: { ar: 'قابل للذوبان', en: 'Soluble' }
+            }
+        };
+
+        function startExperiment() {
+            experimentStarted = true;
+            addObservation('تم بدء التجربة! اسحب المواد إلى أكواب الماء ولاحظ ما يحدث.', 'Start the experiment! Drag materials to water cups and observe what happens.');
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            materialsAdded = 0;
+            testResults = [];
+            
+            // Clear all cups
+            document.querySelectorAll('.water-cup').forEach(cup => {
+                cup.querySelectorAll('.material-in-cup, .bubble').forEach(element => {
+                    element.remove();
+                });
+                cup.classList.remove('stir-animation');
+            });
+
+            // Reset observations
+            document.getElementById('observationsList').innerHTML = 
+                '<div class="observation-item">انتظار بدء التجربة...</div>';
+            
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('resultsTable').style.display = 'none';
+            document.getElementById('resultsTableBody').innerHTML = '';
+            
+            // Reset material items
+            document.querySelectorAll('.material-item').forEach(item => {
+                item.style.opacity = '1';
+                item.draggable = true;
+            });
+        }
+
+        function addObservation(arText, enText, className = '') {
+            const observationsList = document.getElementById('observationsList');
+            if (observationsList.children[0].textContent === 'انتظار بدء التجربة...') {
+                observationsList.innerHTML = '';
+            }
+            
+            const observationItem = document.createElement('div');
+            observationItem.className = `observation-item ${className}`;
+            observationItem.textContent = currentLanguage === 'ar' ? arText : enText;
+            observationsList.appendChild(observationItem);
+            
+            // Scroll to bottom
+            observationsList.scrollTop = observationsList.scrollHeight;
+        }
+
+        function addToResultsTable(material, cupNumber, behavior, reason) {
+            const tableBody = document.getElementById('resultsTableBody');
+            const row = document.createElement('tr');
+            
+            const materialData = materials[material];
+            const behaviorText = behavior === 'dissolves' ? 'ذاب' : 
+                                behavior === 'floats' ? 'طاف' : 'ترسب';
+            
+            row.innerHTML = `
+                <td>${materialData.icon} ${materialData.ar}</td>
+                <td>كوب ${cupNumber}</td>
+                <td>${behaviorText}</td>
+                <td>${reason}</td>
+            `;
+            
+            tableBody.appendChild(row);
+            document.getElementById('resultsTable').style.display = 'block';
+        }
+
+        function createMaterialInCup(material, cup) {
+            const materialData = materials[material];
+            const materialElement = document.createElement('div');
+            materialElement.className = 'material-in-cup';
+            materialElement.innerHTML = materialData.icon;
+            materialElement.style.width = '20px';
+            materialElement.style.height = '20px';
+            materialElement.style.background = materialData.color;
+            materialElement.style.left = '50%';
+            materialElement.style.top = '60px';
+            materialElement.style.transform = 'translateX(-50%)';
+            materialElement.style.display = 'flex';
+            materialElement.style.alignItems = 'center';
+            materialElement.style.justifyContent = 'center';
+            materialElement.style.fontSize = '12px';
+            
+            cup.appendChild(materialElement);
+            
+            // Apply behavior
+            setTimeout(() => {
+                if (materialData.behavior === 'dissolves') {
+                    materialElement.classList.add('dissolving');
+                    createBubbles(cup);
+                    addObservation(
+                        `${materialData.ar} بدأ في الذوبان! تكونت فقاعات صغيرة`,
+                        `${materialData.en} started dissolving! Small bubbles formed`,
+                        'sugar'
+                    );
+                } else if (materialData.behavior === 'floats') {
+                    materialElement.classList.add('floating');
+                    addObservation(
+                        `${materialData.ar} طاف على سطح الماء ولم يمتزج`,
+                        `${materialData.en} floated on water surface without mixing`,
+                        'oil'
+                    );
+                } else if (materialData.behavior === 'settles') {
+                    materialElement.classList.add('settling');
+                    addObservation(
+                        `${materialData.ar} ترسب في قاع الكوب`,
+                        `${materialData.en} settled at the bottom of the cup`,
+                        'sand'
+                    );
+                }
+                
+                // Add stirring animation
+                cup.classList.add('stir-animation');
+                setTimeout(() => {
+                    cup.classList.remove('stir-animation');
+                }, 1000);
+                
+            }, 500);
+        }
+
+        function createBubbles(cup) {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    bubble.style.left = Math.random() * 80 + 10 + '%';
+                    bubble.style.animationDelay = Math.random() * 0.5 + 's';
+                    cup.appendChild(bubble);
+                    
+                    setTimeout(() => {
+                        bubble.remove();
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            // Implementation for language toggle can be added here
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialItems = document.querySelectorAll('.material-item');
+            const waterCups = document.querySelectorAll('.water-cup');
+
+            materialItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            waterCups.forEach(cup => {
+                cup.addEventListener('dragover', handleDragOver);
+                cup.addEventListener('dragenter', handleDragEnter);
+                cup.addEventListener('dragleave', handleDragLeave);
+                cup.addEventListener('drop', handleDrop);
+            });
+        });
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('water-cup') || e.target.closest('.water-cup')) {
+                const cup = e.target.closest('.water-cup') || e.target;
+                cup.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('water-cup') || e.target.closest('.water-cup')) {
+                const cup = e.target.closest('.water-cup') || e.target;
+                cup.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const cup = e.target.closest('.water-cup');
+            if (!cup || !draggedElement) return;
+
+            cup.classList.remove('drag-over');
+            
+            const materialType = draggedElement.dataset.material;
+            const cupNumber = cup.dataset.cup;
+            const materialData = materials[materialType];
+            
+            // Check if this cup already has a material
+            if (cup.querySelector('.material-in-cup')) {
+                addObservation(
+                    'هذا الكوب يحتوي على مادة بالفعل! استخدم كوب آخر.',
+                    'This cup already contains a material! Use another cup.'
+                );
+                return;
+            }
+            
+            materialsAdded++;
+            
+            // Hide original material
+            draggedElement.style.opacity = '0.3';
+            draggedElement.draggable = false;
+            
+            // Create material in cup
+            createMaterialInCup(materialType, cup);
+            
+            // Add to results
+            const behaviorText = materialData.behavior === 'dissolves' ? 'ذاب تماماً' : 
+                               materialData.behavior === 'floats' ? 'طاف على السطح' : 'ترسب في القاع';
+            
+            addToResultsTable(materialType, cupNumber, materialData.behavior, materialData.reason.ar);
+            
+            testResults.push({
+                material: materialType,
+                cup: cupNumber,
+                behavior: materialData.behavior
+            });
+            
+            // Check if experiment complete
+            if (materialsAdded === 3) { // Testing 3 out of 4 materials is enough
+                setTimeout(() => {
+                    document.getElementById('conclusion').style.display = 'block';
+                    addObservation(
+                        'تمت التجربة بنجاح! تم اختبار سلوك المواد المختلفة في الماء.',
+                        'Experiment completed successfully! Different material behaviors in water have been tested.'
+                    );
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

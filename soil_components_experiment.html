@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة مكونات التربة - Soil Components Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B4513, #D2B48C, #F4E4BC);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #8B4513, #D2B48C);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #f44336, #da190b);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .reset-btn:hover {
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .sound-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .sound-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #dee2e6;
+        }
+
+        .experiment-section {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #90caf9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tool {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .tool.dragging {
+            opacity: 0.7;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        .soil-tool {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .water-tool {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-container {
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border: 4px solid #90caf9;
+            border-radius: 15px 15px 25px 25px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .drop-zone {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .soil-layer {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            transition: all 0.5s ease;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .clay-layer {
+            background: linear-gradient(to top, #A0522D, #8B4513);
+            height: 0;
+        }
+
+        .silt-layer {
+            background: linear-gradient(to top, #D2B48C, #DEB887);
+            height: 0;
+        }
+
+        .sand-layer {
+            background: linear-gradient(to top, #F4A460, #D2B48C);
+            height: 0;
+        }
+
+        .water-layer {
+            background: linear-gradient(to top, rgba(33, 150, 243, 0.7), rgba(33, 150, 243, 0.5));
+            height: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        .progress-section {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #ffcc02;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            margin: 0 5px;
+            border-radius: 25px;
+            background: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .step.completed {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .observations {
+            background: linear-gradient(135deg, #f1f8e9, #dcedc8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #8bc34a;
+        }
+
+        .observation-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.5s ease;
+        }
+
+        .observation-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: fall 2s ease-in infinite;
+        }
+
+        .soil-particle {
+            background: #8B4513;
+        }
+
+        .water-particle {
+            background: #2196F3;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #4caf50;
+            text-align: center;
+        }
+
+        .conclusion h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .conclusion ul {
+            text-align: right;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .conclusion li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            list-style-type: none;
+            position: relative;
+            padding-right: 30px;
+        }
+
+        .conclusion li::before {
+            content: "✓";
+            position: absolute;
+            right: 10px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tool {
+                width: 100px;
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .glass-container {
+                width: 160px;
+                height: 240px;
+            }
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        body.en {
+            direction: ltr;
+            text-align: left;
+        }
+
+        body.en .conclusion ul {
+            text-align: left;
+        }
+
+        body.en .conclusion li {
+            padding-left: 30px;
+            padding-right: 10px;
+        }
+
+        body.en .conclusion li::before {
+            left: 10px;
+            right: auto;
+        }
+
+        body.en .observation-item {
+            border-left: none;
+            border-right: 4px solid #4CAF50;
+        }
+
+        .settling-animation {
+            animation: settle 3s ease-out;
+        }
+
+        @keyframes settle {
+            0% { transform: translateY(-20px); opacity: 0.7; }
+            50% { transform: translateY(10px); opacity: 0.9; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-toggle">
+        <button class="control-btn" onclick="toggleLanguage()" id="langToggle">English</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 id="title">تجربة مكونات التربة</h1>
+            <p id="subtitle">اكتشف طبقات التربة المختلفة من خلال التجربة التفاعلية</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="resetExperiment()" id="resetBtn">إعادة تشغيل التجربة</button>
+            <button class="control-btn sound-btn" onclick="toggleSound()" id="soundBtn">🔊 الصوت مفعل</button>
+        </div>
+
+        <div class="progress-section">
+            <h3 id="progressTitle">مراحل التجربة</h3>
+            <div class="step-indicator">
+                <div class="step active" id="step1">1. إضافة التربة</div>
+                <div class="step" id="step2">2. إضافة الماء</div>
+                <div class="step" id="step3">3. الانتظار</div>
+                <div class="step" id="step4">4. المراقبة</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="tools-section">
+                <div class="section-title" id="toolsTitle">الأدوات المتاحة</div>
+                <p id="toolsInstructions">اسحب الأدوات إلى الكوب الشفاف لبدء التجربة</p>
+                <div class="tools-grid">
+                    <div class="tool soil-tool" draggable="true" data-tool="soil" id="soilTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🌱</div>
+                        <div id="soilLabel">تربة</div>
+                    </div>
+                    <div class="tool water-tool" draggable="true" data-tool="water" id="waterTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">💧</div>
+                        <div id="waterLabel">ماء</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experiment-section">
+                <div class="section-title" id="experimentTitle">منطقة التجربة</div>
+                <div class="glass-container">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="particles" id="particles"></div>
+                        <div class="water-layer" id="waterLayer"></div>
+                        <div class="soil-layer sand-layer" id="sandLayer"></div>
+                        <div class="soil-layer silt-layer" id="siltLayer"></div>
+                        <div class="soil-layer clay-layer" id="clayLayer"></div>
+                    </div>
+                </div>
+                <div class="timer" id="timer">الوقت: 0 ثانية</div>
+            </div>
+        </div>
+
+        <div class="observations" id="observationsSection">
+            <h3 id="observationsTitle">الملاحظات</h3>
+            <div id="observationsList">
+                <p id="initialObservation">ابدأ التجربة لرؤية الملاحظات...</p>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusionSection" style="display: none;">
+            <h3 id="conclusionTitle">الاستنتاج</h3>
+            <ul id="conclusionList">
+                <li id="conclusion1">التربة تتكون من طبقات مختلفة</li>
+                <li id="conclusion2">الطين الثقيل يترسب في القاع</li>
+                <li id="conclusion3">الطمي يتوسط الطبقات</li>
+                <li id="conclusion4">الرمل الخفيف يطفو في الأعلى</li>
+                <li id="conclusion5">الماء يساعد في فصل مكونات التربة</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // العناصر الأساسية
+        const dropZone = document.getElementById('dropZone');
+        const clayLayer = document.getElementById('clayLayer');
+        const siltLayer = document.getElementById('siltLayer');
+        const sandLayer = document.getElementById('sandLayer');
+        const waterLayer = document.getElementById('waterLayer');
+        const particles = document.getElementById('particles');
+        const progressFill = document.getElementById('progressFill');
+        const timer = document.getElementById('timer');
+        const observationsList = document.getElementById('observationsList');
+        const conclusionSection = document.getElementById('conclusionSection');
+
+        // متغيرات التجربة
+        let experimentState = {
+            soilAdded: false,
+            waterAdded: false,
+            settled: false,
+            timer: 0,
+            timerInterval: null,
+            currentStep: 1,
+            soundEnabled: true,
+            currentLang: 'ar'
+        };
+
+        // الترجمات
+        const translations = {
+            ar: {
+                title: "تجربة مكونات التربة",
+                subtitle: "اكتشف طبقات التربة المختلفة من خلال التجربة التفاعلية",
+                resetBtn: "إعادة تشغيل التجربة",
+                soundBtn: "🔊 الصوت مفعل",
+                soundBtnOff: "🔇 الصوت مغلق",
+                toolsTitle: "الأدوات المتاحة",
+                toolsInstructions: "اسحب الأدوات إلى الكوب الشفاف لبدء التجربة",
+                soilLabel: "تربة",
+                waterLabel: "ماء",
+                experimentTitle: "منطقة التجربة",
+                progressTitle: "مراحل التجربة",
+                step1: "1. إضافة التربة",
+                step2: "2. إضافة الماء",
+                step3: "3. الانتظار",
+                step4: "4. المراقبة",
+                observationsTitle: "الملاحظات",
+                initialObservation: "ابدأ التجربة لرؤية الملاحظات...",
+                conclusionTitle: "الاستنتاج",
+                conclusion1: "التربة تتكون من طبقات مختلفة",
+                conclusion2: "الطين الثقيل يترسب في القاع",
+                conclusion3: "الطمي يتوسط الطبقات",
+                conclusion4: "الرمل الخفيف يطفو في الأعلى",
+                conclusion5: "الماء يساعد في فصل مكونات التربة",
+                timerText: "الوقت: {time} ثانية",
+                langToggle: "English"
+            },
+            en: {
+                title: "Soil Components Experiment",
+                subtitle: "Discover different soil layers through interactive experimentation",
+                resetBtn: "Reset Experiment",
+                soundBtn: "🔊 Sound On",
+                soundBtnOff: "🔇 Sound Off",
+                toolsTitle: "Available Tools",
+                toolsInstructions: "Drag tools to the transparent glass to start the experiment",
+                soilLabel: "Soil",
+                waterLabel: "Water",
+                experimentTitle: "Experiment Area",
+                progressTitle: "Experiment Stages",
+                step1: "1. Add Soil",
+                step2: "2. Add Water",
+                step3: "3. Wait",
+                step4: "4. Observe",
+                observationsTitle: "Observations",
+                initialObservation: "Start the experiment to see observations...",
+                conclusionTitle: "Conclusion",
+                conclusion1: "Soil consists of different layers",
+                conclusion2: "Heavy clay settles at the bottom",
+                conclusion3: "Silt forms the middle layers",
+                conclusion4: "Light sand floats on top",
+                conclusion5: "Water helps separate soil components",
+                timerText: "Time: {time} seconds",
+                langToggle: "العربية"
+            }
+        };
+
+        // الأصوات
+        let audioContext;
+        let sounds = {};
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                createSounds();
+            } catch (error) {
+                console.log('Audio not supported');
+                experimentState.soundEnabled = false;
+            }
+        }
+
+        function createSounds() {
+            // صوت إضافة التربة
+            sounds.addSoil = createTone(200, 0.3, 'sawtooth');
+            // صوت إضافة الماء
+            sounds.addWater = createTone(400, 0.5, 'sine');
+            // صوت الترسيب
+            sounds.settling = createTone(150, 1, 'triangle');
+            // صوت إكمال التجربة
+            sounds.complete = createTone(800, 0.8, 'square');
+        }
+
+        function createTone(frequency, duration, type = 'sine') {
+            return () => {
+                if (!experimentState.soundEnabled || !audioContext) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            };
+        }
+
+        function playSound(soundName) {
+            if (sounds[soundName] && experimentState.soundEnabled) {
+                sounds[soundName]();
+            }
+        }
+
+        // إدارة السحب والإفلات
+        function setupDragAndDrop() {
+            const tools = document.querySelectorAll('.tool');
+            
+            tools.forEach(tool => {
+                tool.addEventListener('dragstart', handleDragStart);
+                tool.addEventListener('dragend', handleDragEnd);
+            });
+            
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('drop', handleDrop);
+            dropZone.addEventListener('dragenter', handleDragEnter);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.tool);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const toolType = e.dataTransfer.getData('text/plain');
+            
+            if (toolType === 'soil' && !experimentState.soilAdded) {
+                addSoil();
+            } else if (toolType === 'water' && experimentState.soilAdded && !experimentState.waterAdded) {
+                addWater();
+            }
+        }
+
+        // إضافة التربة
+        function addSoil() {
+            experimentState.soilAdded = true;
+            playSound('addSoil');
+            
+            // إنشاء جزيئات التربة
+            createParticles('soil', 30);
+            
+            // إضافة طبقات التربة
+            setTimeout(() => {
+                clayLayer.style.height = '60px';
+                clayLayer.classList.add('settling-animation');
+            }, 500);
+            
+            setTimeout(() => {
+                siltLayer.style.height = '40px';
+                siltLayer.style.bottom = '60px';
+                siltLayer.classList.add('settling-animation');
+            }, 1000);
+            
+            setTimeout(() => {
+                sandLayer.style.height = '30px';
+                sandLayer.style.bottom = '100px';
+                sandLayer.classList.add('settling-animation');
+            }, 1500);
+            
+            updateStep(2);
+            addObservation(translations[experimentState.currentLang].soilAdded || "تم إضافة التربة إلى الكوب");
+            updateProgress(25);
+        }
+
+        // إضافة الماء
+        function addWater() {
+            experimentState.waterAdded = true;
+            playSound('addWater');
+            
+            // إنشاء جزيئات الماء
+            createParticles('water', 20);
+            
+            // إضافة طبقة الماء
+            setTimeout(() => {
+                waterLayer.style.height = '100px';
+                waterLayer.style.top = '0px';
+            }, 500);
+            
+            updateStep(3);
+            addObservation(translations[experimentState.currentLang].waterAdded || "تم إضافة الماء وبدأت عملية الترسيب");
+            updateProgress(50);
+            
+            // بدء العداد
+            startTimer();
+            
+            // بدء عملية الفصل
+            setTimeout(() => {
+                startSeparation();
+            }, 2000);
+        }
+
+        // إنشاء الجزيئات
+        function createParticles(type, count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = `particle ${type}-particle`;
+                    particle.style.left = Math.random() * 180 + 'px';
+                    particle.style.animationDelay = Math.random() * 0.5 + 's';
+                    particles.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 2000);
+                }, i * 50);
+            }
+        }
+
+        // بدء عملية الفصل
+        function startSeparation() {
+            playSound('settling');
+            
+            // إعادة ترتيب الطبقات تدريجياً
+            setTimeout(() => {
+                clayLayer.style.height = '80px';
+                addObservation(translations[experimentState.currentLang].claySettling || "يبدأ الطين الثقيل بالترسب في القاع");
+            }, 1000);
+            
+            setTimeout(() => {
+                siltLayer.style.height = '50px';
+                siltLayer.style.bottom = '80px';
+                addObservation(translations[experimentState.currentLang].siltForming || "يتشكل الطمي في الطبقة الوسطى");
+            }, 3000);
+            
+            setTimeout(() => {
+                sandLayer.style.height = '40px';
+                sandLayer.style.bottom = '130px';
+                addObservation(translations[experimentState.currentLang].sandFloating || "يطفو الرمل في الطبقة العلوية");
+            }, 5000);
+            
+            setTimeout(() => {
+                waterLayer.style.height = '80px';
+                waterLayer.style.top = '40px';
+                addObservation(translations[experimentState.currentLang].layersFormed || "تشكلت طبقات التربة المختلفة بوضوح");
+                completeExperiment();
+            }, 7000);
+        }
+
+        // إكمال التجربة
+        function completeExperiment() {
+            experimentState.settled = true;
+            playSound('complete');
+            
+            updateStep(4);
+            updateProgress(100);
+            
+            setTimeout(() => {
+                conclusionSection.style.display = 'block';
+                conclusionSection.scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+
+        // بدء العداد
+        function startTimer() {
+            experimentState.timerInterval = setInterval(() => {
+                experimentState.timer++;
+                updateTimer();
+            }, 1000);
+        }
+
+        // تحديث العداد
+        function updateTimer() {
+            const text = translations[experimentState.currentLang].timerText.replace('{time}', experimentState.timer);
+            timer.textContent = text;
+        }
+
+        // تحديث المرحلة
+        function updateStep(stepNumber) {
+            experimentState.currentStep = stepNumber;
+            
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active', 'completed');
+                
+                if (i < stepNumber) {
+                    step.classList.add('completed');
+                } else if (i === stepNumber) {
+                    step.classList.add('active');
+                }
+            }
+        }
+
+        // تحديث شريط التقدم
+        function updateProgress(percentage) {
+            progressFill.style.width = percentage + '%';
+        }
+
+        // إضافة ملاحظة
+        function addObservation(text) {
+            const observationItem = document.createElement('div');
+            observationItem.className = 'observation-item';
+            observationItem.textContent = text;
+            
+            observationsList.appendChild(observationItem);
+            
+            setTimeout(() => {
+                observationItem.classList.add('visible');
+            }, 100);
+        }
+
+        // إعادة تشغيل التجربة
+        function resetExperiment() {
+            // إيقاف العداد
+            if (experimentState.timerInterval) {
+                clearInterval(experimentState.timerInterval);
+            }
+            
+            // إعادة تعيين حالة التجربة
+            experimentState = {
+                soilAdded: false,
+                waterAdded: false,
+                settled: false,
+                timer: 0,
+                timerInterval: null,
+                currentStep: 1,
+                soundEnabled: experimentState.soundEnabled,
+                currentLang: experimentState.currentLang
+            };
+            
+            // إعادة تعيين العناصر المرئية
+            clayLayer.style.height = '0';
+            siltLayer.style.height = '0';
+            sandLayer.style.height = '0';
+            waterLayer.style.height = '0';
+            
+            clayLayer.style.bottom = '0';
+            siltLayer.style.bottom = '0';
+            sandLayer.style.bottom = '0';
+            waterLayer.style.top = '0';
+            
+            // إزالة الرسوم المتحركة
+            [clayLayer, siltLayer, sandLayer].forEach(layer => {
+                layer.classList.remove('settling-animation');
+            });
+            
+            // إعادة تعيين التقدم
+            updateStep(1);
+            updateProgress(0);
+            updateTimer();
+            
+            // مسح الملاحظات
+            observationsList.innerHTML = `<p id="initialObservation">${translations[experimentState.currentLang].initialObservation}</p>`;
+            
+            // إخفاء الاستنتاج
+            conclusionSection.style.display = 'none';
+            
+            // مسح الجزيئات
+            particles.innerHTML = '';
+        }
+
+        // تبديل الصوت
+        function toggleSound() {
+            experimentState.soundEnabled = !experimentState.soundEnabled;
+            const soundBtn = document.getElementById('soundBtn');
+            const key = experimentState.soundEnabled ? 'soundBtn' : 'soundBtnOff';
+            soundBtn.textContent = translations[experimentState.currentLang][key];
+        }
+
+        // تبديل اللغة
+        function toggleLanguage() {
+            experimentState.currentLang = experimentState.currentLang === 'ar' ? 'en' : 'ar';
+            document.body.className = experimentState.currentLang;
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const lang = experimentState.currentLang;
+            const t = translations[lang];
+            
+            // تحديث النصوص
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('resetBtn').textContent = t.resetBtn;
+            document.getElementById('toolsTitle').textContent = t.toolsTitle;
+            document.getElementById('toolsInstructions').textContent = t.toolsInstructions;
+            document.getElementById('soilLabel').textContent = t.soilLabel;
+            document.getElementById('waterLabel').textContent = t.waterLabel;
+            document.getElementById('experimentTitle').textContent = t.experimentTitle;
+            document.getElementById('progressTitle').textContent = t.progressTitle;
+            document.getElementById('step1').textContent = t.step1;
+            document.getElementById('step2').textContent = t.step2;
+            document.getElementById('step3').textContent = t.step3;
+            document.getElementById('step4').textContent = t.step4;
+            document.getElementById('observationsTitle').textContent = t.observationsTitle;
+            document.getElementById('conclusionTitle').textContent = t.conclusionTitle;
+            document.getElementById('conclusion1').textContent = t.conclusion1;
+            document.getElementById('conclusion2').textContent = t.conclusion2;
+            document.getElementById('conclusion3').textContent = t.conclusion3;
+            document.getElementById('conclusion4').textContent = t.conclusion4;
+            document.getElementById('conclusion5').textContent = t.conclusion5;
+            document.getElementById('langToggle').textContent = t.langToggle;
+            
+            const soundKey = experimentState.soundEnabled ? 'soundBtn' : 'soundBtnOff';
+            document.getElementById('soundBtn').textContent = t[soundKey];
+            
+            updateTimer();
+            
+            const initialObs = document.getElementById('initialObservation');
+            if (initialObs) {
+                initialObs.textContent = t.initialObservation;
+            }
+        }
+
+        // تهيئة التطبيق
+        function init() {
+            initAudio();
+            setupDragAndDrop();
+            updateLanguage();
+            updateTimer();
+        }
+
+        // بدء التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

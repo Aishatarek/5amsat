@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة دورة حياة النبات - مختبر تفاعلي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #22c55e;
+            --secondary: #16a34a;
+            --accent: #65a30d;
+            --soil-color: #8b5a2b;
+            --water-color: #3b82f6;
+            --bean-color: #dc2626;
+            --leaf-color: #15803d;
+            --light: #f0fdf4;
+            --dark: #1e293b;
+            --success: #10b981;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --growth-gradient: linear-gradient(135deg, #22c55e, #15803d, #166534);
+            --soil-gradient: linear-gradient(135deg, #8b5a2b, #a16207, #92400e);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7, #bbf7d0);
+            color: #334155;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع أوراق متساقطة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><linearGradient id="leaf" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="green" stop-opacity="0.3"/><stop offset="100%" stop-color="darkgreen" stop-opacity="0.1"/></linearGradient></defs><path d="M20 10 Q25 5 30 10 Q25 15 20 10" fill="url(%23leaf)"><animateTransform attributeName="transform" type="rotate" values="0 25 10;360 25 10" dur="20s" repeatCount="indefinite"/></path><path d="M50 8 Q55 3 60 8 Q55 13 50 8" fill="url(%23leaf)"><animateTransform attributeName="transform" type="rotate" values="0 55 8;360 55 8" dur="15s" repeatCount="indefinite"/></path><path d="M80 12 Q85 7 90 12 Q85 17 80 12" fill="url(%23leaf)"><animateTransform attributeName="transform" type="rotate" values="0 85 12;360 85 12" dur="25s" repeatCount="indefinite"/></path></svg>') repeat-x;
+            opacity: 0.4;
+            animation: leaf-fall 30s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes leaf-fall {
+            0% { transform: translateX(-200px) translateY(-50px); }
+            50% { transform: translateX(100px) translateY(50px); }
+            100% { transform: translateX(400px) translateY(150px); }
+        }
+        
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 20px 50px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--growth-gradient);
+            opacity: 0.1;
+            animation: growth-shine 8s infinite;
+        }
+        
+        @keyframes growth-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4rem;
+            background: var(--growth-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: growth-pulse 4s infinite;
+        }
+        
+        @keyframes growth-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            50% { transform: scale(1.15) rotate(-5deg); }
+            75% { transform: scale(1.05) rotate(3deg); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--growth-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--accent);
+            min-width: 220px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #22c55e;
+            margin-bottom: 5px;
+        }
+        
+        .status-description {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 60px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: #166534;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--growth-gradient);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 18px 30px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #64748b, #475569);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+        }
+        
+        .control-btn.fast-forward {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 35px;
+            border-right: 8px solid var(--accent);
+            box-shadow: 0 10px 25px rgba(101, 163, 13, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="3" fill="green" opacity="0.1"><animate attributeName="r" values="2;6;2" dur="8s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: instruction-grow 20s infinite linear;
+        }
+        
+        @keyframes instruction-grow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #78350f;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 6px 15px rgba(101, 163, 13, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 35px;
+            min-height: 800px;
+        }
+        
+        .workspace-section {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 25px;
+            padding: 35px;
+            position: relative;
+            box-shadow: inset 0 6px 15px rgba(0, 0, 0, 0.08);
+            border: 4px dashed #cbd5e1;
+            overflow: hidden;
+        }
+        
+        .workspace-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .workspace-section h3 {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 22px;
+            border-radius: 35px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        
+        .components-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.1);
+        }
+        
+        .components-panel h3 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .components-area {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .component {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 18px;
+            padding: 25px;
+            cursor: grab;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+        
+        .component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.7) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 1s;
+        }
+        
+        .component:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .component:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .component-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        /* صور واقعية للمكونات */
+        .component-img.bean-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="bean-grad" cx="30%" cy="30%"><stop offset="0%" stop-color="%23fca5a5"/><stop offset="70%" stop-color="%23dc2626"/><stop offset="100%" stop-color="%23991b1b"/></radialGradient></defs><ellipse cx="50" cy="50" rx="20" ry="30" fill="url(%23bean-grad)" stroke="%237f1d1d" stroke-width="2"/><path d="M45 35 Q50 40 45 55" stroke="%23450a0a" stroke-width="1.5" fill="none"/><ellipse cx="45" cy="45" rx="3" ry="8" fill="%23ffffff" opacity="0.3"/></svg>') center/contain no-repeat;
+            background-color: #fef2f2;
+        }
+        
+        .component-img.cotton-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="cotton-grad" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff"/><stop offset="70%" stop-color="%23f8fafc"/><stop offset="100%" stop-color="%23e2e8f0"/></radialGradient></defs><circle cx="30" cy="40" r="15" fill="url(%23cotton-grad)" opacity="0.9"/><circle cx="50" cy="35" r="18" fill="url(%23cotton-grad)" opacity="0.8"/><circle cx="70" cy="45" r="16" fill="url(%23cotton-grad)" opacity="0.9"/><circle cx="40" cy="60" r="14" fill="url(%23cotton-grad)" opacity="0.7"/><circle cx="60" cy="65" r="17" fill="url(%23cotton-grad)" opacity="0.8"/></svg>') center/contain no-repeat;
+            background-color: #f8fafc;
+        }
+        
+        .component-img.cup-img {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="cup-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23f0f9ff"/><stop offset="50%" stop-color="%2393c5fd"/><stop offset="100%" stop-color="%233b82f6"/></linearGradient></defs><path d="M25 25 L75 25 L70 85 L30 85 Z" fill="url(%23cup-grad)" stroke="%231d4ed8" stroke-width="2" opacity="0.8"/><ellipse cx="50" cy="25" rx="25" ry="3" fill="%23dbeafe"/><rect x="27" y="30" width="46" height="50" fill="%23ffffff" opacity="0.2"/></svg>') center/contain no-repeat;
+            background-color: #dbeafe;
+        }
+        
+        .component-details {
+            flex: 1;
+        }
+        
+        .component-details h4 {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .component-details p {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .component-spec {
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .component-spec.bean {
+            background: linear-gradient(135deg, #fca5a5, #f87171);
+            color: #7f1d1d;
+        }
+        
+        .component-spec.cotton {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #475569;
+        }
+        
+        .component-spec.transparent {
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+            color: #1e40af;
+        }
+        
+        .component.dragging {
+            opacity: 0.8;
+            transform: rotate(10deg) scale(1.2);
+            z-index: 1000;
+        }
+        
+        .component.placed {
+            opacity: 0.7;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-color: var(--success);
+        }
+        
+        .component.placed::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 35px;
+            height: 35px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        }
+        
+        .experiment-setup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+            margin-top: 60px;
+            width: 100%;
+            min-height: 600px;
+        }
+        
+        .plant-container {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        
+        .glass-cup {
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.2));
+            border-radius: 15px 15px 25px 25px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid #3b82f6;
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-cup.visible {
+            opacity: 1;
+        }
+        
+        .glass-cup::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            width: calc(100% - 30px);
+            height: calc(100% - 40px);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            border-radius: 10px;
+        }
+        
+        .cotton-base {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: calc(100% - 40px);
+            height: 80px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 15px;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cotton-base.visible {
+            opacity: 1;
+        }
+        
+        .cotton-base::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 20"><circle cx="10" cy="8" r="4" fill="white" opacity="0.8"/><circle cx="25" cy="12" r="3" fill="white" opacity="0.7"/><circle cx="40" cy="6" r="5" fill="white" opacity="0.9"/><circle cx="15" cy="15" r="3.5" fill="white" opacity="0.6"/><circle cx="35" cy="14" r="4.5" fill="white" opacity="0.8"/></svg>') repeat;
+        }
+        
+        .bean-seed {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 35px;
+            background: radial-gradient(ellipse at 30% 30%, #fca5a5, #dc2626, #991b1b);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4);
+            border: 2px solid #7f1d1d;
+        }
+        
+        .bean-seed.visible {
+            opacity: 1;
+            animation: bean-settle 2s ease-out;
+        }
+        
+        @keyframes bean-settle {
+            0% { transform: translateX(-50%) translateY(-50px) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(-20px) rotate(180deg); }
+            100% { transform: translateX(-50%) translateY(0) rotate(360deg); }
+        }
+        
+        .bean-seed::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 20%;
+            width: 30%;
+            height: 40%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+        }
+        
+        .root-system {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .root-system.visible {
+            opacity: 1;
+        }
+        
+        .root {
+            position: absolute;
+            background: linear-gradient(180deg, #8b5a2b, #a16207);
+            border-radius: 15px;
+            transform-origin: top center;
+        }
+        
+        .main-root {
+            width: 6px;
+            height: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: root-grow 3s ease-out forwards;
+        }
+        
+        .side-root-1 {
+            width: 4px;
+            height: 30px;
+            left: 40%;
+            top: 20px;
+            transform: translateX(-50%) rotate(-30deg);
+            animation: root-grow 3s 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .side-root-2 {
+            width: 4px;
+            height: 25px;
+            left: 60%;
+            top: 25px;
+            transform: translateX(-50%) rotate(30deg);
+            animation: root-grow 3s 1s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes root-grow {
+            0% { height: 0; opacity: 0; }
+            100% { height: var(--final-height, 60px); opacity: 1; }
+        }
+        
+        .stem {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            background: linear-gradient(180deg, #22c55e, #15803d);
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+        }
+        
+        .stem.visible {
+            opacity: 1;
+            animation: stem-grow 4s ease-out forwards;
+        }
+        
+        @keyframes stem-grow {
+            0% { height: 0; }
+            100% { height: 150px; }
+        }
+        
+        .leaves-container {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .leaves-container.visible {
+            opacity: 1;
+        }
+        
+        .leaf {
+            position: absolute;
+            background: linear-gradient(135deg, #22c55e, #15803d, #166534);
+            border-radius: 0 100% 0 100%;
+            transform-origin: bottom left;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+            animation: leaf-sway 6s infinite ease-in-out;
+        }
+        
+        .leaf-1 {
+            width: 40px;
+            height: 60px;
+            left: -45px;
+            top: -10px;
+            transform: rotate(-45deg);
+            animation-delay: 0s;
+        }
+        
+        .leaf-2 {
+            width: 35px;
+            height: 50px;
+            right: -40px;
+            top: -5px;
+            transform: rotate(45deg);
+            animation-delay: 1s;
+        }
+        
+        .leaf-3 {
+            width: 45px;
+            height: 65px;
+            left: -50px;
+            top: 20px;
+            transform: rotate(-60deg);
+            animation-delay: 2s;
+        }
+        
+        .leaf-4 {
+            width: 38px;
+            height: 55px;
+            right: -45px;
+            top: 25px;
+            transform: rotate(60deg);
+            animation-delay: 3s;
+        }
+        
+        @keyframes leaf-sway {
+            0%, 100% { transform: rotate(var(--base-rotation, 0deg)) scale(1); }
+            25% { transform: rotate(calc(var(--base-rotation, 0deg) + 5deg)) scale(1.02); }
+            50% { transform: rotate(var(--base-rotation, 0deg)) scale(1.05); }
+            75% { transform: rotate(calc(var(--base-rotation, 0deg) - 5deg)) scale(1.02); }
+        }
+        
+        .leaf::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+            border-radius: 0 100% 0 100%;
+        }
+        
+        .leaf::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 2px;
+            height: 60%;
+            background: rgba(21, 128, 61, 0.6);
+            transform: rotate(45deg);
+        }
+        
+        .drop-zones {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .drop-zone {
+            border: 4px dashed var(--primary);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 197, 94, 0.15));
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 160px;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(34, 197, 94, 0.15) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 1s;
+        }
+        
+        .drop-zone.active {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.3));
+            border-color: var(--secondary);
+            transform: scale(1.08);
+        }
+        
+        .drop-zone.active::before {
+            transform: translateX(100%);
+        }
+        
+        .drop-zone.highlight {
+            animation: growth-pulse-zone 2.5s infinite;
+        }
+        
+        @keyframes growth-pulse-zone {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+                border-color: var(--primary);
+            }
+            50% { 
+                box-shadow: 0 0 0 25px rgba(34, 197, 94, 0);
+                border-color: var(--accent);
+            }
+        }
+        
+        .time-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.15);
+            border: 2px solid var(--primary);
+        }
+        
+        .day-counter {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .growth-stage {
+            flex: 1;
+            text-align: center;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .experiment-feedback {
+            margin-top: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(101, 163, 13, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: feedback-shine 6s infinite;
+        }
+        
+        @keyframes feedback-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            color: #92400e;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(240, 253, 244, 0.95), rgba(220, 252, 231, 0.95));
+            border-radius: 25px;
+            padding: 35px;
+            margin-top: 35px;
+            border-left: 8px solid var(--primary);
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(240, 253, 244, 0.95), rgba(220, 252, 231, 0.95));
+            padding: 30px;
+            border-radius: 18px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 15px;
+            color: #065f46;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--growth-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .components-panel {
+                order: -1;
+            }
+            
+            .components-area {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 18px;
+            }
+            
+            .component {
+                min-width: 160px;
+                flex: 1;
+            }
+            
+            .plant-container {
+                width: 250px;
+                height: 350px;
+            }
+            
+            .glass-cup {
+                width: 160px;
+                height: 250px;
+            }
+            
+            .drop-zones {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .drop-zone {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .time-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        /* تأثيرات المياه */
+        .water-droplets {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .water-droplet {
+            position: absolute;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, rgba(59, 130, 246, 0.4) 100%);
+            border-radius: 50%;
+            animation: water-drop 3s infinite;
+        }
+        
+        @keyframes water-drop {
+            0% { 
+                transform: translateY(-20px) scale(0.3); 
+                opacity: 0; 
+            }
+            20% { 
+                opacity: 0.8; 
+            }
+            80% { 
+                transform: translateY(100px) scale(1);
+                opacity: 0.5; 
+            }
+            100% { 
+                transform: translateY(150px) scale(1.2); 
+                opacity: 0; 
+            }
+        }
+        
+        /* تأثيرات الإنبات */
+        .germination-effect {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .germination-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.8) 0%, rgba(34, 197, 94, 0.2) 100%);
+            border-radius: 50%;
+            animation: germination-burst 4s infinite;
+        }
+        
+        @keyframes germination-burst {
+            0% { 
+                transform: scale(0.2) rotate(0deg); 
+                opacity: 0; 
+            }
+            25% { 
+                opacity: 1; 
+            }
+            50% { 
+                transform: scale(1) rotate(180deg);
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: scale(2) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- أزرار التحكم -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <div class="logo-text">
+                    <h1>مختبر دورة حياة النبات</h1>
+                    <p>شاهد الإعجاز في نمو البذرة وتحولها لنبات أخضر</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3>مرحلة النمو</h3>
+                <div class="status-value" id="growthStage">بذرة</div>
+                <div class="status-description" id="growthDesc">في انتظار الزراعة</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2><i class="fas fa-leaf"></i> تجربة دورة حياة النبات</h2>
+                    <p>اكتشف معجزة الحياة من بذرة صغيرة إلى نبات مكتمل</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startGrowth" disabled>
+                        <i class="fas fa-play"></i> بدء المراقبة
+                    </button>
+                    <button class="control-btn fast-forward" id="fastForward" disabled>
+                        <i class="fas fa-forward"></i> تسريع الوقت
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> إعادة التجربة
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol>
+                    <li>اسحب الكوب الشفاف إلى منطقة التجربة</li>
+                    <li>اسحب القطنة المبللة وضعها في الكوب</li>
+                    <li>اسحب حبة الفاصوليا وضعها على القطن</li>
+                    <li>اضغط على "بدء المراقبة" وشاهد النمو اليومي</li>
+                </ol>
+            </div>
+            
+            <div class="experiment-area">
+                <div class="workspace-section" id="workspace">
+                    <h3><i class="fas fa-flask"></i> منطقة المراقبة</h3>
+                    
+                    <div class="time-controls">
+                        <div class="day-counter" id="dayCounter">يوم 0</div>
+                        <div class="growth-stage" id="currentStage">قم بإعداد التجربة لبدء المراقبة</div>
+                    </div>
+                    
+                    <div class="drop-zones">
+                        <div class="drop-zone highlight" id="cupDropZone" data-for="cup">
+                            <div class="component-img cup-img"></div>
+                            <p style="color: var(--primary); font-weight: 800;">الكوب الشفاف</p>
+                        </div>
+                        <div class="drop-zone" id="cottonDropZone" data-for="cotton">
+                            <div class="component-img cotton-img"></div>
+                            <p style="color: var(--primary); font-weight: 800;">القطن المبلل</p>
+                        </div>
+                        <div class="drop-zone" id="beanDropZone" data-for="bean">
+                            <div class="component-img bean-img"></div>
+                            <p style="color: var(--primary); font-weight: 800;">حبة الفاصوليا</p>
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-setup" id="experimentSetup">
+                        <div class="plant-container" id="plantContainer">
+                            <div class="glass-cup" id="glassCup">
+                                <div class="water-droplets" id="waterDroplets"></div>
+                                
+                                <div class="cotton-base" id="cottonBase"></div>
+                                
+                                <div class="bean-seed" id="beanSeed">
+                                    <div class="germination-effect" id="germinationEffect"></div>
+                                </div>
+                                
+                                <div class="root-system" id="rootSystem">
+                                    <div class="root main-root"></div>
+                                    <div class="root side-root-1"></div>
+                                    <div class="root side-root-2"></div>
+                                </div>
+                                
+                                <div class="stem" id="stem"></div>
+                                
+                                <div class="leaves-container" id="leavesContainer">
+                                    <div class="leaf leaf-1" style="--base-rotation: -45deg;"></div>
+                                    <div class="leaf leaf-2" style="--base-rotation: 45deg;"></div>
+                                    <div class="leaf leaf-3" style="--base-rotation: -60deg;"></div>
+                                    <div class="leaf leaf-4" style="--base-rotation: 60deg;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="components-panel">
+                    <h3><i class="fas fa-toolbox"></i> أدوات التجربة</h3>
+                    <div class="components-area" id="componentsArea">
+                        <div class="component" draggable="true" data-component="bean" id="beanComponent">
+                            <div class="component-img bean-img"></div>
+                            <div class="component-details">
+                                <h4>حبة فاصوليا</h4>
+                                <p>بذرة تحتوي على جنين النبات</p>
+                                <div class="component-spec bean">بذرة حية</div>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="cotton" id="cottonComponent">
+                            <div class="component-img cotton-img"></div>
+                            <div class="component-details">
+                                <h4>قطنة مبللة</h4>
+                                <p>توفر الرطوبة اللازمة للإنبات</p>
+                                <div class="component-spec cotton">رطبة ونظيفة</div>
+                            </div>
+                        </div>
+                        
+                        <div class="component" draggable="true" data-component="cup" id="cupComponent">
+                            <div class="component-img cup-img"></div>
+                            <div class="component-details">
+                                <h4>كوب بلاستيك شفاف</h4>
+                                <p>يسمح بمراقبة نمو الجذور</p>
+                                <div class="component-spec transparent">شفاف</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p><i class="fas fa-hand-point-right"></i> ابدأ بوضع الكوب الشفاف في منطقة المراقبة</p>
+            </div>
+            
+            <div class="result-area">
+                <h3><i class="fas fa-chart-line"></i> نتائج مراقبة دورة حياة النبات</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p><i class="fas fa-seedling"></i> قم بإعداد التجربة لمشاهدة معجزة نمو النبات من البذرة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التجربة الرئيسية
+            const glassCup = document.getElementById('glassCup');
+            const cottonBase = document.getElementById('cottonBase');
+            const beanSeed = document.getElementById('beanSeed');
+            const rootSystem = document.getElementById('rootSystem');
+            const stem = document.getElementById('stem');
+            const leavesContainer = document.getElementById('leavesContainer');
+            const waterDroplets = document.getElementById('waterDroplets');
+            const germinationEffect = document.getElementById('germinationEffect');
+            
+            // أزرار التحكم
+            const startBtn = document.getElementById('startGrowth');
+            const fastForwardBtn = document.getElementById('fastForward');
+            const resetBtn = document.getElementById('resetExperiment');
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            
+            // عناصر المعلومات
+            const dayCounter = document.getElementById('dayCounter');
+            const currentStage = document.getElementById('currentStage');
+            const growthStage = document.getElementById('growthStage');
+            const growthDesc = document.getElementById('growthDesc');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            
+            // مناطق الإسقاط
+            const cupDropZone = document.getElementById('cupDropZone');
+            const cottonDropZone = document.getElementById('cottonDropZone');
+            const beanDropZone = document.getElementById('beanDropZone');
+            
+            // عناصر المكونات
+            const componentsArea = document.getElementById('componentsArea');
+            const cupComponent = document.getElementById('cupComponent');
+            const cottonComponent = document.getElementById('cottonComponent');
+            const beanComponent = document.getElementById('beanComponent');
+            
+            // متغيرات الحالة
+            let currentDay = 0;
+            let growthTimer = null;
+            let fastMode = false;
+            let soundEnabled = true;
+            let componentsPlaced = {
+                cup: false,
+                cotton: false,
+                bean: false
+            };
+            
+            // مراحل النمو
+            const growthStages = [
+                { day: 0, stage: 'بذرة', desc: 'في انتظار الزراعة', action: null },
+                { day: 1, stage: 'بذرة مبللة', desc: 'امتصاص الماء', action: 'showWaterDroplets' },
+                { day: 2, stage: 'انتفاخ البذرة', desc: 'بداية الإنبات', action: 'swellBean' },
+                { day: 3, stage: 'ظهور الجذر', desc: 'خروج الجذر الأساسي', action: 'showRoots' },
+                { day: 4, stage: 'نمو الجذور', desc: 'تطور نظام الجذور', action: 'growRoots' },
+                { day: 5, stage: 'ظهور الساق', desc: 'خروج الساق الأولى', action: 'showStem' },
+                { day: 6, stage: 'نمو الساق', desc: 'استطالة الساق', action: 'growStem' },
+                { day: 7, stage: 'ظهور الأوراق', desc: 'تكوين الأوراق الأولى', action: 'showLeaves' },
+                { day: 8, stage: 'نبات صغير', desc: 'نبات مكتمل التكوين', action: 'matureLeaves' },
+                { day: 9, stage: 'نبات مكتمل', desc: 'نبات جاهز للنمو المستقل', action: 'completePlant' }
+            ];
+            
+            // إنشاء الأصوات
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // أصوات مختلفة للنمو
+            const sounds = {
+                drop: () => playSound(400, 0.3, 'sine'),
+                success: () => playSound(600, 0.4, 'square'),
+                germination: () => playSound(350, 0.8, 'triangle'),
+                growth: () => playSound(450, 1.2, 'sawtooth'),
+                water: () => playSound(800, 0.5, 'sine'),
+                leaf: () => playSound(650, 0.6, 'triangle'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 300);
+                    setTimeout(() => playSound(784, 0.5), 600);
+                }
+            };
+            
+            // تبديل الصوت
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // إنشاء قطرات الماء
+            function createWaterDroplets() {
+                waterDroplets.innerHTML = '';
+                const dropletCount = 8;
+                
+                for (let i = 0; i < dropletCount; i++) {
+                    setTimeout(() => {
+                        const droplet = document.createElement('div');
+                        droplet.className = 'water-droplet';
+                        
+                        const size = Math.random() * 8 + 4;
+                        droplet.style.width = `${size}px`;
+                        droplet.style.height = `${size}px`;
+                        droplet.style.left = `${Math.random() * 80 + 10}%`;
+                        droplet.style.top = '10px';
+                        droplet.style.animationDuration = `${Math.random() * 2 + 2}s`;
+                        droplet.style.animationDelay = '0s';
+                        
+                        waterDroplets.appendChild(droplet);
+                        
+                        setTimeout(() => {
+                            if (droplet.parentNode) {
+                                droplet.remove();
+                            }
+                        }, 4000);
+                    }, i * 200);
+                }
+            }
+            
+            // إنشاء تأثير الإنبات
+            function createGerminationEffect() {
+                germinationEffect.innerHTML = '';
+                const particleCount = 6;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'germination-particle';
+                        
+                        const size = Math.random() * 12 + 6;
+                        particle.style.width = `${size}px`;
+                        particle.style.height = `${size}px`;
+                        particle.style.left = `${Math.random() * 40 - 20}px`;
+                        particle.style.top = `${Math.random() * 40 - 20}px`;
+                        particle.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                        particle.style.animationDelay = '0s';
+                        
+                        germinationEffect.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 5000);
+                    }, i * 150);
+                }
+            }
+            
+            // تحديث حالة النمو
+            function updateGrowthStatus(day) {
+                const stage = growthStages[day] || growthStages[growthStages.length - 1];
+                
+                dayCounter.textContent = `يوم ${day}`;
+                currentStage.textContent = stage.desc;
+                growthStage.textContent = stage.stage;
+                growthDesc.textContent = stage.desc;
+                
+                // تنفيذ إجراءات النمو
+                if (stage.action) {
+                    executeGrowthAction(stage.action);
+                }
+                
+                // تحديث رسائل التغذية الراجعة
+                updateFeedbackForDay(day);
+            }
+            
+            // تنفيذ إجراءات النمو
+            function executeGrowthAction(action) {
+                switch (action) {
+                    case 'showWaterDroplets':
+                        createWaterDroplets();
+                        sounds.water();
+                        setInterval(() => {
+                            if (currentDay >= 1 && currentDay < 3) {
+                                createWaterDroplets();
+                            }
+                        }, 3000);
+                        break;
+                        
+                    case 'swellBean':
+                        beanSeed.style.transform = 'translateX(-50%) scale(1.2)';
+                        createGerminationEffect();
+                        sounds.germination();
+                        break;
+                        
+                    case 'showRoots':
+                        rootSystem.classList.add('visible');
+                        sounds.growth();
+                        break;
+                        
+                    case 'growRoots':
+                        document.querySelector('.side-root-1').style.animationPlayState = 'running';
+                        document.querySelector('.side-root-2').style.animationPlayState = 'running';
+                        sounds.growth();
+                        break;
+                        
+                    case 'showStem':
+                        stem.classList.add('visible');
+                        sounds.growth();
+                        break;
+                        
+                    case 'growStem':
+                        stem.style.height = '180px';
+                        sounds.growth();
+                        break;
+                        
+                    case 'showLeaves':
+                        leavesContainer.classList.add('visible');
+                        sounds.leaf();
+                        break;
+                        
+                    case 'matureLeaves':
+                        document.querySelectorAll('.leaf').forEach((leaf, index) => {
+                            setTimeout(() => {
+                                leaf.style.transform += ' scale(1.2)';
+                            }, index * 200);
+                        });
+                        sounds.leaf();
+                        break;
+                        
+                    case 'completePlant':
+                        document.querySelectorAll('.leaf').forEach((leaf, index) => {
+                            setTimeout(() => {
+                                leaf.style.transform += ' scale(1.4)';
+                                leaf.style.filter = 'brightness(1.1)';
+                            }, index * 100);
+                        });
+                        sounds.complete();
+                        break;
+                }
+            }
+            
+            // تحديث رسائل التغذية الراجعة حسب اليوم
+            function updateFeedbackForDay(day) {
+                const messages = [
+                    'قم بإعداد المكونات لبدء المراقبة',
+                    'البذرة تمتص الماء... بداية الحياة! 💧',
+                    'البذرة تنتفخ وتستعد للإنبات... الحياة تتحرك! 🌱',
+                    'ظهور الجذر الأول! النبات يبحث عن المغذيات 🌿',
+                    'نظام الجذور يتطور... قاعدة قوية للنمو! 🌱',
+                    'الساق تخرج للضوء... النبات ينمو لأعلى! 🌿',
+                    'الساق تستطيل وتقوى... النمو مستمر! 🌱',
+                    'الأوراق الأولى تظهر... بداية التمثيل الضوئي! 🍃',
+                    'النبات الصغير مكتمل... حياة جديدة! 🌿',
+                    '🎉 نبات مكتمل النمو! من بذرة صغيرة إلى حياة كاملة!'
+                ];
+                
+                const icons = ['info', 'info', 'success', 'success', 'success', 'expansion', 'expansion', 'complete', 'complete', 'complete'];
+                updateFeedback(messages[day] || messages[messages.length - 1], icons[day] || 'complete');
+            }
+            
+            // معالجة السحب والإفلات
+            let draggedElement = null;
+            
+            componentsArea.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('component')) {
+                    draggedElement = e.target;
+                    e.dataTransfer.setData('text/plain', e.target.dataset.component);
+                    e.target.classList.add('dragging');
+                    
+                    const componentType = e.target.dataset.component;
+                    highlightDropZone(componentType);
+                    
+                    sounds.drop();
+                }
+            });
+            
+            componentsArea.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('component')) {
+                    e.target.classList.remove('dragging');
+                    removeHighlights();
+                    draggedElement = null;
+                }
+            });
+            
+            function highlightDropZone(componentType) {
+                removeHighlights();
+                
+                if (componentType === 'cup' && !componentsPlaced.cup) {
+                    cupDropZone.classList.add('active');
+                } else if (componentType === 'cotton' && componentsPlaced.cup && !componentsPlaced.cotton) {
+                    cottonDropZone.classList.add('active');
+                } else if (componentType === 'bean' && componentsPlaced.cotton && !componentsPlaced.bean) {
+                    beanDropZone.classList.add('active');
+                }
+            }
+            
+            function removeHighlights() {
+                [cupDropZone, cottonDropZone, beanDropZone].forEach(zone => {
+                    zone.classList.remove('active');
+                });
+            }
+            
+            // إعداد مناطق الإسقاط
+            function setupDropZone(zone, validComponent, onDrop) {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const componentType = e.dataTransfer.getData('text/plain');
+                    
+                    if (componentType === validComponent) {
+                        onDrop();
+                        sounds.success();
+                    }
+                    
+                    removeHighlights();
+                });
+            }
+            
+            // إعداد إسقاط الكوب
+            setupDropZone(cupDropZone, 'cup', () => {
+                if (!componentsPlaced.cup) {
+                    glassCup.classList.add('visible');
+                    cupDropZone.style.opacity = '0.5';
+                    componentsPlaced.cup = true;
+                    cupComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! تم وضع الكوب. الآن ضع القطن المبلل', 'success');
+                    cottonDropZone.classList.add('highlight');
+                    
+                    setTimeout(() => {
+                        cottonDropZone.classList.remove('highlight');
+                    }, 3000);
+                }
+            });
+            
+            // إعداد إسقاط القطن
+            setupDropZone(cottonDropZone, 'cotton', () => {
+                if (componentsPlaced.cup && !componentsPlaced.cotton) {
+                    cottonBase.classList.add('visible');
+                    cottonDropZone.style.opacity = '0.5';
+                    componentsPlaced.cotton = true;
+                    cottonComponent.classList.add('placed');
+                    
+                    updateFeedback('رائع! تم وضع القطن. الآن ضع حبة الفاصوليا', 'success');
+                    beanDropZone.classList.add('highlight');
+                    
+                    setTimeout(() => {
+                        beanDropZone.classList.remove('highlight');
+                    }, 3000);
+                }
+            });
+            
+            // إعداد إسقاط البذرة
+            setupDropZone(beanDropZone, 'bean', () => {
+                if (componentsPlaced.cotton && !componentsPlaced.bean) {
+                    beanSeed.classList.add('visible');
+                    beanDropZone.style.opacity = '0.5';
+                    componentsPlaced.bean = true;
+                    beanComponent.classList.add('placed');
+                    
+                    updateFeedback('ممتاز! جميع المكونات جاهزة. ابدأ المراقبة اليومية', 'complete');
+                    startBtn.disabled = false;
+                    startBtn.classList.add('highlight');
+                    
+                    setTimeout(() => {
+                        startBtn.classList.remove('highlight');
+                    }, 5000);
+                }
+            });
+            
+            // تحديث رسائل التغذية الراجعة
+            function updateFeedback(message, type = 'info') {
+                const icons = {
+                    info: 'fas fa-info-circle',
+                    success: 'fas fa-check-circle',
+                    complete: 'fas fa-star',
+                    warning: 'fas fa-exclamation-triangle',
+                    expansion: 'fas fa-seedling'
+                };
+                
+                const colors = {
+                    info: '#3b82f6',
+                    success: '#10b981',
+                    complete: '#f59e0b',
+                    warning: '#ef4444',
+                    expansion: '#22c55e'
+                };
+                
+                experimentFeedback.innerHTML = `
+                    <p><i class="${icons[type]}" style="color: ${colors[type]};"></i> ${message}</p>
+                `;
+                
+                // تأثير وميض
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // بدء مراقبة النمو
+            startBtn.addEventListener('click', () => {
+                if (!componentsPlaced.cup || !componentsPlaced.cotton || !componentsPlaced.bean) return;
+                
+                startBtn.disabled = true;
+                fastForwardBtn.disabled = false;
+                currentDay = 1;
+                
+                // بدء دورة النمو اليومية
+                growthTimer = setInterval(() => {
+                    updateGrowthStatus(currentDay);
+                    currentDay++;
+                    
+                    if (currentDay > growthStages.length - 1) {
+                        clearInterval(growthTimer);
+                        finishExperiment();
+                    }
+                }, fastMode ? 1000 : 3000); // سرعة عادية 3 ثوان، سرعة مضاعفة ثانية واحدة
+                
+                updateFeedback('بدء المراقبة اليومية... شاهد معجزة الحياة! 🌱', 'expansion');
+                updateGrowthStatus(1);
+            });
+            
+            // تسريع الوقت
+            fastForwardBtn.addEventListener('click', () => {
+                fastMode = !fastMode;
+                
+                if (growthTimer) {
+                    clearInterval(growthTimer);
+                    
+                    growthTimer = setInterval(() => {
+                        updateGrowthStatus(currentDay);
+                        currentDay++;
+                        
+                        if (currentDay > growthStages.length - 1) {
+                            clearInterval(growthTimer);
+                            finishExperiment();
+                        }
+                    }, fastMode ? 500 : 3000);
+                }
+                
+                fastForwardBtn.innerHTML = fastMode ? 
+                    '<i class="fas fa-play"></i> سرعة عادية' : 
+                    '<i class="fas fa-forward"></i> تسريع الوقت';
+                
+                updateFeedback(fastMode ? 'تم تفعيل السرعة المضاعفة ⏩' : 'تم العودة للسرعة العادية ⏯️', 'info');
+            });
+            
+            // انتهاء التجربة
+            function finishExperiment() {
+                fastForwardBtn.disabled = true;
+                updateFeedback('🎉 التجربة مكتملة! شاهدت دورة حياة النبات كاملة', 'complete');
+                
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // عرض النتائج النهائية
+            function showFinalResults() {
+                conclusionDiv.innerHTML = `
+                    <p><strong style="color: #22c55e;">🌱 نتائج مراقبة دورة حياة النبات:</strong></p>
+                    <p>✅ <strong>اليوم 1-2:</strong> امتصاص الماء وانتفاخ البذرة</p>
+                    <p>✅ <strong>اليوم 3-4:</strong> ظهور الجذور ونمو نظام الجذور</p>
+                    <p>✅ <strong>اليوم 5-6:</strong> خروج الساق ونموها لأعلى</p>
+                    <p>✅ <strong>اليوم 7-9:</strong> ظهور الأوراق واكتمال النبات</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #22c55e;">📚 الشرح العلمي:</strong></p>
+                    <p>🔬 <strong>الإنبات</strong> - عملية تحول البذرة إلى نبات صغير</p>
+                    <p>🔬 <strong>امتصاص الماء</strong> - البذرة تمتص الماء وتنتفخ</p>
+                    <p>🔬 <strong>نمو الجذور</strong> - الجذور تنمو أولاً لامتصاص الماء والغذاء</p>
+                    <p>🔬 <strong>نمو الساق</strong> - الساق تنمو باتجاه الضوء</p>
+                    <p>🔬 <strong>تكوين الأوراق</strong> - الأوراق تبدأ التمثيل الضوئي</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #f59e0b;">🌟 العوامل المطلوبة للنمو:</strong></p>
+                    <p>💧 <strong>الماء</strong> - ضروري لجميع العمليات الحيوية</p>
+                    <p>☀️ <strong>الضوء</strong> - مصدر طاقة التمثيل الضوئي</p>
+                    <p>🌡️ <strong>درجة الحرارة المناسبة</strong> - لتفعيل الإنزيمات</p>
+                    <p>🌬️ <strong>الهواء</strong> - يوفر ثاني أكسيد الكربون والأكسجين</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #10b981;">🧪 استنتاجات مهمة:</strong></p>
+                    <p>💡 النبات ينمو تدريجياً عبر مراحل محددة</p>
+                    <p>💡 الجذور تنمو قبل الساق لتثبيت النبات</p>
+                    <p>💡 كل جزء من النبات له وظيفة محددة</p>
+                    <p>💡 النمو يحتاج توفر جميع العوامل البيئية المناسبة</p>
+                    
+                    <p style="margin-top: 20px;"><strong style="color: #8b5cf6;">🌍 أهمية النباتات:</strong></p>
+                    <p>🌿 إنتاج الأكسجين الذي نتنفسه</p>
+                    <p>🌿 توفير الغذاء للإنسان والحيوان</p>
+                    <p>🌿 امتصاص ثاني أكسيد الكربون من الجو</p>
+                    <p>🌿 المحافظة على التوازن البيئي</p>
+                `;
+                
+                sounds.complete();
+            }
+            
+            // إعادة تعيين التجربة
+            resetBtn.addEventListener('click', () => {
+                // إيقاف التايمر
+                if (growthTimer) {
+                    clearInterval(growthTimer);
+                    growthTimer = null;
+                }
+                
+                // إخفاء جميع العناصر
+                glassCup.classList.remove('visible');
+                cottonBase.classList.remove('visible');
+                beanSeed.classList.remove('visible');
+                rootSystem.classList.remove('visible');
+                stem.classList.remove('visible');
+                leavesContainer.classList.remove('visible');
+                
+                // إزالة التأثيرات
+                waterDroplets.innerHTML = '';
+                germinationEffect.innerHTML = '';
+                beanSeed.style.transform = 'translateX(-50%)';
+                stem.style.height = '';
+                
+                document.querySelectorAll('.leaf').forEach(leaf => {
+                    leaf.style.transform = '';
+                    leaf.style.filter = '';
+                });
+                
+                // إعادة تعيين الحالات
+                currentDay = 0;
+                fastMode = false;
+                componentsPlaced = {
+                    cup: false,
+                    cotton: false,
+                    bean: false
+                };
+                
+                // إعادة تعيين المكونات
+                [cupComponent, cottonComponent, beanComponent].forEach(component => {
+                    component.classList.remove('placed');
+                });
+                
+                // إعادة تعيين مناطق الإسقاط
+                [cupDropZone, cottonDropZone, beanDropZone].forEach(zone => {
+                    zone.style.opacity = '1';
+                });
+                
+                // إعادة تعيين الأزرار
+                startBtn.disabled = true;
+                fastForwardBtn.disabled = true;
+                fastForwardBtn.innerHTML = '<i class="fas fa-forward"></i> تسريع الوقت';
+                
+                // إعادة تعيين المعلومات
+                updateGrowthStatus(0);
+                updateFeedback('ابدأ بوضع الكوب الشفاف في منطقة المراقبة', 'info');
+                conclusionDiv.innerHTML = `
+                    <p><i class="fas fa-seedling"></i> قم بإعداد التجربة لمشاهدة معجزة نمو النبات من البذرة</p>
+                `;
+                
+                // إعادة التوجيه
+                cupDropZone.classList.add('highlight');
+                setTimeout(() => {
+                    cupDropZone.classList.remove('highlight');
+                }, 3000);
+                
+                sounds.drop();
+            });
+            
+            // بدء التوجيه التفاعلي
+            setTimeout(() => {
+                updateFeedback('مرحباً بك في مختبر دورة حياة النبات! ابدأ بوضع الكوب', 'info');
+                cupDropZone.classList.add('highlight');
+                updateGrowthStatus(0);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

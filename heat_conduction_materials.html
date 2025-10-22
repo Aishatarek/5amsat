@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة توصيل الحرارة في المواد المختلفة - Heat Conduction in Different Materials</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffe0b3, #ffd1dc);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20a138);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .tools-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .tool-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #ff6b35;
+        }
+
+        .tool-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .heat-source {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff4500, #ff6347);
+            border-radius: 10px;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+        }
+
+        .heat-source.active {
+            animation: heat-pulse 1s infinite;
+        }
+
+        @keyframes heat-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 69, 0, 0.8); }
+        }
+
+        .flame {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: radial-gradient(circle, yellow 20%, orange 40%, red 70%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+        }
+
+        .rulers-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .ruler-setup {
+            text-align: center;
+            position: relative;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .ruler {
+            width: 200px;
+            height: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            position: relative;
+            border: 2px solid #333;
+            transition: all 0.5s ease;
+        }
+
+        .ruler.metal {
+            background: linear-gradient(90deg, #c0c0c0, #e6e6e6);
+        }
+
+        .ruler.wood {
+            background: linear-gradient(90deg, #8b4513, #daa520);
+        }
+
+        .ruler.plastic {
+            background: linear-gradient(90deg, #4169e1, #87ceeb);
+        }
+
+        .ruler.heating {
+            animation: heat-glow 2s infinite;
+        }
+
+        @keyframes heat-glow {
+            0% { box-shadow: 0 0 0 rgba(255, 69, 0, 0); }
+            50% { box-shadow: 0 0 20px rgba(255, 69, 0, 0.8); }
+            100% { box-shadow: 0 0 0 rgba(255, 69, 0, 0); }
+        }
+
+        .pins-container {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            width: 100%;
+            height: 50px;
+        }
+
+        .pin {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: #8b4513;
+            border-radius: 2px;
+            transition: all 1s ease;
+        }
+
+        .pin.dropped {
+            transform: translateY(50px);
+            opacity: 0.5;
+        }
+
+        .temperature-indicator {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .temperature-indicator.show {
+            opacity: 1;
+        }
+
+        .progress-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .observations {
+            background: #fff5e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ff6b35;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .safety-icon {
+            color: #dc3545;
+            margin-right: 10px;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ff6b35;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .heat-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .heat-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 69, 0, 0.8);
+            border-radius: 50%;
+            animation: rise-heat 2s infinite;
+        }
+
+        @keyframes rise-heat {
+            0% {
+                bottom: 0;
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                bottom: 100px;
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .rulers-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🌡️ تجربة توصيل الحرارة في المواد المختلفة</h1>
+            <p id="subtitle">Heat Conduction in Different Materials</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">وضع المسطرات</div>
+            <div class="step" id="step2">تثبيت الدبابيس</div>
+            <div class="step" id="step3">تطبيق الحرارة</div>
+            <div class="step" id="step4">ملاحظة النتائج</div>
+        </div>
+
+        <div class="main-content">
+            <div class="tools-panel">
+                <h3 id="toolsTitle">الأدوات المطلوبة</h3>
+                
+                <div class="tool-item" draggable="true" data-tool="metal" id="metalRuler">
+                    <div style="font-size: 2em;">📏</div>
+                    <div id="metalName">مسطرة معدنية</div>
+                    <small>Metal Ruler</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="wood" id="woodRuler">
+                    <div style="font-size: 2em;">📐</div>
+                    <div id="woodName">مسطرة خشبية</div>
+                    <small>Wood Ruler</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="plastic" id="plasticRuler">
+                    <div style="font-size: 2em;">📏</div>
+                    <div id="plasticName">مسطرة بلاستيكية</div>
+                    <small>Plastic Ruler</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="pin" id="pinTool">
+                    <div style="font-size: 2em;">📍</div>
+                    <div id="pinName">دبابيس</div>
+                    <small>Pins</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="vaseline" id="vaseline">
+                    <div style="font-size: 2em;">🧴</div>
+                    <div id="vaselineName">فازلين</div>
+                    <small>Vaseline</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="heat-source" id="heatSource">
+                    <div class="flame" id="flame"></div>
+                    <div class="heat-particles" id="heatParticles"></div>
+                </div>
+
+                <div class="rulers-area">
+                    <div class="ruler-setup">
+                        <h4 id="metalTitle">المعدن</h4>
+                        <div class="drop-zone" data-accept="metal,pin,vaseline" id="metalZone">
+                            <span id="metalInstruction">اسحب المسطرة المعدنية</span>
+                        </div>
+                        <div class="ruler metal" id="metalRulerElement" style="display: none;">
+                            <div class="pins-container" id="metalPins"></div>
+                            <div class="temperature-indicator" id="metalTemp">25°C</div>
+                        </div>
+                    </div>
+
+                    <div class="ruler-setup">
+                        <h4 id="woodTitle">الخشب</h4>
+                        <div class="drop-zone" data-accept="wood,pin,vaseline" id="woodZone">
+                            <span id="woodInstruction">اسحب المسطرة الخشبية</span>
+                        </div>
+                        <div class="ruler wood" id="woodRulerElement" style="display: none;">
+                            <div class="pins-container" id="woodPins"></div>
+                            <div class="temperature-indicator" id="woodTemp">25°C</div>
+                        </div>
+                    </div>
+
+                    <div class="ruler-setup">
+                        <h4 id="plasticTitle">البلاستيك</h4>
+                        <div class="drop-zone" data-accept="plastic,pin,vaseline" id="plasticZone">
+                            <span id="plasticInstruction">اسحب المسطرة البلاستيكية</span>
+                        </div>
+                        <div class="ruler plastic" id="plasticRulerElement" style="display: none;">
+                            <div class="pins-container" id="plasticPins"></div>
+                            <div class="temperature-indicator" id="plasticTemp">25°C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="timer" id="timer">00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">استعد لبدء التجربة</div>
+        </div>
+
+        <div class="warning">
+            <span class="safety-icon">⚠️</span>
+            <strong id="warningTitle">تحذير أمان:</strong>
+            <span id="warningText">هذه التجربة تتطلب إشراف المعلم. احذر من مصدر الحرارة.</span>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4 id="conclusionTitle">الاستنتاج:</h4>
+            <p id="conclusionText">المعدن موصل جيد للحرارة، بينما الخشب والبلاستيك عوازل حرارية.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let timer = 0;
+        let timerInterval;
+        let materialsPlaced = { metal: false, wood: false, plastic: false };
+        let pinsPlaced = { metal: false, wood: false, plastic: false };
+        let vaselineApplied = { metal: false, wood: false, plastic: false };
+        let heatingStarted = false;
+
+        // Audio Context
+        let audioContext;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+                soundEnabled = false;
+            }
+        }
+
+        function playSound(frequency, duration) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Error playing sound:', e);
+            }
+        }
+
+        const translations = {
+            ar: {
+                title: "🌡️ تجربة توصيل الحرارة في المواد المختلفة",
+                subtitle: "Heat Conduction in Different Materials",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                toolsTitle: "الأدوات المطلوبة",
+                metalName: "مسطرة معدنية",
+                woodName: "مسطرة خشبية",
+                plasticName: "مسطرة بلاستيكية",
+                pinName: "دبابيس",
+                vaselineName: "فازلين",
+                metalTitle: "المعدن",
+                woodTitle: "الخشب",
+                plasticTitle: "البلاستيك",
+                metalInstruction: "اسحب المسطرة المعدنية",
+                woodInstruction: "اسحب المسطرة الخشبية",
+                plasticInstruction: "اسحب المسطرة البلاستيكية",
+                warningTitle: "تحذير أمان:",
+                warningText: "هذه التجربة تتطلب إشراف المعلم. احذر من مصدر الحرارة.",
+                observationsTitle: "الملاحظات:",
+                conclusionTitle: "الاستنتاج:",
+                conclusionText: "المعدن موصل جيد للحرارة، بينما الخشب والبلاستيك عوازل حرارية.",
+                obs1: "انتظار بدء التجربة...",
+                step1: "وضع المسطرات",
+                step2: "تثبيت الدبابيس",
+                step3: "تطبيق الحرارة",
+                step4: "ملاحظة النتائج",
+                progressReady: "استعد لبدء التجربة",
+                progressMaterials: "تم وضع المواد",
+                progressPins: "تم تثبيت الدبابيس",
+                progressHeating: "تطبيق الحرارة - راقب تساقط الدبابيس",
+                progressComplete: "التجربة مكتملة - لاحظ الفروق في التوصيل"
+            },
+            en: {
+                title: "🌡️ Heat Conduction in Different Materials",
+                subtitle: "تجربة توصيل الحرارة في المواد المختلفة",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                toolsTitle: "Required Tools",
+                metalName: "Metal Ruler",
+                woodName: "Wood Ruler",
+                plasticName: "Plastic Ruler",
+                pinName: "Pins",
+                vaselineName: "Vaseline",
+                metalTitle: "Metal",
+                woodTitle: "Wood",
+                plasticTitle: "Plastic",
+                metalInstruction: "Drag the metal ruler",
+                woodInstruction: "Drag the wood ruler",
+                plasticInstruction: "Drag the plastic ruler",
+                warningTitle: "Safety Warning:",
+                warningText: "This experiment requires teacher supervision. Beware of the heat source.",
+                observationsTitle: "Observations:",
+                conclusionTitle: "Conclusion:",
+                conclusionText: "Metal is a good heat conductor, while wood and plastic are thermal insulators.",
+                obs1: "Waiting to start experiment...",
+                step1: "Place Rulers",
+                step2: "Attach Pins",
+                step3: "Apply Heat",
+                step4: "Observe Results",
+                progressReady: "Ready to start experiment",
+                progressMaterials: "Materials placed",
+                progressPins: "Pins attached",
+                progressHeating: "Applying heat - watch pins drop",
+                progressComplete: "Experiment complete - observe conduction differences"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled && !audioContext) {
+                initAudio();
+            }
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            
+            experimentStarted = true;
+            initAudio();
+            playSound(440, 0.2);
+            
+            timer = 0;
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            updateProgress();
+            updateStep(1);
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            timer = 0;
+            materialsPlaced = { metal: false, wood: false, plastic: false };
+            pinsPlaced = { metal: false, wood: false, plastic: false };
+            vaselineApplied = { metal: false, wood: false, plastic: false };
+            heatingStarted = false;
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Reset UI
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = translations[currentLanguage].progressReady;
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('heatSource').classList.remove('active');
+            document.getElementById('heatParticles').innerHTML = '';
+            
+            // Reset rulers
+            ['metal', 'wood', 'plastic'].forEach(material => {
+                document.getElementById(material + 'RulerElement').style.display = 'none';
+                document.getElementById(material + 'RulerElement').classList.remove('heating');
+                document.getElementById(material + 'Pins').innerHTML = '';
+                document.getElementById(material + 'Temp').classList.remove('show');
+            });
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+            
+            playSound(220, 0.2);
+        }
+
+        function updateTimer() {
+            timer++;
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            let progress = 0;
+            let text = translations[currentLanguage].progressReady;
+            
+            const allMaterialsPlaced = Object.values(materialsPlaced).every(Boolean);
+            const allPinsPlaced = Object.values(pinsPlaced).every(Boolean);
+            const allVaselineApplied = Object.values(vaselineApplied).every(Boolean);
+            
+            if (allMaterialsPlaced) {
+                progress = 25;
+                text = translations[currentLanguage].progressMaterials;
+            }
+            if (allPinsPlaced && allVaselineApplied) {
+                progress = 50;
+                text = translations[currentLanguage].progressPins;
+            }
+            if (heatingStarted) {
+                progress = 75;
+                text = translations[currentLanguage].progressHeating;
+            }
+            if (progress === 75 && timer > 10) {
+                progress = 100;
+                text = translations[currentLanguage].progressComplete;
+            }
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function createPins(material) {
+            const pinsContainer = document.getElementById(material + 'Pins');
+            pinsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const pin = document.createElement('div');
+                pin.className = 'pin';
+                pin.style.left = (20 + i * 30) + 'px';
+                pinsContainer.appendChild(pin);
+            }
+        }
+
+        function createHeatParticles() {
+            const particlesContainer = document.getElementById('heatParticles');
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'heat-particle';
+                    particle.style.left = Math.random() * 60 + 'px';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    particlesContainer.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 3000);
+                }, i * 200);
+            }
+        }
+
+        function startHeating() {
+            if (heatingStarted) return;
+            
+            heatingStarted = true;
+            document.getElementById('heatSource').classList.add('active');
+            createHeatParticles();
+            
+            updateProgress();
+            updateStep(4);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                'بدء تطبيق الحرارة على المسطرات' : 
+                'Starting to apply heat to the rulers');
+            
+            // Simulate heat conduction and pin dropping
+            setTimeout(() => dropPins('metal', 2), 2000);   // Metal conducts fastest
+            setTimeout(() => dropPins('wood', 8), 8000);    // Wood conducts slowly
+            setTimeout(() => dropPins('plastic', 12), 12000); // Plastic conducts slowest
+            
+            // Update temperatures
+            simulateTemperatureChanges();
+        }
+
+        function dropPins(material, seconds) {
+            const pins = document.getElementById(material + 'Pins').querySelectorAll('.pin');
+            const rulerElement = document.getElementById(material + 'RulerElement');
+            const tempIndicator = document.getElementById(material + 'Temp');
+            
+            rulerElement.classList.add('heating');
+            tempIndicator.classList.add('show');
+            
+            pins.forEach((pin, index) => {
+                setTimeout(() => {
+                    pin.classList.add('dropped');
+                    playSound(200 + index * 50, 0.2);
+                }, index * 500);
+            });
+            
+            const materialNames = {
+                metal: currentLanguage === 'ar' ? 'المعدن' : 'metal',
+                wood: currentLanguage === 'ar' ? 'الخشب' : 'wood',
+                plastic: currentLanguage === 'ar' ? 'البلاستيك' : 'plastic'
+            };
+            
+            setTimeout(() => {
+                addObservation(currentLanguage === 'ar' ? 
+                    `سقطت الدبابيس من ${materialNames[material]} بعد ${seconds} ثانية` : 
+                    `Pins dropped from ${materialNames[material]} after ${seconds} seconds`);
+                
+                if (material === 'plastic') {
+                    document.getElementById('conclusion').style.display = 'block';
+                }
+            }, pins.length * 500);
+        }
+
+        function simulateTemperatureChanges() {
+            let metalTemp = 25;
+            let woodTemp = 25;
+            let plasticTemp = 25;
+            
+            const tempInterval = setInterval(() => {
+                if (!heatingStarted) {
+                    clearInterval(tempInterval);
+                    return;
+                }
+                
+                metalTemp += 8;   // Metal heats up fastest
+                woodTemp += 3;    // Wood heats up slowly
+                plasticTemp += 2; // Plastic heats up slowest
+                
+                document.getElementById('metalTemp').textContent = Math.min(metalTemp, 85) + '°C';
+                document.getElementById('woodTemp').textContent = Math.min(woodTemp, 65) + '°C';
+                document.getElementById('plasticTemp').textContent = Math.min(plasticTemp, 45) + '°C';
+                
+                if (metalTemp >= 85 && woodTemp >= 65 && plasticTemp >= 45) {
+                    clearInterval(tempInterval);
+                }
+            }, 1000);
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateLanguage();
+        });
+
+        function initDragAndDrop() {
+            const toolItems = document.querySelectorAll('.tool-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            toolItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            playSound(330, 0.1);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.drop-zone');
+            if (!dropZone || !draggedItem) return;
+
+            dropZone.classList.remove('drag-over');
+            
+            const toolType = draggedItem.dataset.tool;
+            const acceptedTools = dropZone.dataset.accept.split(',');
+            
+            if (!acceptedTools.includes(toolType)) {
+                playSound(150, 0.3);
+                return;
+            }
+
+            playSound(523, 0.2);
+            
+            const zoneId = dropZone.id;
+            const material = zoneId.replace('Zone', '');
+            
+            if (['metal', 'wood', 'plastic'].includes(toolType) && toolType === material) {
+                placeMaterial(material);
+            } else if (toolType === 'pin') {
+                placePins(material);
+            } else if (toolType === 'vaseline') {
+                applyVaseline(material);
+            }
+        }
+
+        function placeMaterial(material) {
+            if (materialsPlaced[material]) return;
+            
+            materialsPlaced[material] = true;
+            document.getElementById(material + 'RulerElement').style.display = 'block';
+            
+            addObservation(currentLanguage === 'ar' ? 
+                `تم وضع المسطرة ${material === 'metal' ? 'المعدنية' : material === 'wood' ? 'الخشبية' : 'البلاستيكية'}` : 
+                `${material} ruler placed`);
+            
+            updateProgress();
+            
+            const allMaterialsPlaced = Object.values(materialsPlaced).every(Boolean);
+            if (allMaterialsPlaced) {
+                updateStep(2);
+            }
+        }
+
+        function placePins(material) {
+            if (pinsPlaced[material] || !materialsPlaced[material]) return;
+            
+            pinsPlaced[material] = true;
+            createPins(material);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                `تم تثبيت الدبابيس على ${material === 'metal' ? 'المعدن' : material === 'wood' ? 'الخشب' : 'البلاستيك'}` : 
+                `Pins attached to ${material}`);
+            
+            checkReadyForHeating();
+        }
+
+        function applyVaseline(material) {
+            if (vaselineApplied[material] || !materialsPlaced[material]) return;
+            
+            vaselineApplied[material] = true;
+            
+            addObservation(currentLanguage === 'ar' ? 
+                `تم تطبيق الفازلين على ${material === 'metal' ? 'المعدن' : material === 'wood' ? 'الخشب' : 'البلاستيك'}` : 
+                `Vaseline applied to ${material}`);
+            
+            checkReadyForHeating();
+        }
+
+        function checkReadyForHeating() {
+            const allPinsPlaced = Object.values(pinsPlaced).every(Boolean);
+            const allVaselineApplied = Object.values(vaselineApplied).every(Boolean);
+            
+            if (allPinsPlaced && allVaselineApplied) {
+                updateStep(3);
+                updateProgress();
+                
+                setTimeout(() => {
+                    startHeating();
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

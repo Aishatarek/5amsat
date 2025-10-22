@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة التوصيل الحراري - Grade 5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e17055, #fd79a8);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e17055, #fd79a8);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e17055, #fd79a8);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e84393, #d63031);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .materials-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .materials-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .cup-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .cup-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #e17055;
+        }
+
+        .cup-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .cup-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 600px;
+        }
+
+        .heat-source {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(135deg, #e17055, #fd79a8);
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        .heat-source.active {
+            animation: heatGlow 2s infinite alternate;
+        }
+
+        @keyframes heatGlow {
+            0% {
+                box-shadow: 0 4px 20px rgba(225, 112, 85, 0.4);
+                transform: scale(1);
+            }
+            100% {
+                box-shadow: 0 8px 40px rgba(225, 112, 85, 0.8), 0 0 60px rgba(253, 121, 168, 0.6);
+                transform: scale(1.02);
+            }
+        }
+
+        .heat-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #fd79a8, #e17055);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: heatRise 3s infinite;
+        }
+
+        @keyframes heatRise {
+            0% {
+                bottom: 0;
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            100% {
+                bottom: 200px;
+                opacity: 0;
+                transform: translateX(30px) scale(0.5);
+            }
+        }
+
+        .cups-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .cup-zone {
+            height: 200px;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: linear-gradient(to bottom, transparent, rgba(225, 112, 85, 0.1));
+        }
+
+        .cup-zone.drag-over {
+            border-color: #e17055;
+            background: rgba(225, 112, 85, 0.2);
+            transform: scale(1.05);
+        }
+
+        .cup-in-zone {
+            width: 100px;
+            height: 120px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .metal-cup {
+            background: linear-gradient(145deg, #bdc3c7, #95a5a6);
+            border: 3px solid #7f8c8d;
+        }
+
+        .plastic-cup {
+            background: linear-gradient(145deg, #e8f4fd, #74b9ff);
+            border: 3px solid #0984e3;
+        }
+
+        .foam-cup {
+            background: linear-gradient(145deg, #fff5f5, #f8f9fa);
+            border: 3px solid #ddd;
+        }
+
+        .cup-in-zone {
+            border-radius: 10px 10px 20px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .temperature-reading {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 2px solid #e17055;
+            font-weight: bold;
+            color: #e17055;
+            font-size: 0.9em;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 2px solid #e17055;
+            font-weight: bold;
+            color: #e17055;
+            font-size: 1.1em;
+        }
+
+        .temperature-decrease {
+            animation: tempDrop 0.5s ease;
+        }
+
+        @keyframes tempDrop {
+            0% { color: #e74c3c; }
+            50% { color: #3498db; transform: scale(1.1); }
+            100% { color: #e17055; transform: scale(1); }
+        }
+
+        .observations {
+            background: #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #e17055;
+        }
+
+        .observations h4 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .observation-item {
+            background: white;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #00b894;
+            transition: all 0.3s ease;
+        }
+
+        .observation-item.metal {
+            border-left-color: #95a5a6;
+        }
+
+        .observation-item.plastic {
+            border-left-color: #74b9ff;
+        }
+
+        .observation-item.foam {
+            border-left-color: #ddd;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .results-table {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .results-table th {
+            background: #e17055;
+            color: white;
+        }
+
+        .results-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .cups-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌡️ تجربة التوصيل الحراري</h1>
+            <p>مقارنة المواد الموصلة والعازلة للحرارة - الصف الخامس الابتدائي</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()">English</button>
+            <button class="btn btn-success" onclick="startExperiment()">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()">إعادة تعيين</button>
+        </div>
+
+        <div class="main-content">
+            <div class="materials-panel">
+                <h3>أكواب من مواد مختلفة</h3>
+                
+                <div class="cup-item" draggable="true" data-cup="metal">
+                    <div class="cup-icon">🥤</div>
+                    <div><strong>كوب معدني</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Metal Cup</div>
+                    <div style="font-size: 0.7em; color: #999;">موصل جيد للحرارة</div>
+                </div>
+
+                <div class="cup-item" draggable="true" data-cup="plastic">
+                    <div class="cup-icon">🥤</div>
+                    <div><strong>كوب بلاستيك</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Plastic Cup</div>
+                    <div style="font-size: 0.7em; color: #999;">موصل متوسط للحرارة</div>
+                </div>
+
+                <div class="cup-item" draggable="true" data-cup="foam">
+                    <div class="cup-icon">🥤</div>
+                    <div><strong>كوب فوم/فلين</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Foam Cup</div>
+                    <div style="font-size: 0.7em; color: #999;">عازل جيد للحرارة</div>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <h3 style="text-align: center; margin-bottom: 20px;">اسحب الأكواب إلى مصدر الحرارة ولاحظ فقدان الحرارة</h3>
+                
+                <div class="timer" id="timer">00:00</div>
+                
+                <div class="heat-source" id="heatSource">
+                    🔥 مصدر الحرارة - ماء ساخن 🔥
+                </div>
+                
+                <div class="cups-area">
+                    <div class="cup-zone" data-zone="1">
+                        <div style="color: #666; font-size: 0.9em;">المنطقة 1</div>
+                        <div style="color: #999; font-size: 0.8em;">اسحب كوب هنا</div>
+                    </div>
+
+                    <div class="cup-zone" data-zone="2">
+                        <div style="color: #666; font-size: 0.9em;">المنطقة 2</div>
+                        <div style="color: #999; font-size: 0.8em;">اسحب كوب هنا</div>
+                    </div>
+
+                    <div class="cup-zone" data-zone="3">
+                        <div style="color: #666; font-size: 0.9em;">المنطقة 3</div>
+                        <div style="color: #999; font-size: 0.8em;">اسحب كوب هنا</div>
+                    </div>
+                </div>
+
+                <div class="results-table" id="resultsTable" style="display: none;">
+                    <h4>نتائج التجربة - قياس درجة الحرارة</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>نوع الكوب</th>
+                                <th>درجة الحرارة الابتدائية</th>
+                                <th>درجة الحرارة بعد 5 دقائق</th>
+                                <th>فقدان الحرارة</th>
+                                <th>نوع التوصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4>🔍 الملاحظات:</h4>
+            <div id="observationsList">
+                <div class="observation-item">انتظار بدء التجربة...</div>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4>📋 الاستنتاج:</h4>
+            <p><strong>المواد تختلف في قدرتها على توصيل الحرارة:</strong></p>
+            <ul style="margin: 10px 0; padding-right: 20px;">
+                <li><strong>المعادن (الكوب المعدني):</strong> موصلة جيدة للحرارة - تفقد الحرارة بسرعة</li>
+                <li><strong>البلاستيك:</strong> موصل متوسط للحرارة - يحتفظ ببعض الحرارة</li>
+                <li><strong>الفوم/الفلين:</strong> عازل جيد للحرارة - يحتفظ بأعلى درجة حرارة</li>
+                <li><strong>التطبيق العملي:</strong> لذلك نستخدم أكواب الفوم للمشروبات الساخنة</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let experimentStarted = false;
+        let cupsPlaced = 0;
+        let totalCups = 3;
+        let draggedElement = null;
+        let experimentTimer = 0;
+        let timerInterval = null;
+        let heatTestResults = {};
+
+        const cups = {
+            metal: { 
+                ar: 'كوب معدني', en: 'Metal Cup', 
+                class: 'metal-cup',
+                conductivity: 'high', // High conductivity = fast heat loss
+                initialTemp: 85,
+                heatLossRate: 8, // degrees per minute
+                icon: '🥤',
+                description: { ar: 'موصل جيد للحرارة', en: 'Good heat conductor' }
+            },
+            plastic: { 
+                ar: 'كوب بلاستيك', en: 'Plastic Cup', 
+                class: 'plastic-cup',
+                conductivity: 'medium',
+                initialTemp: 85,
+                heatLossRate: 5,
+                icon: '🥤',
+                description: { ar: 'موصل متوسط للحرارة', en: 'Medium heat conductor' }
+            },
+            foam: { 
+                ar: 'كوب فوم/فلين', en: 'Foam Cup', 
+                class: 'foam-cup',
+                conductivity: 'low', // Low conductivity = good insulator
+                initialTemp: 85,
+                heatLossRate: 2,
+                icon: '🥤',
+                description: { ar: 'عازل جيد للحرارة', en: 'Good heat insulator' }
+            }
+        };
+
+        function startExperiment() {
+            experimentStarted = true;
+            addObservation('تم بدء التجربة! اسحب الأكواب إلى المناطق وسيتم ملؤها بماء ساخن.', 'Experiment started! Drag cups to zones and they will be filled with hot water.');
+            
+            // Start heat source animation
+            const heatSource = document.getElementById('heatSource');
+            heatSource.classList.add('active');
+            createHeatParticles();
+            
+            // Start timer
+            startTimer();
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            cupsPlaced = 0;
+            heatTestResults = {};
+            experimentTimer = 0;
+            
+            // Stop timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            document.getElementById('timer').textContent = '00:00';
+            
+            // Clear zones
+            document.querySelectorAll('.cup-zone').forEach(zone => {
+                zone.querySelectorAll('.cup-in-zone, .temperature-reading').forEach(element => {
+                    element.remove();
+                });
+                zone.innerHTML = `
+                    <div style="color: #666; font-size: 0.9em;">المنطقة ${zone.dataset.zone}</div>
+                    <div style="color: #999; font-size: 0.8em;">اسحب كوب هنا</div>
+                `;
+            });
+
+            // Stop heat source
+            const heatSource = document.getElementById('heatSource');
+            heatSource.classList.remove('active');
+            heatSource.querySelectorAll('.heat-particle').forEach(particle => {
+                particle.remove();
+            });
+
+            // Reset observations
+            document.getElementById('observationsList').innerHTML = 
+                '<div class="observation-item">انتظار بدء التجربة...</div>';
+            
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('resultsTable').style.display = 'none';
+            document.getElementById('resultsTableBody').innerHTML = '';
+            
+            // Reset cup items
+            document.querySelectorAll('.cup-item').forEach(item => {
+                item.style.opacity = '1';
+                item.draggable = true;
+            });
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                experimentTimer++;
+                const minutes = Math.floor(experimentTimer / 60);
+                const seconds = experimentTimer % 60;
+                document.getElementById('timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update temperatures every minute
+                if (experimentTimer % 60 === 0) {
+                    updateTemperatures();
+                }
+            }, 1000);
+        }
+
+        function updateTemperatures() {
+            Object.keys(heatTestResults).forEach(cupType => {
+                const cupData = cups[cupType];
+                const result = heatTestResults[cupType];
+                const minutesPassed = Math.floor(experimentTimer / 60);
+                
+                // Calculate new temperature
+                const newTemp = Math.max(20, result.initialTemp - (cupData.heatLossRate * minutesPassed));
+                result.currentTemp = newTemp;
+                
+                // Update display
+                const tempReading = result.element.querySelector('.temperature-reading');
+                if (tempReading) {
+                    tempReading.textContent = `${Math.round(newTemp)}°C`;
+                    tempReading.classList.add('temperature-decrease');
+                    setTimeout(() => {
+                        tempReading.classList.remove('temperature-decrease');
+                    }, 500);
+                }
+                
+                // Add observation for significant temperature changes
+                if (minutesPassed === 1 || minutesPassed === 5) {
+                    addObservation(
+                        `${cupData.ar}: درجة الحرارة أصبحت ${Math.round(newTemp)}°C بعد ${minutesPassed} دقيقة`,
+                        `${cupData.en}: Temperature is now ${Math.round(newTemp)}°C after ${minutesPassed} minute(s)`,
+                        cupType
+                    );
+                }
+            });
+            
+            // Show results after 5 minutes
+            if (experimentTimer === 300) { // 5 minutes
+                showFinalResults();
+            }
+        }
+
+        function showFinalResults() {
+            document.getElementById('resultsTable').style.display = 'block';
+            const tableBody = document.getElementById('resultsTableBody');
+            
+            Object.keys(heatTestResults).forEach(cupType => {
+                const cupData = cups[cupType];
+                const result = heatTestResults[cupType];
+                const heatLoss = result.initialTemp - result.currentTemp;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${cupData.icon} ${cupData.ar}</td>
+                    <td>${result.initialTemp}°C</td>
+                    <td>${Math.round(result.currentTemp)}°C</td>
+                    <td>${Math.round(heatLoss)}°C</td>
+                    <td>${cupData.description.ar}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('conclusion').style.display = 'block';
+            addObservation(
+                'تمت التجربة بنجاح! تم قياس قدرة المواد المختلفة على توصيل الحرارة.',
+                'Experiment completed! Different materials\' heat conductivity has been measured.'
+            );
+        }
+
+        function createHeatParticles() {
+            const heatSource = document.getElementById('heatSource');
+            
+            setInterval(() => {
+                if (!experimentStarted) return;
+                
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'heat-particle';
+                        particle.style.left = Math.random() * 90 + 5 + '%';
+                        particle.style.animationDelay = Math.random() * 1 + 's';
+                        
+                        heatSource.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                particle.remove();
+                            }
+                        }, 3000);
+                    }, i * 100);
+                }
+            }, 2000);
+        }
+
+        function addObservation(arText, enText, className = '') {
+            const observationsList = document.getElementById('observationsList');
+            if (observationsList.children[0].textContent === 'انتظار بدء التجربة...') {
+                observationsList.innerHTML = '';
+            }
+            
+            const observationItem = document.createElement('div');
+            observationItem.className = `observation-item ${className}`;
+            observationItem.textContent = currentLanguage === 'ar' ? arText : enText;
+            observationsList.appendChild(observationItem);
+            
+            // Scroll to bottom
+            observationsList.scrollTop = observationsList.scrollHeight;
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            // Implementation for language toggle can be added here
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const cupItems = document.querySelectorAll('.cup-item');
+            const cupZones = document.querySelectorAll('.cup-zone');
+
+            cupItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            cupZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+        });
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('cup-zone') || e.target.closest('.cup-zone')) {
+                const zone = e.target.closest('.cup-zone') || e.target;
+                zone.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('cup-zone') || e.target.closest('.cup-zone')) {
+                const zone = e.target.closest('.cup-zone') || e.target;
+                zone.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.target.closest('.cup-zone');
+            if (!zone || !draggedElement) return;
+
+            zone.classList.remove('drag-over');
+            
+            const cupType = draggedElement.dataset.cup;
+            const cupData = cups[cupType];
+            
+            // Check if zone already has a cup
+            if (zone.querySelector('.cup-in-zone')) {
+                addObservation(
+                    'هذه المنطقة تحتوي على كوب بالفعل!',
+                    'This zone already contains a cup!'
+                );
+                return;
+            }
+            
+            cupsPlaced++;
+            
+            // Hide original cup
+            draggedElement.style.opacity = '0.3';
+            draggedElement.draggable = false;
+            
+            // Create cup in zone
+            const cupElement = document.createElement('div');
+            cupElement.className = `cup-in-zone ${cupData.class}`;
+            cupElement.dataset.cup = cupType;
+            
+            // Add temperature reading
+            const tempReading = document.createElement('div');
+            tempReading.className = 'temperature-reading';
+            tempReading.textContent = `${cupData.initialTemp}°C`;
+            
+            zone.innerHTML = '';
+            zone.appendChild(cupElement);
+            zone.appendChild(tempReading);
+            
+            // Store test result
+            heatTestResults[cupType] = {
+                element: zone,
+                initialTemp: cupData.initialTemp,
+                currentTemp: cupData.initialTemp,
+                zone: zone.dataset.zone
+            };
+            
+            addObservation(
+                `تم وضع ${cupData.ar} في المنطقة ${zone.dataset.zone} مع ماء ساخن بدرجة ${cupData.initialTemp}°C`,
+                `${cupData.en} placed in zone ${zone.dataset.zone} with hot water at ${cupData.initialTemp}°C`,
+                cupType
+            );
+            
+            // Check if all cups placed
+            if (cupsPlaced === totalCups) {
+                addObservation(
+                    'تم وضع جميع الأكواب! الآن سنراقب تغير درجة الحرارة مع الوقت.',
+                    'All cups placed! Now we will monitor temperature changes over time.'
+                );
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة النظام البيئي البسيط - Terrarium Ecosystem Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2E8B57, #228B22, #006400);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2E8B57, #228B22);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #f44336, #da190b);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .reset-btn:hover {
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .sound-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .sound-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #dee2e6;
+        }
+
+        .experiment-section {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #4caf50;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tool {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .tool.dragging {
+            opacity: 0.7;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        .tool.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .soil-tool {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .plant-tool {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .water-tool {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .jar-tool {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            color: #333;
+            border: 2px solid #90CAF9;
+        }
+
+        .terrarium-container {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87CEEB 0%, rgba(255, 255, 255, 0.2) 100%);
+            border: 3px solid #4A7C59;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .drop-zone {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .jar {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 4px solid rgba(0, 100, 0, 0.3);
+            border-radius: 20px 20px 40px 40px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .jar.visible {
+            opacity: 1;
+        }
+
+        .jar-lid {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            border-radius: 10px;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .jar-lid.visible {
+            opacity: 1;
+        }
+
+        .soil-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to top, #8B4513, #A0522D);
+            border-radius: 0 0 36px 36px;
+            transition: all 0.5s ease;
+        }
+
+        .plant {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 0;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .plant.visible {
+            opacity: 1;
+        }
+
+        .plant-stem {
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to top, #228B22, #32CD32);
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+
+        .plant-leaves {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 40px;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: linear-gradient(135deg, #32CD32, #228B22);
+            border-radius: 50% 10px 50% 10px;
+        }
+
+        .leaf:nth-child(1) {
+            top: 0;
+            left: 0;
+            transform: rotate(-30deg);
+        }
+
+        .leaf:nth-child(2) {
+            top: 0;
+            right: 0;
+            transform: rotate(30deg);
+        }
+
+        .leaf:nth-child(3) {
+            top: 15px;
+            left: 10px;
+            transform: rotate(-15deg);
+        }
+
+        .leaf:nth-child(4) {
+            top: 15px;
+            right: 10px;
+            transform: rotate(15deg);
+        }
+
+        .water-drops {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .water-drop {
+            position: absolute;
+            width: 6px;
+            height: 8px;
+            background: rgba(173, 216, 230, 0.8);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            animation: waterCycle 8s ease-in-out infinite;
+        }
+
+        @keyframes waterCycle {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            25% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-40px) scale(1.2);
+            }
+            75% {
+                opacity: 0.6;
+                transform: translateY(-20px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+        }
+
+        .ecosystem-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .oxygen-bubble {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 0, 0.7);
+            border-radius: 50%;
+            opacity: 0;
+            animation: oxygenRise 6s linear infinite;
+        }
+
+        @keyframes oxygenRise {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        .progress-section {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #ffcc02;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            margin: 0 5px;
+            border-radius: 25px;
+            background: #e0e0e0;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .step.completed {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .observations {
+            background: linear-gradient(135deg, #f1f8e9, #dcedc8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #8bc34a;
+        }
+
+        .observation-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.5s ease;
+        }
+
+        .observation-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #4caf50;
+            text-align: center;
+        }
+
+        .conclusion h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .conclusion ul {
+            text-align: right;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .conclusion li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            list-style-type: none;
+            position: relative;
+            padding-right: 30px;
+        }
+
+        .conclusion li::before {
+            content: "✓";
+            position: absolute;
+            right: 10px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .ecosystem-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .ecosystem-meter {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+
+        .ecosystem-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2E8B57, #32CD32);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tool {
+                width: 100px;
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .terrarium-container {
+                height: 350px;
+            }
+            
+            .jar {
+                width: 160px;
+                height: 200px;
+            }
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        body.en {
+            direction: ltr;
+            text-align: left;
+        }
+
+        body.en .conclusion ul {
+            text-align: left;
+        }
+
+        body.en .conclusion li {
+            padding-left: 30px;
+            padding-right: 10px;
+        }
+
+        body.en .conclusion li::before {
+            left: 10px;
+            right: auto;
+        }
+
+        body.en .observation-item {
+            border-left: none;
+            border-right: 4px solid #4CAF50;
+        }
+
+        .jar-animation {
+            animation: jarAppear 2s ease-out;
+        }
+
+        @keyframes jarAppear {
+            0% { transform: translateX(-50%) scale(0); opacity: 0; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+
+        .ecosystem-active {
+            box-shadow: 0 0 20px rgba(46, 139, 87, 0.5);
+            border-color: #2E8B57;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-toggle">
+        <button class="control-btn" onclick="toggleLanguage()" id="langToggle">English</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 id="title">تجربة النظام البيئي البسيط</h1>
+            <p id="subtitle">أنشئ نظاماً بيئياً مغلقاً واكتشف دورة الحياة</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="resetExperiment()" id="resetBtn">إعادة تشغيل التجربة</button>
+            <button class="control-btn sound-btn" onclick="toggleSound()" id="soundBtn">🔊 الصوت مفعل</button>
+        </div>
+
+        <div class="progress-section">
+            <h3 id="progressTitle">مراحل التجربة</h3>
+            <div class="step-indicator">
+                <div class="step active" id="step1">1. الوعاء</div>
+                <div class="step" id="step2">2. التربة</div>
+                <div class="step" id="step3">3. النبات</div>
+                <div class="step" id="step4">4. الماء</div>
+                <div class="step" id="step5">5. النظام</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="tools-section">
+                <div class="section-title" id="toolsTitle">الأدوات المتاحة</div>
+                <p id="toolsInstructions">اسحب الأدوات لبناء النظام البيئي</p>
+                <div class="tools-grid">
+                    <div class="tool jar-tool" draggable="true" data-tool="jar" id="jarTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🫙</div>
+                        <div id="jarLabel">وعاء زجاجي</div>
+                    </div>
+                    <div class="tool soil-tool" draggable="true" data-tool="soil" id="soilTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🌱</div>
+                        <div id="soilLabel">تربة</div>
+                    </div>
+                    <div class="tool plant-tool" draggable="true" data-tool="plant" id="plantTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🌿</div>
+                        <div id="plantLabel">نبات</div>
+                    </div>
+                    <div class="tool water-tool" draggable="true" data-tool="water" id="waterTool">
+                        <div style="font-size: 2rem; margin-bottom: 5px;">💧</div>
+                        <div id="waterLabel">ماء</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="experiment-section">
+                <div class="section-title" id="experimentTitle">منطقة التجربة</div>
+                <div class="terrarium-container">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="jar" id="jar">
+                            <div class="soil-layer" id="soilLayer"></div>
+                            <div class="plant" id="plant">
+                                <div class="plant-stem"></div>
+                                <div class="plant-leaves">
+                                    <div class="leaf"></div>
+                                    <div class="leaf"></div>
+                                    <div class="leaf"></div>
+                                    <div class="leaf"></div>
+                                </div>
+                            </div>
+                            <div class="water-drops" id="waterDrops"></div>
+                            <div class="ecosystem-particles" id="ecosystemParticles"></div>
+                        </div>
+                        <div class="jar-lid" id="jarLid"></div>
+                    </div>
+                </div>
+                
+                <div class="ecosystem-indicator">
+                    <span id="ecosystemLabel">نشاط النظام البيئي:</span>
+                    <div class="ecosystem-meter">
+                        <div class="ecosystem-fill" id="ecosystemFill"></div>
+                    </div>
+                    <span id="ecosystemPercent">0%</span>
+                </div>
+                
+                <div class="timer" id="timer">الوقت: 0 ثانية</div>
+            </div>
+        </div>
+
+        <div class="observations" id="observationsSection">
+            <h3 id="observationsTitle">الملاحظات</h3>
+            <div id="observationsList">
+                <p id="initialObservation">ابدأ التجربة لرؤية الملاحظات...</p>
+            </div>
+        </div>
+
+        <div class="conclusion" id="conclusionSection" style="display: none;">
+            <h3 id="conclusionTitle">الاستنتاج</h3>
+            <ul id="conclusionList">
+                <li id="conclusion1">النظام البيئي المغلق يحافظ على توازنه</li>
+                <li id="conclusion2">النباتات تنتج الأكسجين وتستهلك ثاني أكسيد الكربون</li>
+                <li id="conclusion3">دورة الماء تحدث داخل النظام</li>
+                <li id="conclusion4">التربة توفر العناصر الغذائية للنبات</li>
+                <li id="conclusion5">جميع العناصر تعمل معاً في توازن طبيعي</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // العناصر الأساسية
+        const dropZone = document.getElementById('dropZone');
+        const jar = document.getElementById('jar');
+        const jarLid = document.getElementById('jarLid');
+        const soilLayer = document.getElementById('soilLayer');
+        const plant = document.getElementById('plant');
+        const waterDrops = document.getElementById('waterDrops');
+        const ecosystemParticles = document.getElementById('ecosystemParticles');
+        const progressFill = document.getElementById('progressFill');
+        const ecosystemFill = document.getElementById('ecosystemFill');
+        const ecosystemPercent = document.getElementById('ecosystemPercent');
+        const timer = document.getElementById('timer');
+        const observationsList = document.getElementById('observationsList');
+        const conclusionSection = document.getElementById('conclusionSection');
+
+        // متغيرات التجربة
+        let experimentState = {
+            jarPlaced: false,
+            soilAdded: false,
+            plantAdded: false,
+            waterAdded: false,
+            ecosystemActive: false,
+            ecosystemLevel: 0,
+            timer: 0,
+            timerInterval: null,
+            ecosystemInterval: null,
+            particleInterval: null,
+            currentStep: 1,
+            soundEnabled: true,
+            currentLang: 'ar'
+        };
+
+        // الترجمات
+        const translations = {
+            ar: {
+                title: "تجربة النظام البيئي البسيط",
+                subtitle: "أنشئ نظاماً بيئياً مغلقاً واكتشف دورة الحياة",
+                resetBtn: "إعادة تشغيل التجربة",
+                soundBtn: "🔊 الصوت مفعل",
+                soundBtnOff: "🔇 الصوت مغلق",
+                toolsTitle: "الأدوات المتاحة",
+                toolsInstructions: "اسحب الأدوات لبناء النظام البيئي",
+                jarLabel: "وعاء زجاجي",
+                soilLabel: "تربة",
+                plantLabel: "نبات",
+                waterLabel: "ماء",
+                experimentTitle: "منطقة التجربة",
+                progressTitle: "مراحل التجربة",
+                step1: "1. الوعاء",
+                step2: "2. التربة",
+                step3: "3. النبات",
+                step4: "4. الماء",
+                step5: "5. النظام",
+                observationsTitle: "الملاحظات",
+                initialObservation: "ابدأ التجربة لرؤية الملاحظات...",
+                conclusionTitle: "الاستنتاج",
+                conclusion1: "النظام البيئي المغلق يحافظ على توازنه",
+                conclusion2: "النباتات تنتج الأكسجين وتستهلك ثاني أكسيد الكربون",
+                conclusion3: "دورة الماء تحدث داخل النظام",
+                conclusion4: "التربة توفر العناصر الغذائية للنبات",
+                conclusion5: "جميع العناصر تعمل معاً في توازن طبيعي",
+                timerText: "الوقت: {time} ثانية",
+                ecosystemLabel: "نشاط النظام البيئي:",
+                langToggle: "English"
+            },
+            en: {
+                title: "Simple Ecosystem Experiment",
+                subtitle: "Create a closed ecosystem and discover the cycle of life",
+                resetBtn: "Reset Experiment",
+                soundBtn: "🔊 Sound On",
+                soundBtnOff: "🔇 Sound Off",
+                toolsTitle: "Available Tools",
+                toolsInstructions: "Drag tools to build the ecosystem",
+                jarLabel: "Glass Jar",
+                soilLabel: "Soil",
+                plantLabel: "Plant",
+                waterLabel: "Water",
+                experimentTitle: "Experiment Area",
+                progressTitle: "Experiment Stages",
+                step1: "1. Container",
+                step2: "2. Soil",
+                step3: "3. Plant",
+                step4: "4. Water",
+                step5: "5. System",
+                observationsTitle: "Observations",
+                initialObservation: "Start the experiment to see observations...",
+                conclusionTitle: "Conclusion",
+                conclusion1: "Closed ecosystem maintains its balance",
+                conclusion2: "Plants produce oxygen and consume carbon dioxide",
+                conclusion3: "Water cycle occurs within the system",
+                conclusion4: "Soil provides nutrients for the plant",
+                conclusion5: "All elements work together in natural balance",
+                timerText: "Time: {time} seconds",
+                ecosystemLabel: "Ecosystem Activity:",
+                langToggle: "العربية"
+            }
+        };
+
+        // الأصوات
+        let audioContext;
+        let sounds = {};
+
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                createSounds();
+            } catch (error) {
+                console.log('Audio not supported');
+                experimentState.soundEnabled = false;
+            }
+        }
+
+        function createSounds() {
+            // صوت وضع الوعاء
+            sounds.placeJar = createTone(400, 0.5, 'sine');
+            // صوت إضافة التربة
+            sounds.addSoil = createTone(200, 0.8, 'sawtooth');
+            // صوت زراعة النبات
+            sounds.plantSeed = createTone(300, 0.6, 'triangle');
+            // صوت إضافة الماء
+            sounds.addWater = createTone(500, 1, 'sine');
+            // صوت النظام البيئي النشط
+            sounds.ecosystem = createTone(350, 2, 'sine');
+            // صوت إكمال التجربة
+            sounds.complete = createTone(800, 1, 'square');
+        }
+
+        function createTone(frequency, duration, type = 'sine') {
+            return () => {
+                if (!experimentState.soundEnabled || !audioContext) return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            };
+        }
+
+        function playSound(soundName) {
+            if (sounds[soundName] && experimentState.soundEnabled) {
+                sounds[soundName]();
+            }
+        }
+
+        // إدارة السحب والإفلات
+        function setupDragAndDrop() {
+            const tools = document.querySelectorAll('.tool');
+            
+            tools.forEach(tool => {
+                tool.addEventListener('dragstart', handleDragStart);
+                tool.addEventListener('dragend', handleDragEnd);
+            });
+            
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('drop', handleDrop);
+            dropZone.addEventListener('dragenter', handleDragEnter);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+        }
+
+        function handleDragStart(e) {
+            if (e.target.classList.contains('used')) {
+                e.preventDefault();
+                return;
+            }
+            e.dataTransfer.setData('text/plain', e.target.dataset.tool);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const toolType = e.dataTransfer.getData('text/plain');
+            
+            if (toolType === 'jar' && !experimentState.jarPlaced) {
+                placeJar();
+            } else if (toolType === 'soil' && experimentState.jarPlaced && !experimentState.soilAdded) {
+                addSoil();
+            } else if (toolType === 'plant' && experimentState.soilAdded && !experimentState.plantAdded) {
+                addPlant();
+            } else if (toolType === 'water' && experimentState.plantAdded && !experimentState.waterAdded) {
+                addWater();
+            }
+        }
+
+        // وضع الوعاء
+        function placeJar() {
+            experimentState.jarPlaced = true;
+            playSound('placeJar');
+            
+            document.getElementById('jarTool').classList.add('used');
+            
+            // إظهار الوعاء
+            jar.classList.add('visible', 'jar-animation');
+            
+            updateStep(2);
+            addObservation("تم وضع الوعاء الزجاجي كأساس للنظام البيئي");
+            updateProgress(20);
+        }
+
+        // إضافة التربة
+        function addSoil() {
+            experimentState.soilAdded = true;
+            playSound('addSoil');
+            
+            document.getElementById('soilTool').classList.add('used');
+            
+            // إضافة طبقة التربة
+            soilLayer.style.height = '60px';
+            
+            updateStep(3);
+            addObservation("تم إضافة التربة كقاعدة للنبات");
+            updateProgress(40);
+        }
+
+        // إضافة النبات
+        function addPlant() {
+            experimentState.plantAdded = true;
+            playSound('plantSeed');
+            
+            document.getElementById('plantTool').classList.add('used');
+            
+            // إظهار النبات
+            plant.style.height = '120px';
+            plant.classList.add('visible');
+            
+            updateStep(4);
+            addObservation("تم زراعة النبات في التربة");
+            updateProgress(60);
+        }
+
+        // إضافة الماء
+        function addWater() {
+            experimentState.waterAdded = true;
+            playSound('addWater');
+            
+            document.getElementById('waterTool').classList.add('used');
+            
+            // إغلاق الوعاء
+            jarLid.classList.add('visible');
+            
+            updateStep(5);
+            addObservation("تم إضافة الماء وإغلاق النظام البيئي");
+            updateProgress(80);
+            
+            // بدء العداد
+            startTimer();
+            
+            // بدء النظام البيئي
+            setTimeout(() => {
+                startEcosystem();
+            }, 2000);
+        }
+
+        // بدء النظام البيئي
+        function startEcosystem() {
+            experimentState.ecosystemActive = true;
+            playSound('ecosystem');
+            
+            jar.classList.add('ecosystem-active');
+            
+            addObservation("بدأ النظام البيئي المغلق في العمل");
+            
+            // إنشاء دورة الماء والأكسجين
+            createEcosystemCycles();
+            
+            // بدء قياس نشاط النظام
+            experimentState.ecosystemInterval = setInterval(() => {
+                if (experimentState.ecosystemLevel < 100) {
+                    experimentState.ecosystemLevel += 1;
+                    updateEcosystemLevel();
+                    
+                    // إضافة ملاحظات حسب مستوى النشاط
+                    if (experimentState.ecosystemLevel === 25) {
+                        addObservation("يبدأ النبات في إنتاج الأكسجين");
+                    } else if (experimentState.ecosystemLevel === 50) {
+                        addObservation("تتشكل قطرات الماء على جدران الوعاء");
+                    } else if (experimentState.ecosystemLevel === 75) {
+                        addObservation("دورة الماء تعمل بشكل مستمر");
+                    } else if (experimentState.ecosystemLevel >= 100) {
+                        completeExperiment();
+                    }
+                }
+            }, 100);
+        }
+
+        // إنشاء دورات النظام البيئي
+        function createEcosystemCycles() {
+            experimentState.particleInterval = setInterval(() => {
+                if (!experimentState.ecosystemActive) {
+                    clearInterval(experimentState.particleInterval);
+                    return;
+                }
+                
+                // قطرات الماء (دورة الماء)
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const waterDrop = document.createElement('div');
+                        waterDrop.className = 'water-drop';
+                        waterDrop.style.left = Math.random() * 160 + 20 + 'px';
+                        waterDrop.style.top = Math.random() * 100 + 50 + 'px';
+                        waterDrop.style.animationDelay = Math.random() * 2 + 's';
+                        waterDrops.appendChild(waterDrop);
+                        
+                        setTimeout(() => {
+                            waterDrop.remove();
+                        }, 8000);
+                    }, i * 300);
+                }
+                
+                // فقاعات الأكسجين
+                for (let i = 0; i < 2; i++) {
+                    setTimeout(() => {
+                        const oxygenBubble = document.createElement('div');
+                        oxygenBubble.className = 'oxygen-bubble';
+                        oxygenBubble.style.left = Math.random() * 40 + 80 + 'px';
+                        oxygenBubble.style.bottom = '60px';
+                        oxygenBubble.style.animationDelay = Math.random() * 1 + 's';
+                        ecosystemParticles.appendChild(oxygenBubble);
+                        
+                        setTimeout(() => {
+                            oxygenBubble.remove();
+                        }, 6000);
+                    }, i * 500);
+                }
+            }, 1000);
+        }
+
+        // تحديث مستوى النظام البيئي
+        function updateEcosystemLevel() {
+            ecosystemFill.style.width = experimentState.ecosystemLevel + '%';
+            ecosystemPercent.textContent = Math.round(experimentState.ecosystemLevel) + '%';
+        }
+
+        // إكمال التجربة
+        function completeExperiment() {
+            clearInterval(experimentState.ecosystemInterval);
+            playSound('complete');
+            
+            updateProgress(100);
+            
+            addObservation("النظام البيئي المغلق يعمل بتوازن مثالي");
+            
+            setTimeout(() => {
+                conclusionSection.style.display = 'block';
+                conclusionSection.scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+
+        // بدء العداد
+        function startTimer() {
+            experimentState.timerInterval = setInterval(() => {
+                experimentState.timer++;
+                updateTimer();
+            }, 1000);
+        }
+
+        // تحديث العداد
+        function updateTimer() {
+            const text = translations[experimentState.currentLang].timerText.replace('{time}', experimentState.timer);
+            timer.textContent = text;
+        }
+
+        // تحديث المرحلة
+        function updateStep(stepNumber) {
+            experimentState.currentStep = stepNumber;
+            
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active', 'completed');
+                
+                if (i < stepNumber) {
+                    step.classList.add('completed');
+                } else if (i === stepNumber) {
+                    step.classList.add('active');
+                }
+            }
+        }
+
+        // تحديث شريط التقدم
+        function updateProgress(percentage) {
+            progressFill.style.width = percentage + '%';
+        }
+
+        // إضافة ملاحظة
+        function addObservation(text) {
+            const observationItem = document.createElement('div');
+            observationItem.className = 'observation-item';
+            observationItem.textContent = text;
+            
+            observationsList.appendChild(observationItem);
+            
+            setTimeout(() => {
+                observationItem.classList.add('visible');
+            }, 100);
+        }
+
+        // إعادة تشغيل التجربة
+        function resetExperiment() {
+            // إيقاف العدادات
+            if (experimentState.timerInterval) {
+                clearInterval(experimentState.timerInterval);
+            }
+            if (experimentState.ecosystemInterval) {
+                clearInterval(experimentState.ecosystemInterval);
+            }
+            if (experimentState.particleInterval) {
+                clearInterval(experimentState.particleInterval);
+            }
+            
+            // إعادة تعيين حالة التجربة
+            experimentState = {
+                jarPlaced: false,
+                soilAdded: false,
+                plantAdded: false,
+                waterAdded: false,
+                ecosystemActive: false,
+                ecosystemLevel: 0,
+                timer: 0,
+                timerInterval: null,
+                ecosystemInterval: null,
+                particleInterval: null,
+                currentStep: 1,
+                soundEnabled: experimentState.soundEnabled,
+                currentLang: experimentState.currentLang
+            };
+            
+            // إعادة تعيين العناصر المرئية
+            jar.classList.remove('visible', 'jar-animation', 'ecosystem-active');
+            jarLid.classList.remove('visible');
+            soilLayer.style.height = '0';
+            plant.style.height = '0';
+            plant.classList.remove('visible');
+            
+            // إعادة تفعيل الأدوات
+            document.getElementById('jarTool').classList.remove('used');
+            document.getElementById('soilTool').classList.remove('used');
+            document.getElementById('plantTool').classList.remove('used');
+            document.getElementById('waterTool').classList.remove('used');
+            
+            // إعادة تعيين التقدم
+            updateStep(1);
+            updateProgress(0);
+            updateEcosystemLevel();
+            updateTimer();
+            
+            // مسح الملاحظات
+            observationsList.innerHTML = `<p id="initialObservation">${translations[experimentState.currentLang].initialObservation}</p>`;
+            
+            // إخفاء الاستنتاج
+            conclusionSection.style.display = 'none';
+            
+            // مسح الجزيئات
+            waterDrops.innerHTML = '';
+            ecosystemParticles.innerHTML = '';
+        }
+
+        // تبديل الصوت
+        function toggleSound() {
+            experimentState.soundEnabled = !experimentState.soundEnabled;
+            const soundBtn = document.getElementById('soundBtn');
+            const key = experimentState.soundEnabled ? 'soundBtn' : 'soundBtnOff';
+            soundBtn.textContent = translations[experimentState.currentLang][key];
+        }
+
+        // تبديل اللغة
+        function toggleLanguage() {
+            experimentState.currentLang = experimentState.currentLang === 'ar' ? 'en' : 'ar';
+            document.body.className = experimentState.currentLang;
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const lang = experimentState.currentLang;
+            const t = translations[lang];
+            
+            // تحديث النصوص
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('resetBtn').textContent = t.resetBtn;
+            document.getElementById('toolsTitle').textContent = t.toolsTitle;
+            document.getElementById('toolsInstructions').textContent = t.toolsInstructions;
+            document.getElementById('jarLabel').textContent = t.jarLabel;
+            document.getElementById('soilLabel').textContent = t.soilLabel;
+            document.getElementById('plantLabel').textContent = t.plantLabel;
+            document.getElementById('waterLabel').textContent = t.waterLabel;
+            document.getElementById('experimentTitle').textContent = t.experimentTitle;
+            document.getElementById('progressTitle').textContent = t.progressTitle;
+            document.getElementById('step1').textContent = t.step1;
+            document.getElementById('step2').textContent = t.step2;
+            document.getElementById('step3').textContent = t.step3;
+            document.getElementById('step4').textContent = t.step4;
+            document.getElementById('step5').textContent = t.step5;
+            document.getElementById('observationsTitle').textContent = t.observationsTitle;
+            document.getElementById('conclusionTitle').textContent = t.conclusionTitle;
+            document.getElementById('conclusion1').textContent = t.conclusion1;
+            document.getElementById('conclusion2').textContent = t.conclusion2;
+            document.getElementById('conclusion3').textContent = t.conclusion3;
+            document.getElementById('conclusion4').textContent = t.conclusion4;
+            document.getElementById('conclusion5').textContent = t.conclusion5;
+            document.getElementById('ecosystemLabel').textContent = t.ecosystemLabel;
+            document.getElementById('langToggle').textContent = t.langToggle;
+            
+            const soundKey = experimentState.soundEnabled ? 'soundBtn' : 'soundBtnOff';
+            document.getElementById('soundBtn').textContent = t[soundKey];
+            
+            updateTimer();
+            
+            const initialObs = document.getElementById('initialObservation');
+            if (initialObs) {
+                initialObs.textContent = t.initialObservation;
+            }
+        }
+
+        // تهيئة التطبيق
+        function init() {
+            initAudio();
+            setupDragAndDrop();
+            updateLanguage();
+            updateTimer();
+            updateEcosystemLevel();
+        }
+
+        // بدء التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

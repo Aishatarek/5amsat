@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الكائنات الحية وتصنيفها - Living Organisms Classification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            width: 95%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+        }
+
+        .sound-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .sound-btn:hover {
+            background: linear-gradient(45deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .lang-btn:hover {
+            background: linear-gradient(45deg, #229954, #1e8449);
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            min-height: 500px;
+        }
+
+        .organisms-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px dashed #bdc3c7;
+        }
+
+        .organisms-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .organism-item {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+            border-radius: 15px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .organism-item:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .organism-item.dragging {
+            transform: scale(1.2) rotate(10deg);
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        .producer {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .primary-consumer {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .secondary-consumer {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .decomposer {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98);
+            color: white;
+        }
+
+        .workspace {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #3498db;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .workspace.drag-over {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #d5f4e6, #a8e6cf);
+        }
+
+        .ecosystem-display {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #87ceeb, #4682b4);
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .ecosystem-layer {
+            position: absolute;
+            width: 100%;
+            height: 25%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px;
+        }
+
+        .producer-layer {
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.3));
+        }
+
+        .primary-layer {
+            bottom: 25%;
+            background: linear-gradient(135deg, rgba(243, 156, 18, 0.3), rgba(230, 126, 34, 0.3));
+        }
+
+        .secondary-layer {
+            bottom: 50%;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.3), rgba(192, 57, 43, 0.3));
+        }
+
+        .decomposer-layer {
+            bottom: 75%;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.3), rgba(125, 60, 152, 0.3));
+        }
+
+        .organism-in-ecosystem {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            animation: ecosystem-float 3s infinite ease-in-out;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes ecosystem-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .food-chain-arrow {
+            position: absolute;
+            width: 2px;
+            height: 60px;
+            background: #34495e;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+        }
+
+        .food-chain-arrow::after {
+            content: '▲';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #34495e;
+            font-size: 16px;
+        }
+
+        .classification-section {
+            background: linear-gradient(135deg, #fef9e7, #fcf3cf);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #f4d03f;
+        }
+
+        .classification-title {
+            font-size: 1.4em;
+            color: #d68910;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .classification-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f39c12;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .classification-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .classification-item.selected {
+            background: #d5f4e6;
+            border-left-color: #27ae60;
+        }
+
+        .classification-item h4 {
+            color: #d68910;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .classification-item p {
+            color: #5d4e75;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .taxonomy-tree {
+            background: linear-gradient(135deg, #e8f4fd, #d6eaf8);
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .taxonomy-level {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .taxonomy-level.filled {
+            background: #a8e6cf;
+            border-left-color: #27ae60;
+        }
+
+        .level-name {
+            font-weight: bold;
+            color: #2c3e50;
+            min-width: 100px;
+        }
+
+        .level-value {
+            color: #5d4e75;
+            margin-left: 20px;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #e8f5e8, #d4f1d4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #27ae60;
+        }
+
+        .instructions h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .step {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #27ae60;
+            transition: all 0.3s ease;
+        }
+
+        .step.completed {
+            background: #d5f4e6;
+            opacity: 0.7;
+        }
+
+        .step.active {
+            background: #a8e6cf;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .floating-instruction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            max-width: 300px;
+            animation: pulse-instruction 2s infinite;
+        }
+
+        @keyframes pulse-instruction {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        .food-chain-info {
+            background: linear-gradient(135deg, #fff5f5, #ffe6e6);
+            border: 2px solid #e74c3c;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .feeding-relationship {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .feeding-arrow {
+            margin: 0 15px;
+            font-size: 1.5em;
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 2em;
+            }
+
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .organism-item {
+                width: 60px;
+                height: 60px;
+                font-size: 25px;
+            }
+
+            .ecosystem-display {
+                height: 300px;
+            }
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+        }
+
+        [dir="ltr"] .container {
+            direction: ltr;
+        }
+
+        [dir="ltr"] .feeding-arrow {
+            transform: scaleX(-1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title" data-ar="🌿 تجربة الكائنات الحية وتصنيفها" data-en="🌿 Living Organisms Classification">🌿 تجربة الكائنات الحية وتصنيفها</h1>
+            <p class="subtitle" data-ar="اكتشف التصنيف الحيوي والعلاقات الغذائية في النظام البيئي" data-en="Discover biological classification and feeding relationships in ecosystems">اكتشف التصنيف الحيوي والعلاقات الغذائية في النظام البيئي</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn reset-btn" onclick="resetExperiment()" data-ar="🔄 إعادة تعيين" data-en="🔄 Reset">🔄 إعادة تعيين</button>
+            <button class="control-btn sound-btn" onclick="toggleSound()" data-ar="🔊 الصوت: تشغيل" data-en="🔊 Sound: ON">🔊 الصوت: تشغيل</button>
+            <button class="control-btn lang-btn" onclick="toggleLanguage()" data-ar="🌐 English" data-en="🌐 العربية">🌐 English</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="instructions">
+            <h3 data-ar="📋 خطوات التجربة" data-en="📋 Experiment Steps">📋 خطوات التجربة</h3>
+            <div class="step active" data-step="1" data-ar="1. اسحب المنتجات (النباتات) إلى النظام البيئي" data-en="1. Drag producers (plants) to the ecosystem">1. اسحب المنتجات (النباتات) إلى النظام البيئي</div>
+            <div class="step" data-step="2" data-ar="2. اسحب المستهلكات الأولية (الحيوانات العاشبة)" data-en="2. Drag primary consumers (herbivores)">2. اسحب المستهلكات الأولية (الحيوانات العاشبة)</div>
+            <div class="step" data-step="3" data-ar="3. اسحب المستهلكات الثانوية (الحيوانات اللاحمة)" data-en="3. Drag secondary consumers (carnivores)">3. اسحب المستهلكات الثانوية (الحيوانات اللاحمة)</div>
+            <div class="step" data-step="4" data-ar="4. اسحب المحللات لإكمال دورة المواد" data-en="4. Drag decomposers to complete the cycle">4. اسحب المحللات لإكمال دورة المواد</div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="organisms-section">
+                <h3 class="organisms-title" data-ar="🦋 الكائنات الحية" data-en="🦋 Living Organisms">🦋 الكائنات الحية</h3>
+                <div class="organism-item producer" draggable="true" data-organism="tree" data-type="producer" title="شجرة - Tree">🌲</div>
+                <div class="organism-item producer" draggable="true" data-organism="grass" data-type="producer" title="عشب - Grass">🌱</div>
+                <div class="organism-item primary-consumer" draggable="true" data-organism="rabbit" data-type="primary-consumer" title="أرنب - Rabbit">🐰</div>
+                <div class="organism-item primary-consumer" draggable="true" data-organism="deer" data-type="primary-consumer" title="غزال - Deer">🦌</div>
+                <div class="organism-item secondary-consumer" draggable="true" data-organism="fox" data-type="secondary-consumer" title="ثعلب - Fox">🦊</div>
+                <div class="organism-item secondary-consumer" draggable="true" data-organism="hawk" data-type="secondary-consumer" title="صقر - Hawk">🦅</div>
+                <div class="organism-item decomposer" draggable="true" data-organism="mushroom" data-type="decomposer" title="فطر - Mushroom">🍄</div>
+                <div class="organism-item decomposer" draggable="true" data-organism="bacteria" data-type="decomposer" title="بكتيريا - Bacteria">🦠</div>
+            </div>
+
+            <div class="workspace" id="workspace">
+                <div class="floating-instruction" id="floatingInstruction" data-ar="اسحب الكائنات الحية لبناء النظام البيئي" data-en="Drag organisms to build the ecosystem">اسحب الكائنات الحية لبناء النظام البيئي</div>
+                
+                <div class="ecosystem-display" id="ecosystemDisplay">
+                    <div class="ecosystem-layer decomposer-layer" id="decomposerLayer">
+                        <div class="food-chain-arrow" style="top: -25px;"></div>
+                    </div>
+                    <div class="ecosystem-layer secondary-layer" id="secondaryLayer">
+                        <div class="food-chain-arrow" style="top: -25px;"></div>
+                    </div>
+                    <div class="ecosystem-layer primary-layer" id="primaryLayer">
+                        <div class="food-chain-arrow" style="top: -25px;"></div>
+                    </div>
+                    <div class="ecosystem-layer producer-layer" id="producerLayer"></div>
+                </div>
+            </div>
+
+            <div class="classification-section">
+                <h3 class="classification-title" data-ar="📊 التصنيف الحيوي" data-en="📊 Biological Classification">📊 التصنيف الحيوي</h3>
+                <div id="classificationList">
+                    <div class="classification-item" data-classification="producer">
+                        <h4 data-ar="المنتجات" data-en="Producers">المنتجات</h4>
+                        <p data-ar="كائنات ذاتية التغذية تصنع غذاءها" data-en="Autotrophic organisms that make their own food">كائنات ذاتية التغذية تصنع غذاءها</p>
+                    </div>
+                    <div class="classification-item" data-classification="primary-consumer">
+                        <h4 data-ar="المستهلكات الأولية" data-en="Primary Consumers">المستهلكات الأولية</h4>
+                        <p data-ar="حيوانات عاشبة تتغذى على النباتات" data-en="Herbivorous animals that feed on plants">حيوانات عاشبة تتغذى على النباتات</p>
+                    </div>
+                    <div class="classification-item" data-classification="secondary-consumer">
+                        <h4 data-ar="المستهلكات الثانوية" data-en="Secondary Consumers">المستهلكات الثانوية</h4>
+                        <p data-ar="حيوانات لاحمة تتغذى على العاشبات" data-en="Carnivorous animals that feed on herbivores">حيوانات لاحمة تتغذى على العاشبات</p>
+                    </div>
+                    <div class="classification-item" data-classification="decomposer">
+                        <h4 data-ar="المحللات" data-en="Decomposers">المحللات</h4>
+                        <p data-ar="كائنات تحلل المواد العضوية الميتة" data-en="Organisms that break down dead organic matter">كائنات تحلل المواد العضوية الميتة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="taxonomy-tree" id="taxonomyTree">
+            <h4 data-ar="🌳 شجرة التصنيف" data-en="🌳 Taxonomy Tree">🌳 شجرة التصنيف</h4>
+            <div class="taxonomy-level" data-level="kingdom">
+                <span class="level-name" data-ar="المملكة:" data-en="Kingdom:">المملكة:</span>
+                <span class="level-value" id="kingdomValue" data-ar="اختر كائناً" data-en="Select organism">اختر كائناً</span>
+            </div>
+            <div class="taxonomy-level" data-level="phylum">
+                <span class="level-name" data-ar="الشعبة:" data-en="Phylum:">الشعبة:</span>
+                <span class="level-value" id="phylumValue">--</span>
+            </div>
+            <div class="taxonomy-level" data-level="class">
+                <span class="level-name" data-ar="الطائفة:" data-en="Class:">الطائفة:</span>
+                <span class="level-value" id="classValue">--</span>
+            </div>
+            <div class="taxonomy-level" data-level="order">
+                <span class="level-name" data-ar="الرتبة:" data-en="Order:">الرتبة:</span>
+                <span class="level-value" id="orderValue">--</span>
+            </div>
+            <div class="taxonomy-level" data-level="family">
+                <span class="level-name" data-ar="الفصيلة:" data-en="Family:">الفصيلة:</span>
+                <span class="level-value" id="familyValue">--</span>
+            </div>
+            <div class="taxonomy-level" data-level="genus">
+                <span class="level-name" data-ar="الجنس:" data-en="Genus:">الجنس:</span>
+                <span class="level-value" id="genusValue">--</span>
+            </div>
+            <div class="taxonomy-level" data-level="species">
+                <span class="level-name" data-ar="النوع:" data-en="Species:">النوع:</span>
+                <span class="level-value" id="speciesValue">--</span>
+            </div>
+        </div>
+
+        <div class="food-chain-info" id="foodChainInfo" style="display: none;">
+            <h4 data-ar="🔄 السلسلة الغذائية" data-en="🔄 Food Chain">🔄 السلسلة الغذائية</h4>
+            <div id="foodChainDisplay"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let currentStep = 1;
+        let placedOrganisms = {
+            producer: [],
+            'primary-consumer': [],
+            'secondary-consumer': [],
+            decomposer: []
+        };
+        let selectedOrganism = null;
+
+        // Taxonomy data
+        const taxonomyData = {
+            tree: { kingdom: 'النباتات/Plantae', phylum: 'النباتات الوعائية/Tracheophyta', class: 'ثنائيات الفلقة/Magnoliopsida', order: 'الورديات/Rosales', family: 'الورقيات/Fagaceae', genus: 'البلوط/Quercus', species: 'البلوط الأبيض/Q. alba' },
+            grass: { kingdom: 'النباتات/Plantae', phylum: 'النباتات الوعائية/Tracheophyta', class: 'أحاديات الفلقة/Liliopsida', order: 'النجيليات/Poales', family: 'النجيلية/Poaceae', genus: 'الفستوكا/Festuca', species: 'فستوكا المروج/F. pratensis' },
+            rabbit: { kingdom: 'الحيوانات/Animalia', phylum: 'الحبليات/Chordata', class: 'الثدييات/Mammalia', order: 'الأرنبيات/Lagomorpha', family: 'الأرنبية/Leporidae', genus: 'الأرنب/Oryctolagus', species: 'الأرنب الأوروبي/O. cuniculus' },
+            deer: { kingdom: 'الحيوانات/Animalia', phylum: 'الحبليات/Chordata', class: 'الثدييات/Mammalia', order: 'مزدوجات الأصابع/Artiodactyla', family: 'الأيليات/Cervidae', genus: 'الأيل/Cervus', species: 'الأيل الأحمر/C. elaphus' },
+            fox: { kingdom: 'الحيوانات/Animalia', phylum: 'الحبليات/Chordata', class: 'الثدييات/Mammalia', order: 'اللواحم/Carnivora', family: 'الكلبيات/Canidae', genus: 'الثعلب/Vulpes', species: 'الثعلب الأحمر/V. vulpes' },
+            hawk: { kingdom: 'الحيوانات/Animalia', phylum: 'الحبليات/Chordata', class: 'الطيور/Aves', order: 'الجوارح/Accipitriformes', family: 'البازية/Accipitridae', genus: 'الباز/Accipiter', species: 'باز الدجاج/A. gentilis' },
+            mushroom: { kingdom: 'الفطريات/Fungi', phylum: 'الفطريات القاعدية/Basidiomycota', class: 'الغاريقيات/Agaricomycetes', order: 'الغاريقيات/Agaricales', family: 'الفطر الحقلي/Agaricaceae', genus: 'الفطر/Agaricus', species: 'فطر الحقل/A. campestris' },
+            bacteria: { kingdom: 'البكتيريا/Bacteria', phylum: 'الأوليات/Proteobacteria', class: 'البكتيريا المعوية/Gammaproteobacteria', order: 'الأمعائيات/Enterobacterales', family: 'الأمعائية/Enterobacteriaceae', genus: 'الإشريكية/Escherichia', species: 'الإشريكية القولونية/E. coli' }
+        };
+
+        // Audio context for sound effects
+        let audioContext;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+
+        function playSound(frequency, duration = 200) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (e) {
+                console.log('Sound play failed');
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.querySelector('.sound-btn');
+            if (currentLanguage === 'ar') {
+                btn.textContent = soundEnabled ? '🔊 الصوت: تشغيل' : '🔇 الصوت: إيقاف';
+            } else {
+                btn.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+            }
+            playSound(soundEnabled ? 800 : 400);
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            const elements = document.querySelectorAll('[data-ar][data-en]');
+            const body = document.body;
+            const container = document.querySelector('.container');
+            
+            if (currentLanguage === 'en') {
+                body.setAttribute('dir', 'ltr');
+                container.setAttribute('dir', 'ltr');
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-en');
+                });
+            } else {
+                body.setAttribute('dir', 'rtl');
+                container.setAttribute('dir', 'rtl');
+                elements.forEach(el => {
+                    el.textContent = el.getAttribute('data-ar');
+                });
+            }
+            
+            updateTaxonomyDisplay();
+            playSound(600);
+        }
+
+        function updateProgress() {
+            const progress = (currentStep - 1) * 25;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateStep(step) {
+            // Mark previous steps as completed
+            for (let i = 1; i < step; i++) {
+                const stepEl = document.querySelector(`[data-step="${i}"]`);
+                if (stepEl) {
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('completed');
+                }
+            }
+            
+            // Mark current step as active
+            const currentStepEl = document.querySelector(`[data-step="${step}"]`);
+            if (currentStepEl) {
+                currentStepEl.classList.add('active');
+                currentStepEl.classList.remove('completed');
+            }
+            
+            currentStep = step;
+            updateProgress();
+        }
+
+        function updateTaxonomyDisplay() {
+            if (!selectedOrganism) return;
+            
+            const taxonomy = taxonomyData[selectedOrganism];
+            const levels = ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'];
+            
+            levels.forEach(level => {
+                const element = document.getElementById(level + 'Value');
+                const parentLevel = document.querySelector(`[data-level="${level}"]`);
+                
+                if (taxonomy[level]) {
+                    const value = currentLanguage === 'ar' ? 
+                        taxonomy[level].split('/')[0] : taxonomy[level].split('/')[1];
+                    element.textContent = value;
+                    parentLevel.classList.add('filled');
+                } else {
+                    element.textContent = '--';
+                    parentLevel.classList.remove('filled');
+                }
+            });
+        }
+
+        function updateFoodChain() {
+            const foodChainInfo = document.getElementById('foodChainInfo');
+            const foodChainDisplay = document.getElementById('foodChainDisplay');
+            
+            if (placedOrganisms.producer.length > 0 && 
+                placedOrganisms['primary-consumer'].length > 0) {
+                foodChainInfo.style.display = 'block';
+                
+                let chainHTML = '';
+                
+                if (placedOrganisms.producer.length > 0) {
+                    chainHTML += `<div class="feeding-relationship">
+                        <span data-ar="منتجات" data-en="Producers">منتجات</span>
+                        <span class="feeding-arrow">→</span>`;
+                }
+                
+                if (placedOrganisms['primary-consumer'].length > 0) {
+                    chainHTML += `<span data-ar="مستهلكات أولية" data-en="Primary Consumers">مستهلكات أولية</span>`;
+                    
+                    if (placedOrganisms['secondary-consumer'].length > 0) {
+                        chainHTML += `<span class="feeding-arrow">→</span>
+                            <span data-ar="مستهلكات ثانوية" data-en="Secondary Consumers">مستهلكات ثانوية</span>`;
+                    }
+                }
+                
+                if (placedOrganisms.decomposer.length > 0) {
+                    chainHTML += `<span class="feeding-arrow">↶</span>
+                        <span data-ar="محللات" data-en="Decomposers">محللات</span>`;
+                }
+                
+                chainHTML += '</div>';
+                foodChainDisplay.innerHTML = chainHTML;
+                
+                // Update language for new elements
+                if (currentLanguage === 'en') {
+                    foodChainDisplay.querySelectorAll('[data-ar][data-en]').forEach(el => {
+                        el.textContent = el.getAttribute('data-en');
+                    });
+                }
+            }
+        }
+
+        // Drag and drop functionality
+        document.querySelectorAll('.organism-item').forEach(organism => {
+            organism.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: organism.dataset.type,
+                    organism: organism.dataset.organism,
+                    emoji: organism.textContent
+                }));
+                organism.classList.add('dragging');
+                playSound(300);
+            });
+
+            organism.addEventListener('dragend', () => {
+                organism.classList.remove('dragging');
+            });
+
+            organism.addEventListener('click', () => {
+                selectedOrganism = organism.dataset.organism;
+                updateTaxonomyDisplay();
+                playSound(500);
+                
+                // Highlight classification
+                document.querySelectorAll('.classification-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                document.querySelector(`[data-classification="${organism.dataset.type}"]`).classList.add('selected');
+            });
+        });
+
+        const workspace = document.getElementById('workspace');
+
+        workspace.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            workspace.classList.add('drag-over');
+        });
+
+        workspace.addEventListener('dragleave', () => {
+            workspace.classList.remove('drag-over');
+        });
+
+        workspace.addEventListener('drop', (e) => {
+            e.preventDefault();
+            workspace.classList.remove('drag-over');
+            
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            handleOrganismDrop(data);
+        });
+
+        function handleOrganismDrop(data) {
+            const { type, organism, emoji } = data;
+            const floatingInstruction = document.getElementById('floatingInstruction');
+            const ecosystemDisplay = document.getElementById('ecosystemDisplay');
+            
+            // Show ecosystem if first organism
+            if (Object.values(placedOrganisms).every(arr => arr.length === 0)) {
+                ecosystemDisplay.style.display = 'block';
+                floatingInstruction.style.display = 'none';
+            }
+            
+            // Add organism to appropriate layer
+            const layerMap = {
+                'producer': 'producerLayer',
+                'primary-consumer': 'primaryLayer',
+                'secondary-consumer': 'secondaryLayer',
+                'decomposer': 'decomposerLayer'
+            };
+            
+            const layer = document.getElementById(layerMap[type]);
+            const organismElement = document.createElement('div');
+            organismElement.className = `organism-in-ecosystem ${type}`;
+            organismElement.textContent = emoji;
+            organismElement.style.animationDelay = Math.random() * 2 + 's';
+            
+            layer.appendChild(organismElement);
+            placedOrganisms[type].push(organism);
+            
+            // Update progress
+            if (type === 'producer' && currentStep === 1) {
+                updateStep(2);
+            } else if (type === 'primary-consumer' && currentStep === 2) {
+                updateStep(3);
+            } else if (type === 'secondary-consumer' && currentStep === 3) {
+                updateStep(4);
+            } else if (type === 'decomposer' && currentStep === 4) {
+                // Experiment complete
+                setTimeout(() => {
+                    alert(currentLanguage === 'ar' ? 
+                        'تم إكمال النظام البيئي! لاحظ السلسلة الغذائية المتكاملة' : 
+                        'Ecosystem completed! Observe the complete food chain');
+                }, 500);
+            }
+            
+            updateFoodChain();
+            playSound(600 + (Object.values(placedOrganisms).flat().length * 50), 400);
+        }
+
+        function resetExperiment() {
+            currentStep = 1;
+            placedOrganisms = {
+                producer: [],
+                'primary-consumer': [],
+                'secondary-consumer': [],
+                decomposer: []
+            };
+            selectedOrganism = null;
+            
+            // Reset UI
+            document.getElementById('ecosystemDisplay').style.display = 'none';
+            document.getElementById('floatingInstruction').style.display = 'block';
+            document.getElementById('foodChainInfo').style.display = 'none';
+            
+            // Clear ecosystem layers
+            ['producerLayer', 'primaryLayer', 'secondaryLayer', 'decomposerLayer'].forEach(layerId => {
+                const layer = document.getElementById(layerId);
+                layer.querySelectorAll('.organism-in-ecosystem').forEach(el => el.remove());
+            });
+            
+            // Reset taxonomy
+            ['kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'].forEach(level => {
+                const element = document.getElementById(level + 'Value');
+                const parentLevel = document.querySelector(`[data-level="${level}"]`);
+                element.textContent = level === 'kingdom' ? 
+                    (currentLanguage === 'ar' ? 'اختر كائناً' : 'Select organism') : '--';
+                parentLevel.classList.remove('filled');
+            });
+            
+            // Reset classification selection
+            document.querySelectorAll('.classification-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Reset steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.querySelector('[data-step="1"]').classList.add('active');
+            
+            updateStep(1);
+            playSound(400, 500);
+        }
+
+        // Classification item click handlers
+        document.querySelectorAll('.classification-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.classification-item').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                item.classList.add('selected');
+                playSound(450);
+            });
+        });
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>

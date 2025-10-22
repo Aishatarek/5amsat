@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة تركيب المادة وحركة الجزيئات - Molecular Motion and Diffusion Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8bbd9, #e1bee7);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20a138);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .tools-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .tool-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .tool-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #9c27b0;
+        }
+
+        .tool-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .graduated-cylinder {
+            width: 120px;
+            height: 400px;
+            border: 4px solid #333;
+            border-radius: 0 0 20px 20px;
+            margin: 30px auto;
+            position: relative;
+            background: linear-gradient(to bottom, 
+                rgba(135, 206, 235, 0.1) 0%, 
+                rgba(135, 206, 235, 0.8) 100%);
+            overflow: hidden;
+        }
+
+        .cylinder-labels {
+            position: absolute;
+            left: -40px;
+            top: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .water-level {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80%;
+            background: linear-gradient(to bottom, 
+                rgba(135, 206, 235, 0.3) 0%, 
+                rgba(135, 206, 235, 0.7) 100%);
+            transition: all 0.5s ease;
+        }
+
+        .molecule {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #9c27b0;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .molecule.diffusing {
+            animation: brownian-motion 3s infinite;
+        }
+
+        @keyframes brownian-motion {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(10px, -5px); }
+            50% { transform: translate(-8px, 8px); }
+            75% { transform: translate(5px, -10px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .permanganate-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #9c27b0, #4a148c);
+            border-radius: 50%;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 2s ease-in-out;
+            z-index: 15;
+        }
+
+        .permanganate-drop.dissolving {
+            animation: dissolve 3s ease-out forwards;
+        }
+
+        @keyframes dissolve {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translateX(-50%) scale(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) scale(2);
+            }
+        }
+
+        .diffusion-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 0%;
+            background: linear-gradient(to bottom,
+                rgba(156, 39, 176, 0.1) 0%,
+                rgba(156, 39, 176, 0.3) 50%,
+                rgba(156, 39, 176, 0.5) 100%);
+            transition: height 5s ease-out;
+            z-index: 5;
+        }
+
+        .diffusion-area.active {
+            height: 80%;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #9c27b0;
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .molecule-viewer {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .molecule-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .atom {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.8em;
+        }
+
+        .potassium {
+            background: #8e24aa;
+        }
+
+        .manganese {
+            background: #5e35b1;
+        }
+
+        .oxygen {
+            background: #e53935;
+        }
+
+        .progress-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9c27b0, #673ab7);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .observations {
+            background: #f3e5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .safety-icon {
+            color: #dc3545;
+            margin-right: 10px;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #9c27b0;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .diffusion-meter {
+            background: rgba(156, 39, 176, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .diffusion-progress {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .diffusion-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9c27b0, #4a148c);
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .graduated-cylinder {
+                width: 100px;
+                height: 300px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .molecular-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            pointer-events: none;
+        }
+
+        .h2o-molecule {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2196f3;
+            border-radius: 50%;
+            animation: water-motion 4s infinite linear;
+        }
+
+        @keyframes water-motion {
+            0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+        }
+
+        .kmo4-molecule {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #9c27b0;
+            border-radius: 50%;
+            animation: permanganate-motion 3s infinite ease-in-out;
+        }
+
+        @keyframes permanganate-motion {
+            0%, 100% { transform: translateX(-20px) translateY(-10px); }
+            50% { transform: translateX(20px) translateY(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🧬 تجربة تركيب المادة وحركة الجزيئات</h1>
+            <p id="subtitle">Molecular Motion and Diffusion Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">إعداد الماء</div>
+            <div class="step" id="step2">إضافة برمنجنات البوتاسيوم</div>
+            <div class="step" id="step3">ملاحظة الانتشار</div>
+            <div class="step" id="step4">تحليل حركة الجزيئات</div>
+        </div>
+
+        <div class="main-content">
+            <div class="tools-panel">
+                <h3 id="toolsTitle">الأدوات المطلوبة</h3>
+                
+                <div class="tool-item" draggable="true" data-tool="water" id="waterItem">
+                    <div style="font-size: 2em;">💧</div>
+                    <div id="waterName">ماء</div>
+                    <small>H₂O</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="permanganate" id="permanganateItem">
+                    <div style="font-size: 2em;">💜</div>
+                    <div id="permanganateName">برمنجنات البوتاسيوم</div>
+                    <small>KMnO₄</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="cylinder" id="cylinderItem">
+                    <div style="font-size: 2em;">🧪</div>
+                    <div id="cylinderName">مخبار مدرج</div>
+                    <small>Graduated Cylinder</small>
+                </div>
+
+                <div class="molecule-viewer" id="moleculeViewer" style="display: none;">
+                    <h4 id="moleculeTitle">تركيب الجزيئات</h4>
+                    <div class="molecule-diagram">
+                        <div class="atom potassium">K</div>
+                        <div class="atom manganese">Mn</div>
+                        <div class="atom oxygen">O</div>
+                        <div class="atom oxygen">O</div>
+                        <div class="atom oxygen">O</div>
+                        <div class="atom oxygen">O</div>
+                    </div>
+                    <p id="moleculeDesc">برمنجنات البوتاسيوم (KMnO₄)</p>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="drop-zone" data-accept="water,permanganate,cylinder" id="experimentZone">
+                    <span id="experimentInstruction">اسحب الأدوات لبدء التجربة</span>
+                </div>
+                
+                <div class="graduated-cylinder" id="graduatedCylinder" style="display: none;">
+                    <div class="cylinder-labels">
+                        <span>100ml</span>
+                        <span>80ml</span>
+                        <span>60ml</span>
+                        <span>40ml</span>
+                        <span>20ml</span>
+                        <span>0ml</span>
+                    </div>
+                    <div class="water-level" id="waterLevel"></div>
+                    <div class="diffusion-area" id="diffusionArea"></div>
+                    <div class="molecular-animation" id="molecularAnimation"></div>
+                </div>
+
+                <div class="diffusion-meter" id="diffusionMeter" style="display: none;">
+                    <h4 id="diffusionTitle">مقياس الانتشار</h4>
+                    <div class="diffusion-progress">
+                        <div class="diffusion-fill" id="diffusionFill"></div>
+                    </div>
+                    <p id="diffusionText">الانتشار: 0%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="timer" id="timer">00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">استعد لبدء التجربة</div>
+        </div>
+
+        <div class="warning">
+            <span class="safety-icon">⚠️</span>
+            <strong id="warningTitle">تحذير أمان:</strong>
+            <span id="warningText">برمنجنات البوتاسيوم مادة كيميائية قوية. تجنب ملامسة الجلد واستخدم القفازات.</span>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4 id="conclusionTitle">الاستنتاج:</h4>
+            <p id="conclusionText">الجزيئات تتحرك باستمرار حتى في السوائل الساكنة، مما يؤدي إلى انتشار المواد تدريجياً. هذا يثبت النظرية الحركية للجزيئات.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let timer = 0;
+        let timerInterval;
+        let diffusionInterval;
+        let hasWater = false;
+        let hasCylinder = false;
+        let hasPermanganate = false;
+        let diffusionStarted = false;
+        let diffusionLevel = 0;
+
+        // Audio Context
+        let audioContext;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+                soundEnabled = false;
+            }
+        }
+
+        function playSound(frequency, duration) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Error playing sound:', e);
+            }
+        }
+
+        const translations = {
+            ar: {
+                title: "🧬 تجربة تركيب المادة وحركة الجزيئات",
+                subtitle: "Molecular Motion and Diffusion Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                toolsTitle: "الأدوات المطلوبة",
+                waterName: "ماء",
+                permanganateName: "برمنجنات البوتاسيوم",
+                cylinderName: "مخبار مدرج",
+                moleculeTitle: "تركيب الجزيئات",
+                moleculeDesc: "برمنجنات البوتاسيوم (KMnO₄)",
+                experimentInstruction: "اسحب الأدوات لبدء التجربة",
+                diffusionTitle: "مقياس الانتشار",
+                diffusionText: "الانتشار: 0%",
+                warningTitle: "تحذير أمان:",
+                warningText: "برمنجنات البوتاسيوم مادة كيميائية قوية. تجنب ملامسة الجلد واستخدم القفازات.",
+                observationsTitle: "الملاحظات:",
+                conclusionTitle: "الاستنتاج:",
+                conclusionText: "الجزيئات تتحرك باستمرار حتى في السوائل الساكنة، مما يؤدي إلى انتشار المواد تدريجياً. هذا يثبت النظرية الحركية للجزيئات.",
+                obs1: "انتظار بدء التجربة...",
+                step1: "إعداد الماء",
+                step2: "إضافة برمنجنات البوتاسيوم",
+                step3: "ملاحظة الانتشار",
+                step4: "تحليل حركة الجزيئات",
+                progressReady: "استعد لبدء التجربة",
+                progressSetup: "إعداد الأدوات",
+                progressAdding: "إضافة برمنجنات البوتاسيوم",
+                progressDiffusing: "ملاحظة انتشار الجزيئات",
+                progressAnalyzing: "تحليل الحركة الجزيئية",
+                progressComplete: "التجربة مكتملة - الجزيئات تتحرك باستمرار"
+            },
+            en: {
+                title: "🧬 Molecular Motion and Diffusion Experiment",
+                subtitle: "تجربة تركيب المادة وحركة الجزيئات",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                toolsTitle: "Required Tools",
+                waterName: "Water",
+                permanganateName: "Potassium Permanganate",
+                cylinderName: "Graduated Cylinder",
+                moleculeTitle: "Molecular Structure",
+                moleculeDesc: "Potassium Permanganate (KMnO₄)",
+                experimentInstruction: "Drag tools to start experiment",
+                diffusionTitle: "Diffusion Meter",
+                diffusionText: "Diffusion: 0%",
+                warningTitle: "Safety Warning:",
+                warningText: "Potassium permanganate is a strong chemical. Avoid skin contact and use gloves.",
+                observationsTitle: "Observations:",
+                conclusionTitle: "Conclusion:",
+                conclusionText: "Molecules are constantly moving even in still liquids, causing gradual diffusion of substances. This proves the kinetic theory of molecules.",
+                obs1: "Waiting to start experiment...",
+                step1: "Setup Water",
+                step2: "Add Potassium Permanganate",
+                step3: "Observe Diffusion",
+                step4: "Analyze Molecular Motion",
+                progressReady: "Ready to start experiment",
+                progressSetup: "Setting up tools",
+                progressAdding: "Adding potassium permanganate",
+                progressDiffusing: "Observing molecular diffusion",
+                progressAnalyzing: "Analyzing molecular motion",
+                progressComplete: "Experiment complete - molecules move continuously"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+            
+            // Update diffusion text if active
+            if (diffusionStarted) {
+                document.getElementById('diffusionText').textContent = 
+                    (currentLanguage === 'ar' ? 'الانتشار: ' : 'Diffusion: ') + diffusionLevel + '%';
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled && !audioContext) {
+                initAudio();
+            }
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            
+            experimentStarted = true;
+            initAudio();
+            playSound(440, 0.2);
+            
+            timer = 0;
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            updateProgress();
+            updateStep(1);
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            timer = 0;
+            hasWater = false;
+            hasCylinder = false;
+            hasPermanganate = false;
+            diffusionStarted = false;
+            diffusionLevel = 0;
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            if (diffusionInterval) {
+                clearInterval(diffusionInterval);
+            }
+            
+            // Reset UI
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = translations[currentLanguage].progressReady;
+            document.getElementById('graduatedCylinder').style.display = 'none';
+            document.getElementById('diffusionMeter').style.display = 'none';
+            document.getElementById('moleculeViewer').style.display = 'none';
+            document.getElementById('conclusion').style.display = 'none';
+            document.getElementById('diffusionArea').classList.remove('active');
+            document.getElementById('diffusionFill').style.width = '0%';
+            document.getElementById('molecularAnimation').innerHTML = '';
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+            
+            playSound(220, 0.2);
+        }
+
+        function updateTimer() {
+            timer++;
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            let progress = 0;
+            let text = translations[currentLanguage].progressReady;
+            
+            if (hasCylinder && hasWater) {
+                progress = 25;
+                text = translations[currentLanguage].progressSetup;
+            }
+            if (hasPermanganate) {
+                progress = 50;
+                text = translations[currentLanguage].progressAdding;
+            }
+            if (diffusionStarted) {
+                progress = 75;
+                text = translations[currentLanguage].progressDiffusing;
+            }
+            if (diffusionLevel >= 100) {
+                progress = 100;
+                text = translations[currentLanguage].progressComplete;
+            }
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function createMolecularAnimation() {
+            const container = document.getElementById('molecularAnimation');
+            container.innerHTML = '';
+            
+            // Create water molecules
+            for (let i = 0; i < 8; i++) {
+                const molecule = document.createElement('div');
+                molecule.className = 'h2o-molecule';
+                molecule.style.animationDelay = (i * 0.5) + 's';
+                molecule.style.left = (20 + i * 20) + 'px';
+                molecule.style.top = (20 + (i % 3) * 20) + 'px';
+                container.appendChild(molecule);
+            }
+            
+            // Create permanganate molecules
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const molecule = document.createElement('div');
+                    molecule.className = 'kmo4-molecule';
+                    molecule.style.animationDelay = (i * 0.3) + 's';
+                    molecule.style.left = (50 + Math.random() * 100) + 'px';
+                    molecule.style.top = (50 + Math.random() * 100) + 'px';
+                    container.appendChild(molecule);
+                }, i * 1000);
+            }
+        }
+
+        function startDiffusion() {
+            if (diffusionStarted) return;
+            
+            diffusionStarted = true;
+            document.getElementById('diffusionArea').classList.add('active');
+            document.getElementById('diffusionMeter').style.display = 'block';
+            
+            updateStep(3);
+            
+            addObservation(currentLanguage === 'ar' ? 
+                'بدء انتشار برمنجنات البوتاسيوم في الماء' : 
+                'Potassium permanganate diffusion started in water');
+            
+            // Create purple drop animation
+            const cylinder = document.getElementById('graduatedCylinder');
+            const drop = document.createElement('div');
+            drop.className = 'permanganate-drop dissolving';
+            cylinder.appendChild(drop);
+            
+            // Remove drop after animation
+            setTimeout(() => {
+                if (drop.parentNode) {
+                    drop.parentNode.removeChild(drop);
+                }
+            }, 3000);
+            
+            // Start molecular animation
+            createMolecularAnimation();
+            
+            // Simulate diffusion progress
+            diffusionInterval = setInterval(() => {
+                diffusionLevel += 2;
+                document.getElementById('diffusionFill').style.width = diffusionLevel + '%';
+                document.getElementById('diffusionText').textContent = 
+                    (currentLanguage === 'ar' ? 'الانتشار: ' : 'Diffusion: ') + diffusionLevel + '%';
+                
+                if (diffusionLevel >= 25 && diffusionLevel < 30) {
+                    addObservation(currentLanguage === 'ar' ? 
+                        'اللون البنفسجي يبدأ في الانتشار تدريجياً' : 
+                        'Purple color begins to spread gradually');
+                }
+                
+                if (diffusionLevel >= 50 && diffusionLevel < 55) {
+                    addObservation(currentLanguage === 'ar' ? 
+                        'الانتشار يصل إلى منتصف المخبار' : 
+                        'Diffusion reaches middle of cylinder');
+                    updateStep(4);
+                }
+                
+                if (diffusionLevel >= 75 && diffusionLevel < 80) {
+                    addObservation(currentLanguage === 'ar' ? 
+                        'اللون ينتشر في معظم أجزاء الماء' : 
+                        'Color spreads throughout most of the water');
+                }
+                
+                if (diffusionLevel >= 100) {
+                    clearInterval(diffusionInterval);
+                    document.getElementById('conclusion').style.display = 'block';
+                    updateProgress();
+                    
+                    addObservation(currentLanguage === 'ar' ? 
+                        'الانتشار مكتمل - اللون موزع بالتساوي رغم أن الماء ساكن' : 
+                        'Diffusion complete - color evenly distributed despite still water');
+                }
+                
+                updateProgress();
+            }, 200);
+        }
+
+        function createBrownianMotion() {
+            const cylinder = document.getElementById('graduatedCylinder');
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const molecule = document.createElement('div');
+                    molecule.className = 'molecule diffusing';
+                    molecule.style.left = (20 + Math.random() * 80) + 'px';
+                    molecule.style.top = (50 + Math.random() * 250) + 'px';
+                    molecule.style.animationDelay = Math.random() * 3 + 's';
+                    cylinder.appendChild(molecule);
+                    
+                    // Remove molecule after some time
+                    setTimeout(() => {
+                        if (molecule.parentNode) {
+                            molecule.parentNode.removeChild(molecule);
+                        }
+                    }, 10000);
+                }, i * 500);
+            }
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateLanguage();
+        });
+
+        function initDragAndDrop() {
+            const toolItems = document.querySelectorAll('.tool-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            toolItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            playSound(330, 0.1);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.drop-zone');
+            if (!dropZone || !draggedItem) return;
+
+            dropZone.classList.remove('drag-over');
+            
+            const tool = draggedItem.dataset.tool;
+            const acceptedTools = dropZone.dataset.accept.split(',');
+            
+            if (!acceptedTools.includes(tool)) {
+                playSound(150, 0.3);
+                return;
+            }
+
+            playSound(523, 0.2);
+            
+            if (tool === 'cylinder' && !hasCylinder) {
+                hasCylinder = true;
+                document.getElementById('graduatedCylinder').style.display = 'block';
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع المخبار المدرج' : 
+                    'Graduated cylinder placed');
+                
+                updateProgress();
+                
+            } else if (tool === 'water' && hasCylinder && !hasWater) {
+                hasWater = true;
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم إضافة الماء إلى المخبار' : 
+                    'Water added to cylinder');
+                
+                updateStep(2);
+                updateProgress();
+                
+            } else if (tool === 'permanganate' && hasWater && hasCylinder && !hasPermanganate) {
+                hasPermanganate = true;
+                document.getElementById('moleculeViewer').style.display = 'block';
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم إضافة نقطة من برمنجنات البوتاسيوم' : 
+                    'Potassium permanganate drop added');
+                
+                updateProgress();
+                
+                // Start diffusion after a short delay
+                setTimeout(() => {
+                    startDiffusion();
+                    createBrownianMotion();
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

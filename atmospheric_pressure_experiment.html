@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الضغط الجوي والحرارة - Atmospheric Pressure Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #fff9c4);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #03a9f4, #ffeb3b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20a138);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .tools-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .tool-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .tool-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #03a9f4;
+        }
+
+        .tool-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .water-cup {
+            width: 100px;
+            height: 120px;
+            border: 3px solid #333;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            background: linear-gradient(to bottom, transparent 20%, rgba(135, 206, 235, 0.8) 20%);
+            transition: all 1s ease;
+            z-index: 10;
+        }
+
+        .cardboard {
+            width: 120px;
+            height: 5px;
+            background: #d4af37;
+            border: 2px solid #b8860b;
+            position: absolute;
+            transition: all 1s ease;
+            z-index: 15;
+        }
+
+        .pressure-arrows {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            transition: all 0.5s ease;
+        }
+
+        .arrow-up {
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 15px solid #03a9f4;
+        }
+
+        .arrow-down {
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #ff5722;
+        }
+
+        .pressure-indicator {
+            background: rgba(3, 169, 244, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #03a9f4;
+        }
+
+        .pressure-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #03a9f4;
+        }
+
+        .candle {
+            width: 20px;
+            height: 60px;
+            background: linear-gradient(to bottom, #ffeb3b 0%, #ff9800 70%, #795548 70%);
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+
+        .flame {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 20px;
+            background: radial-gradient(circle, yellow 20%, orange 40%, red 70%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            100% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+        }
+
+        .water-bowl {
+            width: 200px;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(135, 206, 235, 0.8), rgba(135, 206, 235, 1));
+            border: 3px solid #333;
+            border-radius: 0 0 20px 20px;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .air-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .air-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(3, 169, 244, 0.6);
+            border-radius: 50%;
+            animation: air-movement 3s infinite ease-in-out;
+        }
+
+        @keyframes air-movement {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            50% { transform: translateY(-20px) translateX(10px); opacity: 1; }
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #03a9f4;
+            background: rgba(3, 169, 244, 0.1);
+        }
+
+        .experiment-stage {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .progress-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #03a9f4, #ffeb3b);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .observations {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #03a9f4;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .safety-icon {
+            color: #dc3545;
+            margin-right: 10px;
+        }
+
+        .conclusion {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #03a9f4;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #03a9f4;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .physics-explanation {
+            background: rgba(3, 169, 244, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #03a9f4;
+        }
+
+        .force-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .force-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .force-up {
+            color: #03a9f4;
+        }
+
+        .force-down {
+            color: #ff5722;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .experiment-stage {
+                height: 300px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🌬️ تجربة الضغط الجوي والحرارة</h1>
+            <p id="subtitle">Atmospheric Pressure and Heat Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()" id="langBtn">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()" id="soundBtn">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()" id="startBtn">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()" id="resetBtn">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">إعداد الأدوات</div>
+            <div class="step" id="step2">وضع الورقة</div>
+            <div class="step" id="step3">قلب الكوب</div>
+            <div class="step" id="step4">ملاحظة الضغط</div>
+        </div>
+
+        <div class="main-content">
+            <div class="tools-panel">
+                <h3 id="toolsTitle">الأدوات المطلوبة</h3>
+                
+                <div class="tool-item" draggable="true" data-tool="cup" id="cupItem">
+                    <div style="font-size: 2em;">🥤</div>
+                    <div id="cupName">كوب ماء</div>
+                    <small>Water Cup</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="cardboard" id="cardboardItem">
+                    <div style="font-size: 2em;">📄</div>
+                    <div id="cardboardName">ورقة كرتون</div>
+                    <small>Cardboard Paper</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="candle" id="candleItem">
+                    <div style="font-size: 2em;">🕯️</div>
+                    <div id="candleName">شمعة</div>
+                    <small>Candle</small>
+                </div>
+
+                <div class="tool-item" draggable="true" data-tool="bowl" id="bowlItem">
+                    <div style="font-size: 2em;">🥣</div>
+                    <div id="bowlName">حوض ماء</div>
+                    <small>Water Bowl</small>
+                </div>
+
+                <div class="pressure-indicator" id="pressureIndicator" style="display: none;">
+                    <h4 id="pressureTitle">مقياس الضغط</h4>
+                    <div class="pressure-value" id="pressureValue">1 atm</div>
+                    <p id="pressureDesc">الضغط الجوي العادي</p>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="drop-zone" data-accept="cup,cardboard,candle,bowl" id="experimentZone">
+                    <span id="experimentInstruction">اسحب الأدوات لبدء تجربة الضغط الجوي</span>
+                </div>
+                
+                <div class="experiment-stage" id="experimentStage">
+                    <div class="air-particles" id="airParticles"></div>
+                </div>
+
+                <div class="physics-explanation" id="physicsExplanation" style="display: none;">
+                    <h4 id="physicsTitle">شرح القوى</h4>
+                    <div class="force-diagram">
+                        <div class="force-arrow force-up">
+                            <div class="arrow arrow-up"></div>
+                            <span id="upForce">ضغط الهواء لأعلى</span>
+                            <span>~101,325 Pa</span>
+                        </div>
+                        <div class="force-arrow force-down">
+                            <div class="arrow arrow-down"></div>
+                            <span id="downForce">وزن الماء لأسفل</span>
+                            <span>~2,000 Pa</span>
+                        </div>
+                    </div>
+                    <p id="forceExplanation">ضغط الهواء أقوى من وزن الماء، لذلك تبقى الورقة ملتصقة</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="timer" id="timer">00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="progressText">استعد لبدء التجربة</div>
+        </div>
+
+        <div class="warning">
+            <span class="safety-icon">⚠️</span>
+            <strong id="warningTitle">تحذير أمان:</strong>
+            <span id="warningText">كن حذراً عند التعامل مع الماء والشمعة. تأكد من وجود إشراف الكبار.</span>
+        </div>
+
+        <div class="observations" id="observations">
+            <h4 id="observationsTitle">الملاحظات:</h4>
+            <ul id="observationsList">
+                <li id="obs1">انتظار بدء التجربة...</li>
+            </ul>
+        </div>
+
+        <div class="conclusion" id="conclusion" style="display: none;">
+            <h4 id="conclusionTitle">الاستنتاج:</h4>
+            <p id="conclusionText">ضغط الهواء من الخارج أقوى من وزن الماء داخل الكوب، مما يحافظ على الورقة ملتصقة ويمنع سقوط الماء.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let timer = 0;
+        let timerInterval;
+        let hasCup = false;
+        let hasCardboard = false;
+        let hasCandle = false;
+        let hasBowl = false;
+        let experimentSetup = false;
+
+        // Audio Context
+        let audioContext;
+        
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+                soundEnabled = false;
+            }
+        }
+
+        function playSound(frequency, duration) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Error playing sound:', e);
+            }
+        }
+
+        const translations = {
+            ar: {
+                title: "🌬️ تجربة الضغط الجوي والحرارة",
+                subtitle: "Atmospheric Pressure and Heat Experiment",
+                langBtn: "English",
+                startBtn: "ابدأ التجربة",
+                resetBtn: "إعادة تعيين",
+                toolsTitle: "الأدوات المطلوبة",
+                cupName: "كوب ماء",
+                cardboardName: "ورقة كرتون",
+                candleName: "شمعة",
+                bowlName: "حوض ماء",
+                pressureTitle: "مقياس الضغط",
+                pressureDesc: "الضغط الجوي العادي",
+                experimentInstruction: "اسحب الأدوات لبدء تجربة الضغط الجوي",
+                physicsTitle: "شرح القوى",
+                upForce: "ضغط الهواء لأعلى",
+                downForce: "وزن الماء لأسفل",
+                forceExplanation: "ضغط الهواء أقوى من وزن الماء، لذلك تبقى الورقة ملتصقة",
+                warningTitle: "تحذير أمان:",
+                warningText: "كن حذراً عند التعامل مع الماء والشمعة. تأكد من وجود إشراف الكبار.",
+                observationsTitle: "الملاحظات:",
+                conclusionTitle: "الاستنتاج:",
+                conclusionText: "ضغط الهواء من الخارج أقوى من وزن الماء داخل الكوب، مما يحافظ على الورقة ملتصقة ويمنع سقوط الماء.",
+                obs1: "انتظار بدء التجربة...",
+                step1: "إعداد الأدوات",
+                step2: "وضع الورقة",
+                step3: "قلب الكوب",
+                step4: "ملاحظة الضغط",
+                progressReady: "استعد لبدء التجربة",
+                progressSetup: "إعداد الأدوات",
+                progressCardboard: "وضع الورقة الكرتونية",
+                progressFlipping: "قلب الكوب وملاحظة الضغط",
+                progressComplete: "التجربة مكتملة - الضغط الجوي يحافظ على الماء"
+            },
+            en: {
+                title: "🌬️ Atmospheric Pressure and Heat Experiment",
+                subtitle: "تجربة الضغط الجوي والحرارة",
+                langBtn: "العربية",
+                startBtn: "Start Experiment",
+                resetBtn: "Reset",
+                toolsTitle: "Required Tools",
+                cupName: "Water Cup",
+                cardboardName: "Cardboard Paper",
+                candleName: "Candle",
+                bowlName: "Water Bowl",
+                pressureTitle: "Pressure Meter",
+                pressureDesc: "Normal atmospheric pressure",
+                experimentInstruction: "Drag tools to start atmospheric pressure experiment",
+                physicsTitle: "Force Explanation",
+                upForce: "Air pressure upward",
+                downForce: "Water weight downward",
+                forceExplanation: "Air pressure is stronger than water weight, keeping the paper attached",
+                warningTitle: "Safety Warning:",
+                warningText: "Be careful when handling water and candles. Ensure adult supervision.",
+                observationsTitle: "Observations:",
+                conclusionTitle: "Conclusion:",
+                conclusionText: "Atmospheric pressure from outside is stronger than the weight of water inside the cup, keeping the paper attached and preventing water from falling.",
+                obs1: "Waiting to start experiment...",
+                step1: "Setup Tools",
+                step2: "Place Paper",
+                step3: "Flip Cup",
+                step4: "Observe Pressure",
+                progressReady: "Ready to start experiment",
+                progressSetup: "Setting up tools",
+                progressCardboard: "Placing cardboard paper",
+                progressFlipping: "Flipping cup and observing pressure",
+                progressComplete: "Experiment complete - atmospheric pressure maintains water"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            Object.keys(t).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = t[key];
+                }
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled && !audioContext) {
+                initAudio();
+            }
+        }
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            
+            experimentStarted = true;
+            initAudio();
+            playSound(440, 0.2);
+            
+            timer = 0;
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            updateProgress();
+            updateStep(1);
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            timer = 0;
+            hasCup = false;
+            hasCardboard = false;
+            hasCandle = false;
+            hasBowl = false;
+            experimentSetup = false;
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Reset UI
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = translations[currentLanguage].progressReady;
+            document.getElementById('experimentStage').innerHTML = '<div class="air-particles" id="airParticles"></div>';
+            document.getElementById('pressureIndicator').style.display = 'none';
+            document.getElementById('physicsExplanation').style.display = 'none';
+            document.getElementById('conclusion').style.display = 'none';
+            
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+            
+            // Reset observations
+            const observationsList = document.getElementById('observationsList');
+            observationsList.innerHTML = `<li>${translations[currentLanguage].obs1}</li>`;
+            
+            playSound(220, 0.2);
+        }
+
+        function updateTimer() {
+            timer++;
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            let progress = 0;
+            let text = translations[currentLanguage].progressReady;
+            
+            if (hasCup && hasBowl) {
+                progress = 25;
+                text = translations[currentLanguage].progressSetup;
+            }
+            if (hasCardboard) {
+                progress = 50;
+                text = translations[currentLanguage].progressCardboard;
+            }
+            if (experimentSetup) {
+                progress = 75;
+                text = translations[currentLanguage].progressFlipping;
+            }
+            if (currentStep >= 4) {
+                progress = 100;
+                text = translations[currentLanguage].progressComplete;
+            }
+            
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function addObservation(text) {
+            const observationsList = document.getElementById('observationsList');
+            const li = document.createElement('li');
+            li.textContent = text;
+            observationsList.appendChild(li);
+        }
+
+        function createAirParticles() {
+            const container = document.getElementById('airParticles');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'air-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function setupExperiment() {
+            const stage = document.getElementById('experimentStage');
+            stage.innerHTML = '<div class="air-particles" id="airParticles"></div>';
+            
+            // Add water bowl
+            if (hasBowl) {
+                const bowl = document.createElement('div');
+                bowl.className = 'water-bowl';
+                stage.appendChild(bowl);
+            }
+            
+            // Add water cup
+            if (hasCup) {
+                const cup = document.createElement('div');
+                cup.className = 'water-cup';
+                cup.style.left = '200px';
+                cup.style.top = '150px';
+                cup.id = 'waterCup';
+                stage.appendChild(cup);
+            }
+            
+            // Add cardboard
+            if (hasCardboard) {
+                const cardboard = document.createElement('div');
+                cardboard.className = 'cardboard';
+                cardboard.style.left = '190px';
+                cardboard.style.top = '270px';
+                cardboard.id = 'cardboardPaper';
+                stage.appendChild(cardboard);
+            }
+            
+            // Add candle
+            if (hasCandle) {
+                const candle = document.createElement('div');
+                candle.className = 'candle';
+                candle.style.left = '100px';
+                candle.style.top = '200px';
+                
+                const flame = document.createElement('div');
+                flame.className = 'flame';
+                candle.appendChild(flame);
+                
+                stage.appendChild(candle);
+            }
+            
+            createAirParticles();
+        }
+
+        function demonstrateAtmosphericPressure() {
+            experimentSetup = true;
+            updateProgress();
+            updateStep(3);
+            
+            const cup = document.getElementById('waterCup');
+            const cardboard = document.getElementById('cardboardPaper');
+            
+            if (cup && cardboard) {
+                // Animate flipping the cup
+                setTimeout(() => {
+                    cup.style.transform = 'rotate(180deg)';
+                    cardboard.style.transform = 'rotate(180deg)';
+                    cardboard.style.top = '150px';
+                    
+                    addObservation(currentLanguage === 'ar' ? 
+                        'تم قلب الكوب - الورقة تبقى ملتصقة!' : 
+                        'Cup flipped - paper stays attached!');
+                }, 1000);
+                
+                // Show pressure effects
+                setTimeout(() => {
+                    document.getElementById('pressureIndicator').style.display = 'block';
+                    document.getElementById('physicsExplanation').style.display = 'block';
+                    
+                    addObservation(currentLanguage === 'ar' ? 
+                        'ضغط الهواء يمنع سقوط الماء' : 
+                        'Air pressure prevents water from falling');
+                    
+                    updateStep(4);
+                    updateProgress();
+                    
+                    setTimeout(() => {
+                        document.getElementById('conclusion').style.display = 'block';
+                        
+                        addObservation(currentLanguage === 'ar' ? 
+                            'التجربة تثبت قوة الضغط الجوي' : 
+                            'Experiment proves the power of atmospheric pressure');
+                    }, 2000);
+                }, 2000);
+            }
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+            updateLanguage();
+        });
+
+        function initDragAndDrop() {
+            const toolItems = document.querySelectorAll('.tool-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            toolItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            if (!experimentStarted) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            playSound(330, 0.1);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.target.closest('.drop-zone');
+            if (!dropZone || !draggedItem) return;
+
+            dropZone.classList.remove('drag-over');
+            
+            const tool = draggedItem.dataset.tool;
+            const acceptedTools = dropZone.dataset.accept.split(',');
+            
+            if (!acceptedTools.includes(tool)) {
+                playSound(150, 0.3);
+                return;
+            }
+
+            playSound(523, 0.2);
+            
+            if (tool === 'cup' && !hasCup) {
+                hasCup = true;
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع كوب الماء' : 
+                    'Water cup placed');
+                
+                setupExperiment();
+                updateProgress();
+                
+            } else if (tool === 'bowl' && !hasBowl) {
+                hasBowl = true;
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع حوض الماء' : 
+                    'Water bowl placed');
+                
+                setupExperiment();
+                updateProgress();
+                
+            } else if (tool === 'candle' && !hasCandle) {
+                hasCandle = true;
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع الشمعة' : 
+                    'Candle placed');
+                
+                setupExperiment();
+                
+            } else if (tool === 'cardboard' && hasCup && !hasCardboard) {
+                hasCardboard = true;
+                updateStep(2);
+                
+                addObservation(currentLanguage === 'ar' ? 
+                    'تم وضع الورقة الكرتونية على الكوب' : 
+                    'Cardboard paper placed on cup');
+                
+                setupExperiment();
+                updateProgress();
+                
+                // Start the atmospheric pressure demonstration
+                setTimeout(() => {
+                    demonstrateAtmosphericPressure();
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

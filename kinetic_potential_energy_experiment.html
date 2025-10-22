@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الطاقة الحركية والطاقة الكامنة | Kinetic and Potential Energy Experiment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #8e44ad;
+            --secondary: #9b59b6;
+            --accent: #6c3483;
+            --potential-color: #3498db;
+            --kinetic-color: #e74c3c;
+            --ball-color: #f39c12;
+            --table-color: #95a5a6;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --shadow: rgba(0, 0, 0, 0.15);
+            --energy-gradient: linear-gradient(135deg, #8e44ad, #9b59b6, #3498db);
+            --potential-gradient: linear-gradient(135deg, #3498db, #5dade2, #85c1e9);
+            --kinetic-gradient: linear-gradient(135deg, #e74c3c, #ec7063, #f1948a);
+            --table-gradient: linear-gradient(135deg, #95a5a6, #b2babb, #d5dbdb);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6, #3498db);
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* خلفية متحركة مع جزيئات الطاقة */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="energy-particle" cx="50%" cy="50%"><stop offset="0%" stop-color="purple" stop-opacity="0.8"/><stop offset="100%" stop-color="blue" stop-opacity="0.3"/></radialGradient></defs><circle cx="20" cy="10" r="2" fill="url(%23energy-particle)"><animate attributeName="r" values="1;3;1" dur="3s" repeatCount="indefinite"/><animate attributeName="cy" values="10;5;10" dur="4s" repeatCount="indefinite"/></circle><circle cx="60" cy="15" r="1.5" fill="url(%23energy-particle)"><animate attributeName="r" values="0.5;2.5;0.5" dur="3.5s" repeatCount="indefinite"/><animate attributeName="cy" values="15;7;15" dur="3s" repeatCount="indefinite"/></circle><circle cx="85" cy="8" r="2.5" fill="url(%23energy-particle)"><animate attributeName="r" values="1.5;3.5;1.5" dur="4s" repeatCount="indefinite"/><animate attributeName="cy" values="8;3;8" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+            animation: energy-flow 30s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes energy-flow {
+            0% { transform: translateX(-200px) translateY(15px); }
+            50% { transform: translateX(100px) translateY(-10px); }
+            100% { transform: translateX(400px) translateY(15px); }
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Language Toggle */
+        .language-toggle {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            background: var(--energy-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(142, 68, 173, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .language-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(142, 68, 173, 0.6);
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 30px 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 25px 60px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--energy-gradient);
+            opacity: 0.1;
+            animation: header-energy 8s infinite;
+        }
+        
+        @keyframes header-energy {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+        }
+        
+        .logo i {
+            font-size: 4.5rem;
+            background: var(--energy-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: energy-dance 4s infinite;
+        }
+        
+        @keyframes energy-dance {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(10deg); filter: brightness(1.3); }
+            50% { transform: scale(1.2) rotate(-10deg); filter: brightness(1.5); }
+            75% { transform: scale(1.05) rotate(5deg); filter: brightness(1.2); }
+        }
+        
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: var(--energy-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+        }
+        
+        .logo-text p {
+            color: #64748b;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-panel {
+            background: var(--energy-gradient);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(142, 68, 173, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            min-width: 280px;
+        }
+        
+        .status-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .status-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .lab-workspace {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 30px 70px var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+        
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.1), rgba(108, 52, 131, 0.1));
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(142, 68, 173, 0.15);
+            border-left: 8px solid var(--primary);
+        }
+        
+        .experiment-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: 800;
+        }
+        
+        .experiment-header p {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: var(--energy-gradient);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(142, 68, 173, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s;
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(142, 68, 173, 0.6);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+        
+        .control-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .instructions {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 40px;
+            border-right: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions h3 {
+            color: var(--success);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            counter-reset: step-counter;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions li {
+            counter-increment: step-counter;
+            margin-bottom: 18px;
+            padding-left: 60px;
+            position: relative;
+            color: #1e7e34;
+            font-weight: 700;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .experiment-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            min-height: 600px;
+            align-items: start;
+        }
+        
+        .tools-section {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.9), rgba(233, 236, 239, 0.9));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--light);
+            text-align: center;
+            height: fit-content;
+        }
+        
+        .tools-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        /* Draggable Items */
+        .draggable-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .draggable-item:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(108, 52, 131, 0.4);
+        }
+        
+        .draggable-item.dragging {
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            opacity: 0.8;
+            cursor: grabbing;
+            box-shadow: 0 20px 50px rgba(108, 52, 131, 0.6);
+        }
+        
+        .draggable-item.used {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.9);
+            filter: grayscale(50%);
+        }
+        
+        .item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .draggable-item:hover .item-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .item-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .item-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        /* Ball Specific */
+        .ball-item {
+            background: linear-gradient(135deg, #f39c12, #e67e22, #d35400);
+            border: 3px solid #e67e22;
+        }
+        
+        .ball-item:hover {
+            border-color: #d35400;
+            box-shadow: 0 15px 35px rgba(211, 84, 0, 0.5);
+        }
+        
+        .ball-item .item-icon {
+            color: #fff;
+        }
+        
+        .ball-item .item-name,
+        .ball-item .item-description {
+            color: white;
+        }
+        
+        .experiment-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.1), rgba(108, 52, 131, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(142, 68, 173, 0.2);
+            border: 3px solid var(--primary);
+            position: relative;
+            min-height: 500px;
+        }
+        
+        /* Drop Zone */
+        .drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px dashed transparent;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+            pointer-events: all;
+        }
+        
+        .physics-area {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            background: linear-gradient(to bottom, 
+                rgba(135, 206, 235, 0.2) 0%, 
+                rgba(135, 206, 235, 0.1) 50%, 
+                rgba(34, 139, 34, 0.1) 100%);
+            overflow: hidden;
+        }
+        
+        .table {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 80px;
+            background: var(--table-gradient);
+            border: 3px solid #7f8c8d;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .table::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            height: 5px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 3px;
+        }
+        
+        .height-markers {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 80px;
+            width: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .height-marker {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--dark);
+            font-weight: bold;
+        }
+        
+        .height-marker::before {
+            content: '';
+            width: 15px;
+            height: 2px;
+            background: var(--dark);
+        }
+        
+        .ball {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #f39c12, #e67e22, #d35400);
+            border-radius: 50%;
+            border: 2px solid #d35400;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .ball.visible {
+            opacity: 1;
+        }
+        
+        .ball::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            width: 12px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: rotate(-20deg);
+        }
+        
+        .ball.falling {
+            animation: ball-fall 2s ease-in;
+        }
+        
+        .ball.bouncing {
+            animation: ball-bounce 1s ease-out;
+        }
+        
+        @keyframes ball-fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(280px); }
+        }
+        
+        @keyframes ball-bounce {
+            0% { transform: translateY(280px) scale(1, 0.8); }
+            25% { transform: translateY(260px) scale(1.1, 0.9); }
+            50% { transform: translateY(240px) scale(1, 1); }
+            75% { transform: translateY(250px) scale(0.95, 1.05); }
+            100% { transform: translateY(280px) scale(1, 0.8); }
+        }
+        
+        .energy-indicator {
+            position: absolute;
+            left: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            text-align: center;
+        }
+        
+        .energy-bar {
+            width: 20px;
+            height: 200px;
+            background: linear-gradient(to bottom, 
+                var(--potential-color) 0%, 
+                var(--potential-color) 50%, 
+                var(--kinetic-color) 50%, 
+                var(--kinetic-color) 100%);
+            border: 2px solid var(--dark);
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .potential-energy {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--potential-gradient);
+            transition: height 0.5s ease;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .kinetic-energy {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--kinetic-gradient);
+            transition: height 0.5s ease;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .energy-labels {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .energy-values {
+            position: absolute;
+            right: -100px;
+            top: 0;
+            bottom: 0;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .energy-value {
+            padding: 5px;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+        }
+        
+        .potential-value {
+            background: var(--potential-color);
+        }
+        
+        .kinetic-value {
+            background: var(--kinetic-color);
+        }
+        
+        .total-value {
+            background: var(--primary);
+        }
+        
+        /* Drag Feedback */
+        .drag-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .drag-feedback.show {
+            opacity: 1;
+        }
+        
+        .process-info {
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.1), rgba(155, 89, 182, 0.1));
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(142, 68, 173, 0.2);
+            border: 3px solid var(--secondary);
+            height: fit-content;
+        }
+        
+        .process-header {
+            color: var(--secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .process-step {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            transition: all 0.5s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .process-step.active {
+            opacity: 1;
+            border-left-color: var(--secondary);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
+        }
+        
+        .process-step.completed {
+            opacity: 1;
+            border-left-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .step-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .measurement-panel {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 2px solid var(--success);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .measurement-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+        
+        .measurement-icon {
+            font-size: 2rem;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+        
+        .measurement-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .measurement-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .experiment-feedback {
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.15), rgba(108, 52, 131, 0.15));
+            border-radius: 25px;
+            border-left: 8px solid var(--accent);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(142, 68, 173, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-feedback p {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            color: var(--secondary);
+            font-weight: 800;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .result-area {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(46, 204, 113, 0.1));
+            border-radius: 25px;
+            padding: 40px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.15);
+        }
+        
+        .result-area h3 {
+            color: var(--success);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(46, 204, 113, 0.05));
+            padding: 35px;
+            border-radius: 20px;
+            border-left: 8px solid var(--success);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.15);
+        }
+        
+        .conclusion p {
+            margin-bottom: 18px;
+            color: #1e7e34;
+            font-weight: 700;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .conclusion strong {
+            color: var(--success);
+        }
+        
+        .sound-toggle {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: var(--energy-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(142, 68, 173, 0.4);
+            z-index: 1000;
+            transition: all 0.5s;
+        }
+        
+        .sound-toggle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 15px 40px rgba(142, 68, 173, 0.6);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* English Language Styles */
+        .lang-en {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .lang-en .instructions {
+            border-right: none;
+            border-left: 8px solid var(--success);
+        }
+        
+        .lang-en .experiment-header,
+        .lang-en .experiment-feedback,
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-right: none;
+            border-left: 8px solid var(--primary);
+        }
+        
+        .lang-en .experiment-feedback,
+        .lang-en .result-area {
+            border-left: 8px solid var(--accent);
+        }
+        
+        .lang-en .result-area,
+        .lang-en .conclusion {
+            border-left: 8px solid var(--success);
+        }
+        
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .experiment-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .measurement-panel {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .physics-area {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .experiment-header {
+                flex-direction: column;
+                gap: 25px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .draggable-item {
+                margin-bottom: 15px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <button class="language-toggle" id="languageToggle">
+        <i class="fas fa-language"></i> English
+    </button>
+
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up" id="soundIcon"></i>
+    </button>
+
+    <!-- Drag Feedback -->
+    <div class="drag-feedback" id="dragFeedback">اسحب الكرة إلى أعلى الطاولة</div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-bowling-ball"></i>
+                <div class="logo-text">
+                    <h1 id="headerTitle">مختبر الطاقة الحركية والطاقة الكامنة</h1>
+                    <p id="headerSubtitle">تمييز بين نوعين من الطاقة</p>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3 id="statusTitle">حالة التجربة</h3>
+                <div class="status-value" id="experimentStatus">جاهز</div>
+                <div class="status-description" id="statusDescription">ابدأ التجربة</div>
+            </div>
+        </header>
+        
+        <div class="lab-workspace">
+            <div class="experiment-header">
+                <div>
+                    <h2 id="experimentTitle"><i class="fas fa-atom"></i> تجربة الطاقة الحركية والطاقة الكامنة</h2>
+                    <p id="experimentSubtitle">تمييز بين نوعين من الطاقة</p>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="startExperiment">
+                        <i class="fas fa-play"></i> <span id="startBtn">بدء التجربة</span>
+                    </button>
+                    <button class="control-btn reset" id="resetExperiment">
+                        <i class="fas fa-redo"></i> <span id="resetBtn">إعادة التجربة</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3 id="instructionsTitle"><i class="fas fa-info-circle"></i> تعليمات التجربة</h3>
+                <ol id="instructionsList">
+                    <li id="step1">اسحب الكرة إلى أعلى الطاولة</li>
+                    <li id="step2">انقر على الكرة لإسقاطها</li>
+                    <li id="step3">راقب تحول الطاقة الكامنة إلى طاقة حركية</li>
+                    <li id="step4">لاحظ مؤشرات الطاقة أثناء السقوط</li>
+                </ol>
+            </div>
+            
+            <div class="measurement-panel">
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-arrow-up"></i></div>
+                    <div class="measurement-value" id="ballHeight">0m</div>
+                    <div class="measurement-label" id="heightLabel">ارتفاع الكرة</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-battery-three-quarters"></i></div>
+                    <div class="measurement-value" id="potentialEnergy">0J</div>
+                    <div class="measurement-label" id="potentialLabel">الطاقة الكامنة</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div class="measurement-value" id="kineticEnergy">0J</div>
+                    <div class="measurement-label" id="kineticLabel">الطاقة الحركية</div>
+                </div>
+                <div class="measurement-item">
+                    <div class="measurement-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="measurement-value" id="totalEnergy">0J</div>
+                    <div class="measurement-label" id="totalLabel">الطاقة الكلية</div>
+                </div>
+            </div>
+            
+            <div class="experiment-area">
+                <!-- Tools Section -->
+                <div class="tools-section">
+                    <div class="tools-header">
+                        <i class="fas fa-tools"></i>
+                        <span id="toolsTitle">الأدوات المطلوبة</span>
+                    </div>
+                    
+                    <div class="draggable-item ball-item" draggable="true" data-type="ball" id="ballTool">
+                        <div class="item-icon"><i class="fas fa-volleyball-ball"></i></div>
+                        <div class="item-name" id="ballName">كرة</div>
+                        <div class="item-description" id="ballDesc">اسحبني إلى أعلى الطاولة!</div>
+                    </div>
+                    
+                    <div class="draggable-item" id="tableTool">
+                        <div class="item-icon"><i class="fas fa-table"></i></div>
+                        <div class="item-name" id="tableName">طاولة</div>
+                        <div class="item-description" id="tableDesc">سطح مرتفع لإجراء التجربة</div>
+                    </div>
+                    
+                    <div class="draggable-item" id="gravityTool">
+                        <div class="item-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="item-name" id="gravityName">الجاذبية الأرضية</div>
+                        <div class="item-description" id="gravityDesc">9.8 م/ث² - قوة الجذب نحو الأرض</div>
+                    </div>
+                </div>
+                
+                <!-- Experiment Container -->
+                <div class="experiment-container" id="experimentContainer">
+                    <div class="drop-zone" id="dropZone"></div>
+                    
+                    <div class="physics-area" id="physicsArea">
+                        <div class="height-markers">
+                            <div class="height-marker">3m</div>
+                            <div class="height-marker">2m</div>
+                            <div class="height-marker">1m</div>
+                            <div class="height-marker">0m</div>
+                        </div>
+                        
+                        <div class="energy-indicator">
+                            <div class="energy-bar">
+                                <div class="potential-energy" id="potentialBar" style="height: 0%"></div>
+                                <div class="kinetic-energy" id="kineticBar" style="height: 0%"></div>
+                            </div>
+                            <div class="energy-labels">
+                                <div id="potentialBarLabel">PE</div>
+                                <div id="kineticBarLabel">KE</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ball" id="ball"></div>
+                        
+                        <div class="energy-values">
+                            <div class="energy-value potential-value" id="potentialDisplay">PE: 0J</div>
+                            <div class="energy-value kinetic-value" id="kineticDisplay">KE: 0J</div>
+                            <div class="energy-value total-value" id="totalDisplay">Total: 0J</div>
+                        </div>
+                        
+                        <div class="table" id="table"></div>
+                    </div>
+                    
+                    <div class="experiment-status" id="experimentStatusText">
+                        <p id="currentStepText">ابدأ التجربة أولاً</p>
+                    </div>
+                </div>
+                
+                <!-- Process Information -->
+                <div class="process-info">
+                    <div class="process-header">
+                        <i class="fas fa-cogs"></i>
+                        <span id="processTitle">مراحل العملية</span>
+                    </div>
+                    
+                    <div class="process-step" id="step-1">
+                        <div class="step-title">
+                            <i class="fas fa-play-circle"></i>
+                            <span id="processStep1">بداية التجربة</span>
+                        </div>
+                        <div class="step-description" id="processDesc1">تحضير النظام والأدوات</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-2">
+                        <div class="step-title">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="processStep2">رفع الكرة</span>
+                        </div>
+                        <div class="step-description" id="processDesc2">اسحب الكرة إلى أعلى الطاولة</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-3">
+                        <div class="step-title">
+                            <i class="fas fa-hand-pointer"></i>
+                            <span id="processStep3">إسقاط الكرة</span>
+                        </div>
+                        <div class="step-description" id="processDesc3">انقر على الكرة لإسقاطها</div>
+                    </div>
+                    
+                    <div class="process-step" id="step-4">
+                        <div class="step-title">
+                            <i class="fas fa-chart-line"></i>
+                            <span id="processStep4">مراقبة تحول الطاقة</span>
+                        </div>
+                        <div class="step-description" id="processDesc4">لاحظ تغير مؤشرات الطاقة</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="experiment-feedback" id="experimentFeedback">
+                <p id="feedbackText"><i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب الكرة إلى أعلى الطاولة</p>
+            </div>
+            
+            <div class="result-area">
+                <h3 id="resultsTitle"><i class="fas fa-chart-line"></i> نتائج تجربة الطاقة الحركية والطاقة الكامنة</h3>
+                <div class="conclusion" id="experimentConclusion">
+                    <p id="conclusionText"><i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف تحولات الطاقة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Translation data
+            const translations = {
+                ar: {
+                    headerTitle: 'مختبر الطاقة الحركية والطاقة الكامنة',
+                    headerSubtitle: 'تمييز بين نوعين من الطاقة',
+                    statusTitle: 'حالة التجربة',
+                    experimentTitle: 'تجربة الطاقة الحركية والطاقة الكامنة',
+                    experimentSubtitle: 'تمييز بين نوعين من الطاقة',
+                    startBtn: 'بدء التجربة',
+                    resetBtn: 'إعادة التجربة',
+                    instructionsTitle: 'تعليمات التجربة',
+                    step1: 'اسحب الكرة إلى أعلى الطاولة',
+                    step2: 'انقر على الكرة لإسقاطها',
+                    step3: 'راقب تحول الطاقة الكامنة إلى طاقة حركية',
+                    step4: 'لاحظ مؤشرات الطاقة أثناء السقوط',
+                    heightLabel: 'ارتفاع الكرة',
+                    potentialLabel: 'الطاقة الكامنة',
+                    kineticLabel: 'الطاقة الحركية',
+                    totalLabel: 'الطاقة الكلية',
+                    toolsTitle: 'الأدوات المطلوبة',
+                    ballName: 'كرة',
+                    ballDesc: 'اسحبني إلى أعلى الطاولة!',
+                    tableName: 'طاولة',
+                    tableDesc: 'سطح مرتفع لإجراء التجربة',
+                    gravityName: 'الجاذبية الأرضية',
+                    gravityDesc: '9.8 م/ث² - قوة الجذب نحو الأرض',
+                    processTitle: 'مراحل العملية',
+                    processStep1: 'بداية التجربة',
+                    processDesc1: 'تحضير النظام والأدوات',
+                    processStep2: 'رفع الكرة',
+                    processDesc2: 'اسحب الكرة إلى أعلى الطاولة',
+                    processStep3: 'إسقاط الكرة',
+                    processDesc3: 'انقر على الكرة لإسقاطها',
+                    processStep4: 'مراقبة تحول الطاقة',
+                    processDesc4: 'لاحظ تغير مؤشرات الطاقة',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب الكرة إلى أعلى الطاولة',
+                    resultsTitle: 'نتائج تجربة الطاقة الحركية والطاقة الكامنة',
+                    conclusionText: '<i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف تحولات الطاقة',
+                    ready: 'جاهز',
+                    startExp: 'ابدأ التجربة',
+                    currentStepText: 'ابدأ التجربة أولاً',
+                    dragBall: 'اسحب الكرة إلى أعلى الطاولة',
+                    langBtn: 'English',
+                    dragFeedback: 'اسحب الكرة إلى أعلى الطاولة'
+                },
+                en: {
+                    headerTitle: 'Kinetic and Potential Energy Laboratory',
+                    headerSubtitle: 'Distinguish between two types of energy',
+                    statusTitle: 'Experiment Status',
+                    experimentTitle: 'Kinetic and Potential Energy Experiment',
+                    experimentSubtitle: 'Distinguish between two types of energy',
+                    startBtn: 'Start Experiment',
+                    resetBtn: 'Reset Experiment',
+                    instructionsTitle: 'Experiment Instructions',
+                    step1: 'Drag the ball to the top of the table',
+                    step2: 'Click on the ball to drop it',
+                    step3: 'Watch potential energy transform to kinetic energy',
+                    step4: 'Observe energy indicators during fall',
+                    heightLabel: 'Ball Height',
+                    potentialLabel: 'Potential Energy',
+                    kineticLabel: 'Kinetic Energy',
+                    totalLabel: 'Total Energy',
+                    toolsTitle: 'Required Tools',
+                    ballName: 'Ball',
+                    ballDesc: 'Drag me to the top of the table!',
+                    tableName: 'Table',
+                    tableDesc: 'Elevated surface for the experiment',
+                    gravityName: 'Earth\'s Gravity',
+                    gravityDesc: '9.8 m/s² - gravitational force toward Earth',
+                    processTitle: 'Process Stages',
+                    processStep1: 'Experiment Start',
+                    processDesc1: 'Preparing system and tools',
+                    processStep2: 'Lifting Ball',
+                    processDesc2: 'Drag ball to top of table',
+                    processStep3: 'Dropping Ball',
+                    processDesc3: 'Click ball to drop it',
+                    processStep4: 'Energy Transformation',
+                    processDesc4: 'Observe energy indicator changes',
+                    feedbackText: '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag ball to top of table',
+                    resultsTitle: 'Kinetic and Potential Energy Experiment Results',
+                    conclusionText: '<i class="fas fa-atom"></i> Start the experiment to discover energy transformations',
+                    ready: 'Ready',
+                    startExp: 'Start Experiment',
+                    currentStepText: 'Start the experiment first',
+                    dragBall: 'Drag ball to top of table',
+                    langBtn: 'العربية',
+                    dragFeedback: 'Drag ball to top of table'
+                }
+            };
+            
+            // Language management
+            let currentLang = 'ar';
+            const languageToggle = document.getElementById('languageToggle');
+            const body = document.body;
+            
+            function updateLanguage(lang) {
+                currentLang = lang;
+                const texts = translations[lang];
+                
+                // Update all text elements
+                Object.keys(texts).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (key.includes('Text') || key.includes('feedbackText') || key.includes('conclusionText')) {
+                            element.innerHTML = texts[key];
+                        } else {
+                            element.textContent = texts[key];
+                        }
+                    }
+                });
+                
+                // Update body class for RTL/LTR
+                if (lang === 'en') {
+                    body.classList.add('lang-en');
+                    body.dir = 'ltr';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                } else {
+                    body.classList.remove('lang-en');
+                    body.dir = 'rtl';
+                    languageToggle.innerHTML = '<i class="fas fa-language"></i> ' + texts.langBtn;
+                }
+            }
+            
+            languageToggle.addEventListener('click', () => {
+                updateLanguage(currentLang === 'ar' ? 'en' : 'ar');
+            });
+            
+            // Experiment elements
+            const soundToggle = document.getElementById('soundToggle');
+            const soundIcon = document.getElementById('soundIcon');
+            const startBtn = document.getElementById('startExperiment');
+            const resetBtn = document.getElementById('resetExperiment');
+            const dragFeedback = document.getElementById('dragFeedback');
+            
+            // Visual elements
+            const ball = document.getElementById('ball');
+            const physicsArea = document.getElementById('physicsArea');
+            const experimentContainer = document.getElementById('experimentContainer');
+            const dropZone = document.getElementById('dropZone');
+            const potentialBar = document.getElementById('potentialBar');
+            const kineticBar = document.getElementById('kineticBar');
+            
+            // Draggable elements
+            const ballTool = document.getElementById('ballTool');
+            
+            // Status elements
+            const experimentStatus = document.getElementById('experimentStatus');
+            const statusDescription = document.getElementById('statusDescription');
+            const ballHeight = document.getElementById('ballHeight');
+            const potentialEnergy = document.getElementById('potentialEnergy');
+            const kineticEnergy = document.getElementById('kineticEnergy');
+            const totalEnergy = document.getElementById('totalEnergy');
+            const experimentFeedback = document.getElementById('experimentFeedback');
+            const conclusionDiv = document.getElementById('experimentConclusion');
+            const currentStepText = document.getElementById('currentStepText');
+            
+            // State variables
+            let soundEnabled = true;
+            let experimentStarted = false;
+            let ballPlaced = false;
+            let ballLifted = false;
+            let ballFalling = false;
+            let draggedElement = null;
+            let currentHeight = 0;
+            let maxHeight = 3; // meters
+            let ballMass = 1; // kg
+            let gravity = 9.8; // m/s²
+            
+            // Audio context for sounds
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playSound(frequency, duration, type = 'sine') {
+                if (!soundEnabled) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration);
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+            
+            // Sound effects
+            const sounds = {
+                start: () => playSound(500, 0.5, 'sine'),
+                drag: () => playSound(350, 0.3, 'triangle'),
+                drop: () => playSound(450, 0.5, 'square'),
+                placeBall: () => playSound(400, 0.6, 'triangle'),
+                lift: () => playSound(600, 0.8, 'sine'),
+                fall: () => playSound(300, 1.5, 'sawtooth'),
+                bounce: () => playSound(500, 0.4, 'square'),
+                complete: () => {
+                    playSound(523, 0.3);
+                    setTimeout(() => playSound(659, 0.3), 200);
+                    setTimeout(() => playSound(784, 0.4), 400);
+                },
+                error: () => playSound(200, 0.5, 'sawtooth')
+            };
+            
+            // Sound toggle
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+                playSound(soundEnabled ? 600 : 400, 0.2);
+            });
+            
+            // Calculate energy values
+            function calculateEnergy(height) {
+                const pe = ballMass * gravity * height;
+                const ke = ballMass * gravity * (maxHeight - height);
+                const total = ballMass * gravity * maxHeight;
+                
+                return {
+                    potential: Math.max(0, pe),
+                    kinetic: Math.max(0, ke),
+                    total: total
+                };
+            }
+            
+            // Update energy displays
+            function updateEnergyDisplays(height) {
+                const energy = calculateEnergy(height);
+                
+                // Update measurement panel
+                ballHeight.textContent = `${height.toFixed(1)}m`;
+                potentialEnergy.textContent = `${energy.potential.toFixed(1)}J`;
+                kineticEnergy.textContent = `${energy.kinetic.toFixed(1)}J`;
+                totalEnergy.textContent = `${energy.total.toFixed(1)}J`;
+                
+                // Update energy bars
+                const potentialPercent = (energy.potential / energy.total) * 100;
+                const kineticPercent = (energy.kinetic / energy.total) * 100;
+                
+                potentialBar.style.height = `${potentialPercent}%`;
+                kineticBar.style.height = `${kineticPercent}%`;
+                
+                // Update energy value displays
+                document.getElementById('potentialDisplay').textContent = `PE: ${energy.potential.toFixed(1)}J`;
+                document.getElementById('kineticDisplay').textContent = `KE: ${energy.kinetic.toFixed(1)}J`;
+                document.getElementById('totalDisplay').textContent = `Total: ${energy.total.toFixed(1)}J`;
+            }
+            
+            // Drag and Drop functionality
+            function handleDragStart(e) {
+                if (!experimentStarted) {
+                    e.preventDefault();
+                    const message = currentLang === 'ar' ? 'يجب بدء التجربة أولاً!' : 'Must start experiment first!';
+                    showDragFeedback(message);
+                    sounds.error();
+                    return;
+                }
+                
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+                sounds.drag();
+                
+                const message = currentLang === 'ar' ? 'اسحب الكرة إلى أعلى الطاولة' : 'Drag ball to top of table';
+                showDragFeedback(message);
+            }
+            
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                draggedElement = null;
+                hideDragFeedback();
+            }
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            }
+            
+            function handleDragLeave(e) {
+                dropZone.classList.remove('drag-over');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                
+                if (!draggedElement) return;
+                
+                const type = draggedElement.dataset.type;
+                
+                if (type === 'ball' && !ballPlaced) {
+                    placeBall();
+                }
+            }
+            
+            function showDragFeedback(message) {
+                dragFeedback.textContent = message;
+                dragFeedback.classList.add('show');
+            }
+            
+            function hideDragFeedback() {
+                dragFeedback.classList.remove('show');
+            }
+            
+            // Add event listeners
+            ballTool.addEventListener('dragstart', handleDragStart);
+            ballTool.addEventListener('dragend', handleDragEnd);
+            experimentContainer.addEventListener('dragover', handleDragOver);
+            experimentContainer.addEventListener('dragleave', handleDragLeave);
+            experimentContainer.addEventListener('drop', handleDrop);
+            
+            // Place ball function
+            function placeBall() {
+                ballPlaced = true;
+                ballTool.classList.add('used');
+                ballTool.draggable = false;
+                ball.classList.add('visible');
+                ball.style.left = '50%';
+                ball.style.transform = 'translateX(-50%)';
+                ball.style.bottom = '80px';
+                
+                currentHeight = 0;
+                updateEnergyDisplays(currentHeight);
+                
+                sounds.placeBall();
+                
+                updateProcessStep(2);
+                
+                const statusText = currentLang === 'ar' ? 'تم وضع الكرة' : 'Ball Placed';
+                const descText = currentLang === 'ar' ? 'اسحب لأعلى' : 'Drag upward';
+                const stepText = currentLang === 'ar' ? 'اسحب الكرة إلى أعلى' : 'Drag ball upward';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-arrow-up"></i> تم وضع الكرة! اسحبها إلى أعلى الطاولة' :
+                    '<i class="fas fa-arrow-up"></i> Ball placed! Drag it to the top of the table';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'warning');
+                
+                // Enable ball dragging on physics area
+                enableBallDragging();
+            }
+            
+            // Enable ball dragging within physics area
+            function enableBallDragging() {
+                let isDragging = false;
+                let startY = 0;
+                let startBallY = 0;
+                
+                ball.addEventListener('mousedown', (e) => {
+                    if (ballFalling) return;
+                    isDragging = true;
+                    startY = e.clientY;
+                    startBallY = parseInt(ball.style.bottom) || 80;
+                    ball.style.cursor = 'grabbing';
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging || ballFalling) return;
+                    
+                    const deltaY = startY - e.clientY; // Inverted because we want up to increase
+                    const newBottom = Math.max(80, Math.min(320, startBallY + deltaY));
+                    
+                    ball.style.bottom = `${newBottom}px`;
+                    
+                    // Calculate height based on position
+                    const heightPixels = newBottom - 80;
+                    currentHeight = (heightPixels / 240) * maxHeight; // 240px = 3m
+                    
+                    updateEnergyDisplays(currentHeight);
+                    
+                    if (currentHeight > 0.5 && !ballLifted) {
+                        ballLifted = true;
+                        sounds.lift();
+                        updateProcessStep(3);
+                        
+                        const feedbackText = currentLang === 'ar' ? 
+                            '<i class="fas fa-hand-pointer"></i> ممتاز! الآن انقر على الكرة لإسقاطها' :
+                            '<i class="fas fa-hand-pointer"></i> Excellent! Now click the ball to drop it';
+                        updateFeedback(feedbackText, 'success');
+                    }
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        ball.style.cursor = 'pointer';
+                        
+                        if (ballLifted) {
+                            ball.addEventListener('click', dropBall);
+                        }
+                    }
+                });
+            }
+            
+            // Drop ball function
+            function dropBall() {
+                if (ballFalling) return;
+                
+                ballFalling = true;
+                ball.removeEventListener('click', dropBall);
+                ball.style.cursor = 'default';
+                
+                sounds.fall();
+                updateProcessStep(4);
+                
+                const statusText = currentLang === 'ar' ? 'الكرة تسقط' : 'Ball Falling';
+                const descText = currentLang === 'ar' ? 'تحول الطاقة' : 'Energy transformation';
+                const stepText = currentLang === 'ar' ? 'راقب تحول الطاقة' : 'Watch energy transformation';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-chart-line"></i> الكرة تسقط! راقب تحول الطاقة الكامنة إلى طاقة حركية' :
+                    '<i class="fas fa-chart-line"></i> Ball falling! Watch potential energy transform to kinetic energy';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'info');
+                
+                // Animate falling with energy updates
+                animateFall();
+            }
+            
+            // Animate ball falling
+            function animateFall() {
+                const fallDuration = 2000; // 2 seconds
+                const startTime = Date.now();
+                const startHeight = currentHeight;
+                
+                function updateFall() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / fallDuration, 1);
+                    
+                    // Calculate current height using physics equations
+                    const fallDistance = 0.5 * gravity * Math.pow(elapsed / 1000, 2);
+                    const newHeight = Math.max(0, startHeight - (fallDistance / maxHeight) * maxHeight);
+                    
+                    currentHeight = newHeight;
+                    
+                    // Update ball position
+                    const ballBottom = 80 + (newHeight / maxHeight) * 240;
+                    ball.style.bottom = `${ballBottom}px`;
+                    
+                    // Update energy displays
+                    updateEnergyDisplays(currentHeight);
+                    
+                    if (progress < 1 && newHeight > 0) {
+                        requestAnimationFrame(updateFall);
+                    } else {
+                        // Ball hit the ground
+                        currentHeight = 0;
+                        ball.style.bottom = '80px';
+                        updateEnergyDisplays(currentHeight);
+                        
+                        // Bounce effect
+                        ball.classList.add('bouncing');
+                        sounds.bounce();
+                        
+                        setTimeout(() => {
+                            ball.classList.remove('bouncing');
+                            completeFall();
+                        }, 1000);
+                    }
+                }
+                
+                ball.classList.add('falling');
+                updateFall();
+            }
+            
+            // Complete fall
+            function completeFall() {
+                ballFalling = false;
+                ball.classList.remove('falling');
+                
+                const statusText = currentLang === 'ar' ? 'انتهى السقوط' : 'Fall Complete';
+                const descText = currentLang === 'ar' ? 'تم تحول الطاقة' : 'Energy transformed';
+                const stepText = currentLang === 'ar' ? 'التجربة اكتملت!' : 'Experiment completed!';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-check-circle"></i> ممتاز! تحولت الطاقة الكامنة إلى طاقة حركية!' :
+                    '<i class="fas fa-check-circle"></i> Excellent! Potential energy transformed to kinetic energy!';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'complete');
+                updateProcessStep(4, 'completed');
+                sounds.complete();
+                
+                setTimeout(() => {
+                    showFinalResults();
+                }, 2000);
+            }
+            
+            // Update process steps
+            function updateProcessStep(stepNumber, status = 'active') {
+                // Reset all steps
+                for (let i = 1; i <= 4; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    step.classList.remove('active', 'completed');
+                }
+                
+                // Update current step
+                for (let i = 1; i <= stepNumber; i++) {
+                    const step = document.getElementById(`step-${i}`);
+                    if (i < stepNumber) {
+                        step.classList.add('completed');
+                    } else if (i === stepNumber) {
+                        step.classList.add(status);
+                    }
+                }
+            }
+            
+            // Update experiment feedback
+            function updateFeedback(message, type = 'info') {
+                document.getElementById('feedbackText').innerHTML = message;
+                
+                // Visual feedback
+                experimentFeedback.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    experimentFeedback.style.transform = 'scale(1)';
+                }, 300);
+            }
+            
+            // Show final results
+            function showFinalResults() {
+                const conclusion = currentLang === 'ar' ? `
+                    <p><strong style="color: #8e44ad;">⚡ نتائج تجربة الطاقة الحركية والطاقة الكامنة:</strong></p>
+                    <p>✅ <strong>الارتفاع الأقصى:</strong> ${maxHeight.toFixed(1)} متر</p>
+                    <p>🔋 <strong>أقصى طاقة كامنة:</strong> ${(ballMass * gravity * maxHeight).toFixed(1)} جول</p>
+                    <p>🏃 <strong>أقصى طاقة حركية:</strong> ${(ballMass * gravity * maxHeight).toFixed(1)} جول</p>
+                    <p>⚡ <strong>الطاقة الكلية المحفوظة:</strong> ${(ballMass * gravity * maxHeight).toFixed(1)} جول</p>
+                    <p>🎯 <strong>طريقة التفاعل:</strong> السحب والإفلات (Drag & Drop)</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 الشرح العلمي:</strong></p>
+                    <p>🔋 <strong>الطاقة الكامنة:</strong> طاقة مخزونة في الجسم بسبب موضعه (PE = mgh)</p>
+                    <p>🏃 <strong>الطاقة الحركية:</strong> طاقة الجسم بسبب حركته (KE = ½mv²)</p>
+                    <p>⚖️ <strong>حفظ الطاقة:</strong> الطاقة الكلية تبقى ثابتة أثناء التحول</p>
+                    <p>🔄 <strong>تحول الطاقة:</strong> PE → KE أثناء السقوط</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">📊 مراحل تحول الطاقة:</strong></p>
+                    <p>🔵 <strong>في الأعلى:</strong> طاقة كامنة عالية + طاقة حركية صفر</p>
+                    <p>🟡 <strong>أثناء السقوط:</strong> تناقص الطاقة الكامنة + زيادة الطاقة الحركية</p>
+                    <p>🔴 <strong>في الأسفل:</strong> طاقة كامنة صفر + طاقة حركية عالية</p>
+                    <p>⚡ <strong>النتيجة:</strong> الطاقة الكلية = PE + KE = ثابتة</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e74c3c;">🧮 المعادلات المستخدمة:</strong></p>
+                    <p>📐 <strong>الطاقة الكامنة:</strong> PE = mgh = ${ballMass} × ${gravity} × h</p>
+                    <p>🚀 <strong>الطاقة الحركية:</strong> KE = ½mv² = ½ × ${ballMass} × v²</p>
+                    <p>📏 <strong>قانون السقوط:</strong> h = ½gt² (t = الزمن)</p>
+                    <p>⚡ <strong>حفظ الطاقة:</strong> PE₁ + KE₁ = PE₂ + KE₂</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #3498db;">🌍 تطبيقات في الحياة:</strong></p>
+                    <p>🎢 <strong>الألعاب:</strong> الأفعوانية تحول PE إلى KE للحصول على السرعة</p>
+                    <p>⚡ <strong>توليد الكهرباء:</strong> السدود تستخدم PE للماء لتوليد الطاقة</p>
+                    <p>🏹 <strong>الرياضة:</strong> رمي الكرة - تحويل KE لليد إلى PE ثم KE للكرة</p>
+                    <p>🚗 <strong>المركبات:</strong> المكابح تحول KE إلى حرارة</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #9b59b6;">🔬 أنواع الطاقة الأخرى:</strong></p>
+                    <p>🔥 <strong>الطاقة الحرارية:</strong> حركة الجزيئات والذرات</p>
+                    <p>💡 <strong>الطاقة الضوئية:</strong> الموجات الكهرومغناطيسية</p>
+                    <p>🔊 <strong>الطاقة الصوتية:</strong> اهتزاز الجزيئات في الوسط</p>
+                    <p>⚛️ <strong>الطاقة النووية:</strong> من تفاعلات النواة الذرية</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 الاستنتاج النهائي:</strong></p>
+                    <p>💡 الطاقة لا تفنى ولا تستحدث، بل تتحول من شكل لآخر</p>
+                    <p>💡 الطاقة الكامنة تعتمد على الارتفاع والكتلة</p>
+                    <p>💡 الطاقة الحركية تعتمد على السرعة والكتلة</p>
+                    <p>💡 مجموع الطاقتين يبقى ثابت في النظام المغلق</p>
+                    <p>💡 التجربة التفاعلية بالسحب والإفلات جعلت فهم الفيزياء ممتعاً!</p>
+                ` : `
+                    <p><strong style="color: #8e44ad;">⚡ Kinetic and Potential Energy Experiment Results:</strong></p>
+                    <p>✅ <strong>Maximum Height:</strong> ${maxHeight.toFixed(1)} meters</p>
+                    <p>🔋 <strong>Maximum Potential Energy:</strong> ${(ballMass * gravity * maxHeight).toFixed(1)} Joules</p>
+                    <p>🏃 <strong>Maximum Kinetic Energy:</strong> ${(ballMass * gravity * maxHeight).toFixed(1)} Joules</p>
+                    <p>⚡ <strong>Total Energy Conserved:</strong> ${(ballMass * gravity * maxHeight).toFixed(1)} Joules</p>
+                    <p>🎯 <strong>Interaction Method:</strong> Drag & Drop</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">🔬 Scientific Explanation:</strong></p>
+                    <p>🔋 <strong>Potential Energy:</strong> Stored energy due to position (PE = mgh)</p>
+                    <p>🏃 <strong>Kinetic Energy:</strong> Energy due to motion (KE = ½mv²)</p>
+                    <p>⚖️ <strong>Energy Conservation:</strong> Total energy remains constant during transformation</p>
+                    <p>🔄 <strong>Energy Transformation:</strong> PE → KE during fall</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #f39c12;">📊 Energy Transformation Stages:</strong></p>
+                    <p>🔵 <strong>At Top:</strong> High potential energy + Zero kinetic energy</p>
+                    <p>🟡 <strong>During Fall:</strong> Decreasing potential + Increasing kinetic energy</p>
+                    <p>🔴 <strong>At Bottom:</strong> Zero potential + High kinetic energy</p>
+                    <p>⚡ <strong>Result:</strong> Total Energy = PE + KE = Constant</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #e74c3c;">🧮 Equations Used:</strong></p>
+                    <p>📐 <strong>Potential Energy:</strong> PE = mgh = ${ballMass} × ${gravity} × h</p>
+                    <p>🚀 <strong>Kinetic Energy:</strong> KE = ½mv² = ½ × ${ballMass} × v²</p>
+                    <p>📏 <strong>Free Fall Law:</strong> h = ½gt² (t = time)</p>
+                    <p>⚡ <strong>Energy Conservation:</strong> PE₁ + KE₁ = PE₂ + KE₂</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #3498db;">🌍 Real Life Applications:</strong></p>
+                    <p>🎢 <strong>Amusement Rides:</strong> Roller coasters convert PE to KE for speed</p>
+                    <p>⚡ <strong>Power Generation:</strong> Dams use water PE to generate electricity</p>
+                    <p>🏹 <strong>Sports:</strong> Throwing ball - converting hand KE to ball PE then KE</p>
+                    <p>🚗 <strong>Vehicles:</strong> Brakes convert KE to heat energy</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #9b59b6;">🔬 Other Energy Types:</strong></p>
+                    <p>🔥 <strong>Thermal Energy:</strong> Motion of molecules and atoms</p>
+                    <p>💡 <strong>Light Energy:</strong> Electromagnetic waves</p>
+                    <p>🔊 <strong>Sound Energy:</strong> Vibration of particles in medium</p>
+                    <p>⚛️ <strong>Nuclear Energy:</strong> From atomic nucleus reactions</p>
+                    
+                    <p style="margin-top: 25px;"><strong style="color: #27ae60;">📚 Final Conclusion:</strong></p>
+                    <p>💡 Energy cannot be created or destroyed, only transformed</p>
+                    <p>💡 Potential energy depends on height and mass</p>
+                    <p>💡 Kinetic energy depends on velocity and mass</p>
+                    <p>💡 Sum of both energies remains constant in closed system</p>
+                    <p>💡 Interactive drag & drop experiment made physics fun to understand!</p>
+                `;
+                
+                conclusionDiv.innerHTML = conclusion;
+                sounds.complete();
+            }
+            
+            // Start experiment
+            startBtn.addEventListener('click', () => {
+                if (experimentStarted) return;
+                
+                experimentStarted = true;
+                startBtn.disabled = true;
+                
+                const statusText = currentLang === 'ar' ? 'بدء التجربة' : 'Starting Experiment';
+                const descText = currentLang === 'ar' ? 'جاهز للتفاعل' : 'Ready for interaction';
+                const stepText = currentLang === 'ar' ? 'اسحب الكرة إلى منطقة التجربة' : 'Drag ball to experiment area';
+                const feedbackText = currentLang === 'ar' ? 
+                    '<i class="fas fa-play-circle"></i> بدأت التجربة! اسحب الكرة إلى منطقة التجربة' :
+                    '<i class="fas fa-play-circle"></i> Experiment started! Drag ball to experiment area';
+                
+                experimentStatus.textContent = statusText;
+                statusDescription.textContent = descText;
+                currentStepText.textContent = stepText;
+                updateFeedback(feedbackText, 'success');
+                updateProcessStep(1);
+                sounds.start();
+            });
+            
+            // Reset experiment
+            resetBtn.addEventListener('click', () => {
+                // Reset state
+                experimentStarted = false;
+                ballPlaced = false;
+                ballLifted = false;
+                ballFalling = false;
+                draggedElement = null;
+                currentHeight = 0;
+                
+                // Reset UI
+                startBtn.disabled = false;
+                ballTool.classList.remove('used');
+                ballTool.draggable = true;
+                
+                // Reset ball
+                ball.classList.remove('visible', 'falling', 'bouncing');
+                ball.style.left = '';
+                ball.style.bottom = '';
+                ball.style.transform = '';
+                ball.removeEventListener('click', dropBall);
+                
+                // Reset energy displays
+                updateEnergyDisplays(0);
+                dropZone.classList.remove('drag-over');
+                
+                // Reset status
+                const readyText = currentLang === 'ar' ? 'جاهز' : 'Ready';
+                const startText = currentLang === 'ar' ? 'ابدأ التجربة' : 'Start Experiment';
+                const stepText = currentLang === 'ar' ? 'ابدأ التجربة أولاً' : 'Start the experiment first';
+                const resetFeedback = currentLang === 'ar' ? 
+                    '<i class="fas fa-hand-point-right"></i> اضغط على "بدء التجربة" ثم اسحب الكرة إلى أعلى الطاولة' :
+                    '<i class="fas fa-hand-point-right"></i> Click "Start Experiment" then drag ball to top of table';
+                
+                experimentStatus.textContent = readyText;
+                statusDescription.textContent = startText;
+                currentStepText.textContent = stepText;
+                
+                updateFeedback(resetFeedback, 'info');
+                updateProcessStep(1);
+                hideDragFeedback();
+                
+                const resetConclusion = currentLang === 'ar' ?
+                    '<i class="fas fa-atom"></i> ابدأ التجربة لاكتشاف تحولات الطاقة' :
+                    '<i class="fas fa-atom"></i> Start the experiment to discover energy transformations';
+                
+                conclusionDiv.innerHTML = `<p>${resetConclusion}</p>`;
+                
+                sounds.start();
+            });
+            
+            // Initial setup
+            updateProcessStep(1);
+            updateLanguage('ar');
+            updateEnergyDisplays(0);
+        });
+    </script>
+</body>
+</html>

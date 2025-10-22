@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة علاقة الكثافة والطفو والغوص - Density and Buoyancy Experiment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e1f5fe, #f3e5f5);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        [dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2196f3, #3f51b5);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20a138);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .tools-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .tools-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        .material-item {
+            background: white;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: grab;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #2196f3;
+        }
+
+        .material-item.dragging {
+            opacity: 0.6;
+            transform: rotate(5deg);
+        }
+
+        .material-item .density-info {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .experiment-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .water-tank {
+            width: 400px;
+            height: 300px;
+            border: 4px solid #333;
+            border-radius: 10px;
+            margin: 30px auto;
+            position: relative;
+            background: linear-gradient(to bottom, rgba(135, 206, 235, 0.3) 0%, rgba(135, 206, 235, 0.8) 100%);
+            overflow: hidden;
+        }
+
+        .water-surface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                rgba(135, 206, 235, 0.4) 0%, 
+                rgba(135, 206, 235, 0.6) 50%, 
+                rgba(135, 206, 235, 0.8) 100%);
+            animation: water-ripple 3s infinite ease-in-out;
+        }
+
+        @keyframes water-ripple {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+
+        .material-in-water {
+            position: absolute;
+            transition: all 2s ease-in-out;
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        .material-coin {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ffd700, #b8860b);
+            border-radius: 50%;
+            border: 2px solid #8b7355;
+        }
+
+        .material-wood {
+            width: 40px;
+            height: 25px;
+            background: linear-gradient(90deg, #8b4513, #daa520);
+            border: 2px solid #654321;
+        }
+
+        .material-cork {
+            width: 35px;
+            height: 30px;
+            background: linear-gradient(90deg, #deb887, #f4a460);
+            border: 2px solid #d2691e;
+            border-radius: 8px;
+        }
+
+        .material-iron {
+            width: 30px;
+            height: 25px;
+            background: linear-gradient(90deg, #708090, #2f4f4f);
+            border: 2px solid #1c1c1c;
+        }
+
+        .material-oil {
+            width: 50px;
+            height: 15px;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.7), rgba(255, 165, 0, 0.7));
+            border: 2px solid rgba(255, 140, 0, 0.8);
+            border-radius: 25px;
+        }
+
+        .floating {
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .sinking {
+            animation: sink 2s ease-out forwards;
+        }
+
+        @keyframes sink {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(250px); }
+        }
+
+        .bubble {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: bubble-rise 3s infinite;
+        }
+
+        @keyframes bubble-rise {
+            0% {
+                bottom: 0;
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                bottom: 300px;
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #2196f3;
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #2196f3;
+            color: white;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .water-tank {
+                width: 300px;
+                height: 250px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌊 تجربة علاقة الكثافة والطفو والغوص</h1>
+            <p>Density and Buoyancy Experiment</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleLanguage()">English</button>
+            <button class="btn btn-warning" onclick="toggleSound()">🔊</button>
+            <button class="btn btn-success" onclick="startExperiment()">ابدأ التجربة</button>
+            <button class="btn btn-danger" onclick="resetExperiment()">إعادة تعيين</button>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step" id="step1">إعداد المواد</div>
+            <div class="step" id="step2">اختبار المواد</div>
+            <div class="step" id="step3">ملاحظة النتائج</div>
+            <div class="step" id="step4">تحليل الكثافة</div>
+        </div>
+
+        <div class="main-content">
+            <div class="tools-panel">
+                <h3>المواد المتاحة</h3>
+                
+                <div class="material-item" draggable="true" data-material="coin">
+                    <div style="font-size: 2em;">🪙</div>
+                    <div>عملة معدنية</div>
+                    <div class="density-info">كثافة: 8.9 g/cm³</div>
+                    <small>Metal Coin</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="wood">
+                    <div style="font-size: 2em;">🪵</div>
+                    <div>قطعة خشب</div>
+                    <div class="density-info">كثافة: 0.6 g/cm³</div>
+                    <small>Wood Piece</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="cork">
+                    <div style="font-size: 2em;">🍷</div>
+                    <div>قطعة فلين</div>
+                    <div class="density-info">كثافة: 0.2 g/cm³</div>
+                    <small>Cork Piece</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="iron">
+                    <div style="font-size: 2em;">🔩</div>
+                    <div>قطعة حديد</div>
+                    <div class="density-info">كثافة: 7.8 g/cm³</div>
+                    <small>Iron Piece</small>
+                </div>
+
+                <div class="material-item" draggable="true" data-material="oil">
+                    <div style="font-size: 2em;">🛢️</div>
+                    <div>قطرة زيت</div>
+                    <div class="density-info">كثافة: 0.8 g/cm³</div>
+                    <small>Oil Drop</small>
+                </div>
+            </div>
+
+            <div class="experiment-area">
+                <div class="drop-zone" data-accept="coin,wood,cork,iron,oil">
+                    <span>اسحب المواد إلى الحوض لاختبار الطفو والغوص</span>
+                </div>
+                
+                <div class="water-tank" id="waterTank">
+                    <div class="water-surface"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'ar';
+        let soundEnabled = true;
+        let experimentStarted = false;
+        let currentStep = 0;
+        let materialsInWater = [];
+
+        // Material properties
+        const materials = {
+            coin: { density: 8.9, floats: false, name: 'عملة معدنية' },
+            wood: { density: 0.6, floats: true, name: 'قطعة خشب' },
+            cork: { density: 0.2, floats: true, name: 'قطعة فلين' },
+            iron: { density: 7.8, floats: false, name: 'قطعة حديد' },
+            oil: { density: 0.8, floats: true, name: 'قطرة زيت' }
+        };
+
+        function startExperiment() {
+            if (experimentStarted) return;
+            experimentStarted = true;
+            updateStep(1);
+        }
+
+        function resetExperiment() {
+            experimentStarted = false;
+            currentStep = 0;
+            materialsInWater = [];
+            document.getElementById('waterTank').innerHTML = '<div class="water-surface"></div>';
+            
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).className = 'step';
+            }
+        }
+
+        function updateStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step';
+                }
+            }
+            currentStep = step;
+        }
+
+        function createMaterialInWater(material) {
+            const tank = document.getElementById('waterTank');
+            const materialElement = document.createElement('div');
+            materialElement.className = `material-in-water material-${material}`;
+            
+            const x = Math.random() * 300 + 50;
+            materialElement.style.left = x + 'px';
+            materialElement.style.top = '20px';
+            
+            tank.appendChild(materialElement);
+            
+            setTimeout(() => {
+                if (materials[material].floats) {
+                    materialElement.style.top = '40px';
+                    materialElement.classList.add('floating');
+                } else {
+                    materialElement.classList.add('sinking');
+                }
+            }, 500);
+            
+            return materialElement;
+        }
+
+        // Drag and Drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialItems = document.querySelectorAll('.material-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            materialItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    if (!experimentStarted) {
+                        e.preventDefault();
+                        return;
+                    }
+                    e.target.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    e.target.classList.remove('dragging');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const draggedItem = document.querySelector('.dragging');
+                    if (!draggedItem) return;
+
+                    const material = draggedItem.dataset.material;
+                    if (materialsInWater.includes(material)) return;
+
+                    materialsInWater.push(material);
+                    createMaterialInWater(material);
+                    
+                    if (materialsInWater.length >= 3) {
+                        updateStep(3);
+                    }
+                });
+            });
+        });
+
+        function toggleLanguage() {
+            // Language toggle functionality
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+        }
+    </script>
+</body>
+</html>
